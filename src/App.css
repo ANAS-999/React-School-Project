@@ -1,0 +1,35 @@
+main {
+  flex: 1;
+  width: 100%;
+}
+
+/* Scroll behavior */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 60px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--blue-light);
+  }
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-color: var(--border) var(--bg-secondary);
+  scrollbar-width: thin;
+}
