@@ -80,9 +80,10 @@ class GamesAPI {
   }
 
   private getPopularGamesQuery() {
+    const limit: number = 150;
     const query = `fields id, name, cover.image_id, rating, first_release_date, genres.name, summary; where total_rating_count > 500;
     sort total_rating_count desc;
-    limit 50;`;
+    limit ${limit};`;
 
     return query;
   }

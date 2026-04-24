@@ -1,3 +1,6 @@
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import "./DiscoverHero.css";
 
 interface DiscoverHeroProps {
@@ -6,9 +9,71 @@ interface DiscoverHeroProps {
 
 function DiscoverHero({ gameCount }: DiscoverHeroProps) {
   const currentYear = new Date().getFullYear();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const countRef = useRef<HTMLSpanElement>(null);
+
+  useGSAP(() => {
+    // Initial timeline animations
+    const tl = gsap.timeline();
+
+    tl.fromTo(".discover-badge",
+      { y: -20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.7)" }
+    )
+    .fromTo(".discover-title",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+      "-=0.4"
+    )
+    .fromTo(".discover-subtitle",
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+      "-=0.6"
+    )
+    .fromTo(".discover-stats",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+      "-=0.6"
+    )
+    .fromTo(".scroll-indicator",
+      { opacity: 0 },
+      { opacity: 1, duration: 1, ease: "power2.inOut" },
+      "-=0.4"
+    );
+
+    // Subtle parallax effect on the glow
+    gsap.to(".discover-hero-glow", {
+      yPercent: 30,
+      ease: "none",
+      scrollTrigger: {
+        trigger: heroRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      }
+    });
+
+  }, { scope: heroRef });
+
+  // Separate useGSAP specifically for the counter animation when gameCount changes
+  useGSAP(() => {
+    if (gameCount > 0 && countRef.current) {
+      const target = { val: 0 };
+      gsap.to(target, {
+        val: gameCount,
+        duration: 2,
+        ease: "power3.out",
+        onUpdate: () => {
+          if (countRef.current) {
+            countRef.current.innerText = Math.floor(target.val).toString();
+          }
+        },
+      });
+    }
+  }, { dependencies: [gameCount], scope: heroRef });
 
   return (
-    <section className="discover-hero">
+    <section className="discover-hero" ref={heroRef}>
       <div className="container">
         <div className="discover-hero-content">
           <span className="discover-badge">
@@ -24,7 +89,7 @@ function DiscoverHero({ gameCount }: DiscoverHeroProps) {
         </div>
         <div className="discover-stats">
           <div className="stat">
-            <span className="stat-number">{gameCount}</span>
+            <span className="stat-number" ref={countRef}>0</span>
             <span className="stat-label">Popular Hits</span>
           </div>
           <div className="stat-divider" />

@@ -1,16 +1,48 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Footer } from "../components/common/Footer";
 import { Header } from "../components/common/Header";
 import DiscoverHero from "../components/discover/DiscoverHero";
 import GamesAPI from "../api/games_api";
 import type { GameModel } from "../models/GameModel";
 import GameCard from "../components/discover/GameCard";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./Discover.css";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function Discover() {
   const [games, setGames] = useState<GameModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (loading) return;
+    
+    // Animate the header
+    gsap.fromTo(".content-header",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: ".content-header", start: "top 85%" } }
+    );
+
+    // Stagger animate the games grid
+    gsap.fromTo(".game-card",
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.05,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".games-grid",
+          start: "top 85%",
+        }
+      }
+    );
+  }, { dependencies: [loading, games], scope: containerRef });
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -34,7 +66,7 @@ function Discover() {
   const skeletonCards = Array.from({ length: 12 }, (_, i) => i);
 
   return (
-    <>
+    <div ref={containerRef}>
       <Header />
       <main>
         <DiscoverHero gameCount={games.length} />
@@ -70,7 +102,7 @@ function Discover() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 
