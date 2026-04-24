@@ -1,9 +1,9 @@
 export interface GameModel {
   id: number;
   title: string;
-  imageId: string;
-  rating: number;
-  year: number;
-  genre: string;
-  hypes: number;
+  imageId: string | null;
+  rating: number | null;
+  releaseYear: string | null;
+  genres: string[];
+  summary: string;
 }

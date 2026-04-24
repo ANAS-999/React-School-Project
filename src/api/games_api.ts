@@ -69,19 +69,18 @@ class GamesAPI {
     return rawData.map((game) => ({
       id: game.id,
       title: game.name,
-      imageId: game.cover?.image_id,
-      rating: game.rating || 0,
-      year: game.first_release_date
-        ? new Date(game.first_release_date * 1000).getFullYear()
-        : 0,
-      genre: "",
-      hypes: game.hypes || 0,
+      imageId: game.cover?.image_id || null,
+      rating: game.rating ? Math.round(game.rating) : null,
+      releaseYear: game.first_release_date
+        ? new Date(game.first_release_date * 1000).getFullYear().toString()
+        : null,
+      genres: game.genres ? game.genres.map((g: any) => g.name) : [],
+      summary: game.summary || "No description available.",
     }));
   }
 
   private getPopularGamesQuery() {
-    const query: string = `fields name, cover.image_id, rating, hypes, first_release_date;
-    where total_rating_count > 500;
+    const query = `fields id, name, cover.image_id, rating, first_release_date, genres.name, summary; where total_rating_count > 500;
     sort total_rating_count desc;
     limit 50;`;
 
