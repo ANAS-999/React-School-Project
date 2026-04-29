@@ -85,6 +85,8 @@ class GamesAPI {
       }
 
       const listGames: GameModel[] = this.mapResponseToGameModel(rawData);
+      console.log(listGames.length);
+      
       return listGames;
     } catch (error) {
       console.error("Fetch error:", error);
@@ -103,13 +105,15 @@ class GamesAPI {
         ? new Date(game.first_release_date * 1000).getFullYear().toString()
         : null,
       genres: game.genres ? game.genres.map((g: any) => g.name) : [],
+      platforms: game.platforms ? game.platforms.map((p: any) => p.name) : [],
       summary: game.summary || "No description available.",
       category: typeof game.category === "number" ? game.category : null,
+      type: typeof game.type === "number" ? game.type : null,
     }));
   }
 
   private getPopularGamesQuery(limit: number = 50) {
-    const query = `fields id, name, cover.image_id, rating, first_release_date, genres.name, summary, category; where total_rating_count > 500;
+    const query = `fields id, name, cover.image_id, rating, first_release_date, genres.name, platforms.name, summary, category; where total_rating_count > 500;
     sort total_rating_count desc;
     limit ${limit};`;
 
@@ -121,6 +125,9 @@ class GamesAPI {
     const sort = "sort total_rating_count desc;";
     const whereParts: string[] = ["cover != null"];
 
+    console.log(gameFilter);
+    
+
     if (gameFilter.title) {
       whereParts.push(`name ~ *"${gameFilter.title}"*`);
     }
@@ -129,8 +136,27 @@ class GamesAPI {
       whereParts.push(`game_type = ${gameFilter.type}`);
     }
 
+    if (gameFilter.platform) {
+      whereParts.push(`platforms.name ~ *"${gameFilter.platform}"*`);
+    }
+
+    if (gameFilter.genre !== null && gameFilter.genre !== undefined) {
+      whereParts.push(`genres = ${gameFilter.genre}`);
+    }
+
+    if (gameFilter.studio !== null && gameFilter.studio !== undefined) {
+      whereParts.push(`involved_companies.company = ${gameFilter.studio}`);
+    }
+
+    if (gameFilter.year) {
+      const startOfYear = Math.floor(new Date(`${gameFilter.year}-01-01T00:00:00Z`).getTime() / 1000);
+      const endOfYear = Math.floor(new Date(`${gameFilter.year}-12-31T23:59:59Z`).getTime() / 1000);
+      whereParts.push(`first_release_date >= ${startOfYear}`);
+      whereParts.push(`first_release_date <= ${endOfYear}`);
+    }
+
     const where = `where ${whereParts.join(" & ")};`;
-    const fields = "fields id, name, cover.image_id, rating, first_release_date, genres.name, summary, category;";
+    const fields = "fields id, name, cover.image_id, rating, first_release_date, genres.name, platforms.name, summary, category;";
     const query = where + fields + sort + limit;
 
     console.log(query);

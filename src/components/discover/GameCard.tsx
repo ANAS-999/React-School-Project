@@ -16,6 +16,23 @@ function GameCard({ game }: GameCardProps) {
     return "var(--error)";
   };
 
+  const getPlatformIcon = (platformName: string) => {
+    const name = platformName.toLowerCase();
+    if (name.includes("playstation") || name.includes("ps")) return "fab fa-playstation";
+    if (name.includes("xbox")) return "fab fa-xbox";
+    if (name.includes("pc") || name.includes("windows")) return "fab fa-windows";
+    if (name.includes("nintendo") || name.includes("switch") || name.includes("wii") || name.includes("ds")) return "fas fa-gamepad";
+    if (name.includes("mac") || name.includes("apple")) return "fab fa-apple";
+    if (name.includes("linux")) return "fab fa-linux";
+    if (name.includes("android")) return "fab fa-android";
+    return null;
+  };
+
+  // Extract unique platforms
+  const uniquePlatformIcons = Array.from(
+    new Set(game.platforms.map(getPlatformIcon).filter(Boolean))
+  ) as string[];
+
   return (
     <div className="game-card group">
       <div className="game-card-inner">
@@ -38,6 +55,11 @@ function GameCard({ game }: GameCardProps) {
           )}
         </div>
         <div className="game-card-content">
+          <div className="game-card-platforms">
+            {uniquePlatformIcons.map((icon, index) => (
+              <Icon key={index} icon={icon} className="platform-icon" title={icon.split('-')[2] || 'Platform'} />
+            ))}
+          </div>
           <h3 className="game-card-title">{game.title}</h3>
           <div className="game-card-info">
             <span className="game-card-year">

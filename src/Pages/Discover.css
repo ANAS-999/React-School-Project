@@ -16,6 +16,40 @@
   color: var(--text-secondary);
 }
 
+/* Layout */
+.discover-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.discover-sidebar {
+  position: sticky;
+  top: 120px;
+  align-self: start;
+}
+
+.discover-main {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .discover-layout {
+    grid-template-columns: 220px 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .discover-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .discover-sidebar {
+    position: static;
+  }
+}
+
 /* Grid */
 .games-grid {
   display: grid;

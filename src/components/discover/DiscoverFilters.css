@@ -1,9 +1,9 @@
 .discover-filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 16px;
-  align-items: center;
-  justify-content: space-between;
+  align-items: stretch;
+  justify-content: flex-start;
   margin-bottom: 32px;
   background: var(--bg-secondary);
   padding: 16px;
@@ -13,9 +13,7 @@
 }
 
 .search-bar {
-  flex: 1;
-  min-width: 250px;
-  max-width: 400px;
+  width: 100%;
   position: relative;
   display: flex;
   align-items: center;
@@ -80,6 +78,7 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  order: 0;
 }
 
 .filter-group {
@@ -90,6 +89,7 @@
   border-radius: 12px;
   padding: 0 12px;
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .filter-group:hover {
@@ -108,7 +108,8 @@
   align-items: center;
 }
 
-.filter-select {
+.filter-select,
+.filter-input {
   background: transparent;
   border: none;
   color: var(--text-primary);
@@ -116,11 +117,19 @@
   font-weight: 500;
   padding: 12px 0;
   outline: none;
+  font-family: var(--sans);
+}
+
+.filter-input::placeholder {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.filter-select {
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   padding-right: 16px; /* Space for a custom arrow if desired */
-  font-family: var(--sans);
 }
 
 .filter-select option {
@@ -128,25 +137,55 @@
   color: var(--text-primary);
 }
 
+.clear-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clear-filters-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--blue-primary);
+  background: rgba(59, 130, 246, 0.12);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2);
+}
+
+.clear-filters-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .discover-filters {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-bar {
     max-width: 100%;
   }
-  
+
   .filter-options {
     width: 100%;
     justify-content: stretch;
+    order: 0;
   }
-  
+
   .filter-group {
     flex: 1;
   }
-  
+
   .filter-select {
     width: 100%;
   }
