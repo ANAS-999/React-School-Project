@@ -6,4 +6,5 @@ export interface GameModel {
   releaseYear: string | null;
   genres: string[];
   summary: string;
+  category?: number | null;
 }

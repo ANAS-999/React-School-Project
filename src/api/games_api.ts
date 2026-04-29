@@ -1,4 +1,5 @@
 import type { GameModel } from "../models/GameModel";
+import type { GameFilter } from "../types";
 
 interface GamesAPIHeaders {
   clientId: string;
@@ -64,6 +65,33 @@ class GamesAPI {
     }
   }
 
+  public async getFilteredGames(gameFilter: GameFilter): Promise<GameModel[]> {
+    try {
+      const response = await fetch(this.apiConfig.getApiUrl() + "games", {
+        method: "POST",
+        headers: this.apiConfig.getHeaders(),
+        body: this.getFilteredGamesQuery(gameFilter),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const rawData = await response.json();
+
+      if (!Array.isArray(rawData)) {
+        console.error("API Error:", rawData);
+        return [];
+      }
+
+      const listGames: GameModel[] = this.mapResponseToGameModel(rawData);
+      return listGames;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw error;
+    }
+  }
+
   //! Utils Methods
   private mapResponseToGameModel(rawData: any[]): GameModel[] {
     return rawData.map((game) => ({
@@ -76,14 +104,37 @@ class GamesAPI {
         : null,
       genres: game.genres ? game.genres.map((g: any) => g.name) : [],
       summary: game.summary || "No description available.",
+      category: typeof game.category === "number" ? game.category : null,
     }));
   }
 
-  private getPopularGamesQuery() {
-    const limit: number = 150;
-    const query = `fields id, name, cover.image_id, rating, first_release_date, genres.name, summary; where total_rating_count > 500;
+  private getPopularGamesQuery(limit: number = 50) {
+    const query = `fields id, name, cover.image_id, rating, first_release_date, genres.name, summary, category; where total_rating_count > 500;
     sort total_rating_count desc;
     limit ${limit};`;
+
+    return query;
+  }
+
+  private getFilteredGamesQuery(gameFilter: GameFilter) {
+    const limit = "limit 50;";
+    const sort = "sort total_rating_count desc;";
+    const whereParts: string[] = ["cover != null"];
+
+    if (gameFilter.title) {
+      whereParts.push(`name ~ *"${gameFilter.title}"*`);
+    }
+
+    if (gameFilter.type !== null && gameFilter.type !== undefined) {
+      whereParts.push(`game_type = ${gameFilter.type}`);
+    }
+
+    const where = `where ${whereParts.join(" & ")};`;
+    const fields = "fields id, name, cover.image_id, rating, first_release_date, genres.name, summary, category;";
+    const query = where + fields + sort + limit;
+
+    console.log(query);
+    
 
     return query;
   }

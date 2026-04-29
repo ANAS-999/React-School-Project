@@ -5,9 +5,10 @@ import "./DiscoverHero.css";
 
 interface DiscoverHeroProps {
   gameCount: number;
+  isSearching: boolean;
 }
 
-function DiscoverHero({ gameCount }: DiscoverHeroProps) {
+function DiscoverHero({ gameCount, isSearching }: DiscoverHeroProps) {
   const currentYear = new Date().getFullYear();
   const heroRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
@@ -16,23 +17,18 @@ function DiscoverHero({ gameCount }: DiscoverHeroProps) {
     // Initial timeline animations
     const tl = gsap.timeline();
 
-    tl.fromTo(".discover-badge",
-      { y: -20, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.7)" }
-    )
-    .fromTo(".discover-title",
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-      "-=0.4"
+    tl.fromTo(".discover-title",
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
     )
     .fromTo(".discover-subtitle",
-      { y: 20, opacity: 0 },
+      { y: 30, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
       "-=0.6"
     )
-    .fromTo(".discover-stats",
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+    .fromTo(".discover-stats-wrapper",
+      { scale: 0.9, y: 30, opacity: 0 },
+      { scale: 1, y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.5)" },
       "-=0.6"
     )
     .fromTo(".scroll-indicator",
@@ -42,7 +38,7 @@ function DiscoverHero({ gameCount }: DiscoverHeroProps) {
     );
 
     // Subtle parallax effect on the glow
-    gsap.to(".discover-hero-glow", {
+    gsap.to(".discover-hero-bg", {
       yPercent: 30,
       ease: "none",
       scrollTrigger: {
@@ -55,9 +51,8 @@ function DiscoverHero({ gameCount }: DiscoverHeroProps) {
 
   }, { scope: heroRef });
 
-  // Separate useGSAP specifically for the counter animation when gameCount changes
   useGSAP(() => {
-    if (gameCount > 0 && countRef.current) {
+    if (countRef.current) {
       const target = { val: 0 };
       gsap.to(target, {
         val: gameCount,
@@ -74,30 +69,35 @@ function DiscoverHero({ gameCount }: DiscoverHeroProps) {
 
   return (
     <section className="discover-hero" ref={heroRef}>
-      <div className="container">
+      <div className="discover-hero-bg">
+        <div className="glow glow-1" />
+        <div className="glow glow-2" />
+        <div className="glow glow-3" />
+      </div>
+      <div className="container discover-hero-container">
         <div className="discover-hero-content">
-          <span className="discover-badge">
-            <span className="pulse" />
-            Trending Now
-          </span>
           <h1 className="discover-title">
-            Discover <span className="gradient-text"> Games</span>
+            Discover <span className="gradient-text">Games</span>
           </h1>
           <p className="discover-subtitle">
             Explore the most popular games of {currentYear}, curated by millions of players worldwide
           </p>
         </div>
-        <div className="discover-stats">
-          <div className="stat">
-            <span className="stat-number" ref={countRef}>0</span>
-            <span className="stat-label">Popular Hits</span>
-          </div>
-          <div className="stat-divider" />
-          <div className="stat">
-            <span className="stat-number">{currentYear}</span>
-            <span className="stat-label">Year</span>
+        
+        <div className="discover-stats-wrapper">
+          <div className="discover-stats glass-panel">
+            <div className="stat">
+              <span className="stat-number" ref={countRef}>0</span>
+              <span className="stat-label">{isSearching ? "Found Games" : "Popular Hits"}</span>
+            </div>
+            <div className="stat-divider" />
+            <div className="stat">
+              <span className="stat-number">{currentYear}</span>
+              <span className="stat-label">Year</span>
+            </div>
           </div>
         </div>
+
         <div className="scroll-indicator">
           <span>Scroll to explore</span>
           <div className="scroll-arrow">
@@ -107,7 +107,6 @@ function DiscoverHero({ gameCount }: DiscoverHeroProps) {
           </div>
         </div>
       </div>
-      <div className="discover-hero-glow" />
       <div className="discover-hero-gradient" />
     </section>
   );
