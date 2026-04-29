@@ -150,16 +150,16 @@ export const Contact = () => {
               <h4>Follow Us</h4>
               <div className="social-icons">
                 <a href="#" className="social-icon" aria-label="Twitter">
-                  <Icon icon="fa-x-twitter" size="md" />
+                  <i className="fab fa-twitter fa-lg"></i>
                 </a>
                 <a href="#" className="social-icon" aria-label="Discord">
-                  <Icon icon="fa-discord" size="md" />
+                  <i className="fab fa-discord fa-lg"></i>
                 </a>
                 <a href="#" className="social-icon" aria-label="GitHub">
-                  <Icon icon="fa-github" size="md" />
+                  <i className="fab fa-github fa-lg"></i>
                 </a>
                 <a href="#" className="social-icon" aria-label="Instagram">
-                  <Icon icon="fa-instagram" size="md" />
+                  <i className="fab fa-instagram fa-lg"></i>
                 </a>
               </div>
             </div>

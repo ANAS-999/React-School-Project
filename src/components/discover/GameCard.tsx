@@ -2,6 +2,7 @@ import type { GameModel } from "../../models/GameModel";
 import { GameImageSize } from "../../types";
 import { getGameImageUrl } from "../../utils/imageUtils";
 import { Icon } from "../common/Icon";
+import { useNavigate } from "react-router-dom";
 import "./GameCard.css";
 
 interface GameCardProps {
@@ -9,6 +10,8 @@ interface GameCardProps {
 }
 
 function GameCard({ game }: GameCardProps) {
+  const navigate = useNavigate();
+
   const getRatingColor = (rating: number | null) => {
     if (!rating) return "var(--text-tertiary)";
     if (rating >= 85) return "var(--success)";
@@ -34,7 +37,7 @@ function GameCard({ game }: GameCardProps) {
   ) as string[];
 
   return (
-    <div className="game-card group">
+    <div className="game-card group" onClick={() => navigate(`/games/${game.id}`)}>
       <div className="game-card-inner">
         <div className="game-card-image">
           {game.imageId ? (

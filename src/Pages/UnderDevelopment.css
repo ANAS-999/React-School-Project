@@ -1,0 +1,35 @@
+.under-development-page {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.under-development-page .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.under-development-page .icon {
+  color: var(--text-tertiary);
+  animation: fa-spin-pulse 2s infinite;
+}
+
+@keyframes fa-spin-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.under-development-page h1 {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+}
+
+.under-development-page p {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}

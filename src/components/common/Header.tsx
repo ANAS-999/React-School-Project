@@ -1,24 +1,25 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Icon } from './Icon';
 import './Header.css';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   return (
     <header className="header">
       <div className="header-content">
-        <div className="logo">
+        <Link to="/" className="logo">
           <Icon icon="fa-gamepad" size="lg" className="logo-icon" />
           <span className="logo-text">EntertainHub</span>
-        </div>
+        </Link>
 
         <nav className={`nav ${mobileMenuOpen ? 'open' : ''}`}>
-          <a href="#home" onClick={() => setMobileMenuOpen(false)}>Home</a>
-          <a href="#games" onClick={() => setMobileMenuOpen(false)}>Games</a>
-          <a href="#movies" onClick={() => setMobileMenuOpen(false)}>Movies</a>
-          <a href="#animes" onClick={() => setMobileMenuOpen(false)}>Animes</a>
-          <a href="#contact" onClick={() => setMobileMenuOpen(false)}>Contact</a>
+          <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={() => setMobileMenuOpen(false)}>Home</Link>
+          <Link to="/discover" className={location.pathname === '/discover' ? 'active' : ''} onClick={() => setMobileMenuOpen(false)}>Games</Link>
+          <Link to="/movies" className={location.pathname === '/movies' ? 'active' : ''} onClick={() => setMobileMenuOpen(false)}>Movies</Link>
+          <Link to="/animes" className={location.pathname === '/animes' ? 'active' : ''} onClick={() => setMobileMenuOpen(false)}>Animes</Link>
         </nav>
 
         <div className="header-actions">

@@ -8,27 +8,36 @@ import GamesAPI from "../api/games_api";
 import type { GameModel } from "../models/GameModel";
 import GameCard from "../components/discover/GameCard";
 import type { GameTypeType, GameGenreType, GamesPopularStudiosType } from "../types";
+import { discoverCache } from "../utils/discoverCache";
 import "./Discover.css";
 
 function Discover() {
-  const [games, setGames] = useState<GameModel[]>([]);
+  const [games, setGames] = useState<GameModel[]>(discoverCache.games);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("popular");
-  const [gameType, setGameType] = useState<string>("");
-  const [platform, setPlatform] = useState<string>("");
-  const [year, setYear] = useState<string>("");
-  const [genre, setGenre] = useState<string>("");
-  const [studio, setStudio] = useState<string>("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [debouncedGameType, setDebouncedGameType] = useState<string>("");
-  const [debouncedPlatform, setDebouncedPlatform] = useState<string>("");
-  const [debouncedYear, setDebouncedYear] = useState<string>("");
-  const [debouncedGenre, setDebouncedGenre] = useState<string>("");
-  const [debouncedStudio, setDebouncedStudio] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState(discoverCache.searchQuery);
+  const [sortBy, setSortBy] = useState(discoverCache.sortBy);
+  const [gameType, setGameType] = useState<string>(discoverCache.gameType);
+  const [platform, setPlatform] = useState<string>(discoverCache.platform);
+  const [year, setYear] = useState<string>(discoverCache.year);
+  const [genre, setGenre] = useState<string>(discoverCache.genre);
+  const [studio, setStudio] = useState<string>(discoverCache.studio);
+  
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(discoverCache.searchQuery);
+  const [debouncedGameType, setDebouncedGameType] = useState<string>(discoverCache.gameType);
+  const [debouncedPlatform, setDebouncedPlatform] = useState<string>(discoverCache.platform);
+  const [debouncedYear, setDebouncedYear] = useState<string>(discoverCache.year);
+  const [debouncedGenre, setDebouncedGenre] = useState<string>(discoverCache.genre);
+  const [debouncedStudio, setDebouncedStudio] = useState<string>(discoverCache.studio);
+  
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [offset, setOffset] = useState(discoverCache.offset);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  
   const contentRef = useRef<HTMLElement>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
 
   const skeletonCards = useMemo(() => Array.from({ length: 12 }, (_, i) => i), []);
 
@@ -66,12 +75,34 @@ function Discover() {
   const hasResults = filteredGames.length > 0;
 
   useEffect(() => {
+    // Restore scroll position after a slight delay to allow rendering
+    if (discoverCache.hasCachedData && discoverCache.scrollY > 0) {
+      setTimeout(() => {
+        window.scrollTo(0, discoverCache.scrollY);
+      }, 50);
+    }
+
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 500);
+      discoverCache.scrollY = window.scrollY; // Update cache with scroll position continuously
     };
+    
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      // When leaving the page, save all the state to the cache
+      discoverCache.games = games;
+      discoverCache.searchQuery = searchQuery;
+      discoverCache.sortBy = sortBy;
+      discoverCache.gameType = gameType;
+      discoverCache.platform = platform;
+      discoverCache.year = year;
+      discoverCache.genre = genre;
+      discoverCache.studio = studio;
+      discoverCache.offset = offset;
+      discoverCache.hasCachedData = true;
+    };
+  }, [games, searchQuery, sortBy, gameType, platform, year, genre, studio, offset]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
   const clearFilters = () => {
@@ -98,14 +129,24 @@ function Discover() {
   }, [searchQuery, gameType, platform, year, genre, studio]);
 
   useEffect(() => {
+    setOffset(0);
+    setHasMore(true);
+  }, [debouncedSearchQuery, debouncedGameType, debouncedPlatform, debouncedYear, debouncedGenre, debouncedStudio]);
+
+  useEffect(() => {
     const fetchGames = async () => {
-      setLoading(true);
+      if (offset === 0) {
+        setLoading(true);
+      } else {
+        setIsFetchingMore(true);
+      }
+      
       try {
         const gamesAPI = new GamesAPI();
         let data: GameModel[];
 
-        // Scroll to the content if we're further down the page
-        if (contentRef.current) {
+        // Scroll to the content if we're further down the page and doing a fresh search
+        if (contentRef.current && offset === 0) {
           const topOffset = contentRef.current.getBoundingClientRect().top + window.scrollY - 80; // 80px for header offset
           if (window.scrollY > topOffset) {
             window.scrollTo({ top: topOffset, behavior: "smooth" });
@@ -120,22 +161,47 @@ function Discover() {
             year: debouncedYear !== "" ? debouncedYear : null,
             genre: debouncedGenre !== "" ? (Number(debouncedGenre) as GameGenreType) : null,
             studio: debouncedStudio !== "" ? (Number(debouncedStudio) as GamesPopularStudiosType) : null,
+            offset: offset,
           });
         } else {
-          data = await gamesAPI.getPopularGames();
+          data = await gamesAPI.getPopularGames(offset);
         }
         
-        setGames(data);
+        if (data.length < 50) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
+
+        setGames((prev) => (offset === 0 ? data : [...prev, ...data]));
       } catch (err) {
         console.error("Failed to fetch games:", err);
         setError(err instanceof Error ? err.message : "Failed to load games");
       } finally {
         setLoading(false);
+        setIsFetchingMore(false);
       }
     };
 
     fetchGames();
-  }, [debouncedSearchQuery, debouncedGameType, debouncedPlatform, debouncedYear, debouncedGenre, debouncedStudio]);
+  }, [debouncedSearchQuery, debouncedGameType, debouncedPlatform, debouncedYear, debouncedGenre, debouncedStudio, offset]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !isFetchingMore) {
+          setOffset((prev) => prev + 50);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, loading, isFetchingMore]);
 
   return (
     <div>
@@ -189,9 +255,21 @@ function Discover() {
                 ) : (
                   <div className="games-grid">
                     {filteredGames.length > 0 ? (
-                      filteredGames.map((game) => (
-                        <GameCard key={game.id} game={game} />
-                      ))
+                      <>
+                        {filteredGames.map((game, idx) => (
+                          <GameCard key={`${game.id}-${idx}`} game={game} />
+                        ))}
+                        {isFetchingMore &&
+                          skeletonCards.slice(0, 4).map((i) => (
+                            <div key={`more-${i}`} className="skeleton-card">
+                              <div className="skeleton-image" />
+                              <div className="skeleton-content">
+                                <div className="skeleton-title" />
+                                <div className="skeleton-info" />
+                              </div>
+                            </div>
+                          ))}
+                      </>
                     ) : (
                       <div className="no-results">
                         <p>No games found matching your search.</p>
@@ -206,6 +284,8 @@ function Discover() {
                     )}
                   </div>
                 )}
+                
+                <div ref={observerTarget} style={{ height: "10px", marginTop: "20px" }}></div>
 
                 {!loading && !error && hasResults && (
                   <div className="scroll-top-wrapper">

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Footer } from "../components/common/Footer";
 import { Header } from "../components/common/Header";
 import { Contact } from "../components/home/Contact";
@@ -105,7 +106,17 @@ const ANIMES = [
 ];
 
 function Home() {
-  const handleDiscoverClick = () => {};
+  const navigate = useNavigate();
+
+  const handleDiscoverClick = (type: string) => {
+    if (type === "games") {
+      navigate("/discover");
+    } else if (type === "movies") {
+      navigate("/movies");
+    } else if (type === "animes") {
+      navigate("/animes");
+    }
+  };
 
   return (
     <>
@@ -119,7 +130,7 @@ function Home() {
           subtitle="Discover the most played and highly-rated games"
           items={GAMES}
           type="games"
-          onDiscoverClick={handleDiscoverClick}
+          onDiscoverClick={() => handleDiscoverClick("games")}
         />
         <ContentGrid
           id="movies"
@@ -127,7 +138,7 @@ function Home() {
           subtitle="Find your next favorite movie to watch"
           items={MOVIES}
           type="movies"
-          onDiscoverClick={handleDiscoverClick}
+          onDiscoverClick={() => handleDiscoverClick("movies")}
         />
         <ContentGrid
           id="animes"
@@ -135,7 +146,7 @@ function Home() {
           subtitle="Explore the best anime series and movies"
           items={ANIMES}
           type="animes"
-          onDiscoverClick={handleDiscoverClick}
+          onDiscoverClick={() => handleDiscoverClick("animes")}
         />
         <Contact />
       </main>

@@ -66,8 +66,8 @@ export const Hero = () => {
             </p>
 
             <div className="hero-buttons">
-              <button className="btn btn-primary btn-large">Start Exploring</button>
-              <button className="btn btn-outline btn-large">Learn More</button>
+              <button className="btn btn-primary btn-large" onClick={() => document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' })}>Start Exploring</button>
+              <button className="btn btn-outline btn-large" onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })}>Learn More</button>
             </div>
           </div>
         </div>

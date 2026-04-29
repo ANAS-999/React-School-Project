@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { Icon } from "../common/Icon";
 import "./DiscoverHero.css";
 
 interface DiscoverHeroProps {
@@ -14,7 +15,6 @@ function DiscoverHero({ gameCount, isSearching }: DiscoverHeroProps) {
   const countRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(() => {
-    // Initial timeline animations
     const tl = gsap.timeline();
 
     tl.fromTo(".discover-title",
@@ -31,13 +31,17 @@ function DiscoverHero({ gameCount, isSearching }: DiscoverHeroProps) {
       { scale: 1, y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.5)" },
       "-=0.6"
     )
+    .fromTo(".floating-icons .icon-wrapper",
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out" },
+      "-=0.4"
+    )
     .fromTo(".scroll-indicator",
       { opacity: 0 },
       { opacity: 1, duration: 1, ease: "power2.inOut" },
-      "-=0.4"
+      "-=0.2"
     );
 
-    // Subtle parallax effect on the glow
     gsap.to(".discover-hero-bg", {
       yPercent: 30,
       ease: "none",
@@ -47,6 +51,39 @@ function DiscoverHero({ gameCount, isSearching }: DiscoverHeroProps) {
         end: "bottom top",
         scrub: true,
       }
+    });
+
+    gsap.to(".floating-icon-1", {
+      y: -20,
+      rotation: 10,
+      duration: 4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+    gsap.to(".floating-icon-2", {
+      y: -30,
+      rotation: -15,
+      duration: 5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+    gsap.to(".floating-icon-3", {
+      y: -15,
+      rotation: 20,
+      duration: 3.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+    gsap.to(".floating-icon-4", {
+      y: -25,
+      rotation: -10,
+      duration: 4.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
     });
 
   }, { scope: heroRef });
@@ -70,17 +107,39 @@ function DiscoverHero({ gameCount, isSearching }: DiscoverHeroProps) {
   return (
     <section className="discover-hero" ref={heroRef}>
       <div className="discover-hero-bg">
+        <div className="grid-pattern" />
         <div className="glow glow-1" />
         <div className="glow glow-2" />
         <div className="glow glow-3" />
       </div>
+      
+      <div className="floating-icons">
+        <div className="icon-wrapper floating-icon-1">
+          <Icon icon="fa-gamepad" />
+        </div>
+        <div className="icon-wrapper floating-icon-2">
+          <Icon icon="fa-trophy" />
+        </div>
+        <div className="icon-wrapper floating-icon-3">
+          <Icon icon="fa-dragon" />
+        </div>
+        <div className="icon-wrapper floating-icon-4">
+          <Icon icon="fa-chess" />
+        </div>
+      </div>
+
       <div className="container discover-hero-container">
         <div className="discover-hero-content">
+          <div className="hero-badge">
+            <span className="badge-dot" />
+            Explore Thousands of Games
+          </div>
           <h1 className="discover-title">
-            Discover <span className="gradient-text">Games</span>
+            Discover Your Next <span className="gradient-text">Adventure</span>
           </h1>
           <p className="discover-subtitle">
-            Explore the most popular games of {currentYear}, curated by millions of players worldwide
+            Browse through thousands of titles, find hidden gems, and track your favorite games. 
+            Your next gaming journey starts here.
           </p>
         </div>
         
@@ -88,12 +147,17 @@ function DiscoverHero({ gameCount, isSearching }: DiscoverHeroProps) {
           <div className="discover-stats glass-panel">
             <div className="stat">
               <span className="stat-number" ref={countRef}>0</span>
-              <span className="stat-label">{isSearching ? "Found Games" : "Popular Hits"}</span>
+              <span className="stat-label">{isSearching ? "Found Games" : "Total Games"}</span>
             </div>
             <div className="stat-divider" />
             <div className="stat">
               <span className="stat-number">{currentYear}</span>
-              <span className="stat-label">Year</span>
+              <span className="stat-label">Current Year</span>
+            </div>
+            <div className="stat-divider" />
+            <div className="stat">
+              <span className="stat-number">50+</span>
+              <span className="stat-label">Genres</span>
             </div>
           </div>
         </div>

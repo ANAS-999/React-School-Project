@@ -9,4 +9,12 @@ export interface GameModel {
   summary: string;
   category?: number | null;
   type: number | null;
+  
+  // Extended Details
+  storyline?: string | null;
+  screenshots?: string[];
+  videos?: { name: string; videoId: string }[];
+  developers?: string[];
+  publishers?: string[];
+  similarGames?: { id: number; title: string; imageId: string | null }[];
 }

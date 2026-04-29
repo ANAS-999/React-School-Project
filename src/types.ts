@@ -5,6 +5,7 @@ export const GameImageSize = {
   HD: "720p",
   Micro: "micro",
   Thumb: "thumb",
+  ScreenshotMed: "screenshot_med",
 } as const;
 
 export interface GameFilter {
@@ -14,6 +15,7 @@ export interface GameFilter {
   year?: string | null;
   genre?: GameGenreType | null;
   studio?: GamesPopularStudiosType | null;
+  offset?: number;
 }
 
 export const GameType = {
