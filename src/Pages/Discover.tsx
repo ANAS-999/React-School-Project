@@ -37,7 +37,6 @@ function Discover() {
   
   const contentRef = useRef<HTMLElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
-  const isInitialMount = useRef(true);
 
   const skeletonCards = useMemo(() => Array.from({ length: 12 }, (_, i) => i), []);
 
