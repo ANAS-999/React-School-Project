@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import Discover from "./Pages/Discover";
 import GameDetails from "./Pages/GameDetails";
+import AnimeDiscover from "./Pages/AnimeDiscover";
+import AnimeDetails from "./Pages/AnimeDetails";
 import UnderDevelopment from "./Pages/UnderDevelopment";
 
 function App() {
@@ -10,8 +12,9 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/discover" element={<Discover />} />
       <Route path="/games/:id" element={<GameDetails />} />
+      <Route path="/animes" element={<AnimeDiscover />} />
+      <Route path="/anime/:id" element={<AnimeDetails />} />
       <Route path="/movies" element={<UnderDevelopment />} />
-      <Route path="/animes" element={<UnderDevelopment />} />
     </Routes>
   );
 }
