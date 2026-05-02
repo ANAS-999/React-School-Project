@@ -95,7 +95,7 @@ function DiscoverFilters({
 
         <div className="filter-group">
           <label htmlFor="type-select">
-            <Icon icon="fa-gamepad" />
+            <Icon icon="fa-gem" />
           </label>
           <select
             id="type-select"

@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const SplineLoader = () => (
   <div className="spline-loader">
-    <Icon icon="fa-gamepad" className="fa-spin" size="2xl" />
+    <Icon icon="fa-gem" className="fa-spin" size="2xl" />
     <p>Loading 3D...</p>
   </div>
 );

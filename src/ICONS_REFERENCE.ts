@@ -3,7 +3,7 @@
 
 export const ICONS_USED = {
   // Header
-  logo: 'fa-gamepad',
+  logo: 'fa-gem',
 
   // Hero Section
   badge: 'fa-star',

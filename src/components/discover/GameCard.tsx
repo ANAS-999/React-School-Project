@@ -44,7 +44,7 @@ function GameCard({ game }: GameCardProps) {
             <img src={getGameImageUrl(game.imageId, GameImageSize.FHD)} alt={game.title} />
           ) : (
             <div className="game-card-placeholder">
-              <Icon icon="fa-gamepad" size="2xl" />
+              <Icon icon="fa-gem" size="2xl" />
             </div>
           )}
           {game.rating && (

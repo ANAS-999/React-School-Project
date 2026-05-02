@@ -115,7 +115,7 @@ function DiscoverHero({ gameCount, isSearching }: DiscoverHeroProps) {
       
       <div className="floating-icons">
         <div className="icon-wrapper floating-icon-1">
-          <Icon icon="fa-gamepad" />
+          <Icon icon="fa-gem" />
         </div>
         <div className="icon-wrapper floating-icon-2">
           <Icon icon="fa-trophy" />

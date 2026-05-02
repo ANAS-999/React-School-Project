@@ -89,6 +89,9 @@ export const ContentGrid = ({
     <section id={id} className={`content-section content-${type}`} ref={containerRef}>
       <div className="container">
         <div className="section-header">
+          <div className="section-badge">
+            <Icon icon="fa-fire" size="sm" /> Trending {type}
+          </div>
           <h2>{title}</h2>
           {subtitle && <p className="section-subtitle">{subtitle}</p>}
         </div>

@@ -31,7 +31,7 @@ export const Header = () => {
     <header className="header">
       <div className="header-content">
         <Link to="/" className="logo" onClick={handleLogoClick}>
-          <Icon icon="fa-gamepad" size="lg" className="logo-icon" />
+          <Icon icon="fa-gem" size="lg" className="logo-icon" />
           <span className="logo-text">EntertainHub</span>
         </Link>
 
@@ -40,6 +40,7 @@ export const Header = () => {
           <Link to="/discover" className={location.pathname === '/discover' ? 'active' : ''} onClick={() => handleNavClick('/discover')}>Games</Link>
           <Link to="/movies" className={location.pathname === '/movies' ? 'active' : ''} onClick={() => handleNavClick('/movies')}>Movies</Link>
           <Link to="/animes" className={location.pathname === '/animes' ? 'active' : ''} onClick={() => handleNavClick('/animes')}>Animes</Link>
+          <Link to="/about" className={location.pathname === '/about' ? 'active' : ''} onClick={() => handleNavClick('/about')}>About</Link>
         </nav>
 
         <div className="header-actions">

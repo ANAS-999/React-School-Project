@@ -97,7 +97,7 @@ function GameDetails() {
                 {game.imageId ? (
                   <img src={getGameImageUrl(game.imageId, GameImageSize.CoverBig)} alt={game.title} />
                 ) : (
-                  <div className="placeholder-cover"><Icon icon="fa-gamepad" size="2xl" /></div>
+                  <div className="placeholder-cover"><Icon icon="fa-gem" size="2xl" /></div>
                 )}
               </div>
               <div className="game-info">
@@ -236,7 +236,7 @@ function GameDetails() {
                     {similar.imageId ? (
                       <img src={getGameImageUrl(similar.imageId, GameImageSize.CoverBig)} alt={similar.title} loading="lazy" />
                     ) : (
-                      <div className="placeholder"><Icon icon="fa-gamepad" /></div>
+                      <div className="placeholder"><Icon icon="fa-gem" /></div>
                     )}
                   </div>
                   <div className="similar-game-info">

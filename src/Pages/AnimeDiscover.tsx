@@ -7,6 +7,7 @@ import AnimeCard from "../components/discover/AnimeCard";
 import AnimeAPI from "../api/anime_api";
 import type { AnimeModel } from "../models/AnimeModel";
 import "./Discover.css";
+import "../components/discover/DiscoverFilters.css";
 
 function AnimeDiscover() {
   const [animeList, setAnimeList] = useState<AnimeModel[]>([]);
@@ -34,22 +35,26 @@ function AnimeDiscover() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
-      setPage(1);
-      setAnimeList([]);
-      fetchAnime(true);
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   useEffect(() => {
-    fetchAnime(false);
-  }, [page, debouncedSearchQuery]);
+    setPage(1);
+    setAnimeList([]);
+    fetchAnime(true, debouncedSearchQuery, 1);
+  }, [debouncedSearchQuery]);
 
-  const fetchAnime = async (isNewSearch: boolean) => {
+  useEffect(() => {
+    if (page === 1) return;
+    fetchAnime(false, debouncedSearchQuery, page);
+  }, [page]);
+
+  const fetchAnime = async (isNewSearch: boolean, query: string, pageToFetch: number) => {
     try {
       const api = new AnimeAPI();
-      const currentPage = page;
-      const currentQuery = debouncedSearchQuery;
+      const currentPage = pageToFetch;
+      const currentQuery = query;
       
       console.log("Fetching anime:", { isNewSearch, currentPage, currentQuery });
       
@@ -115,21 +120,21 @@ function AnimeDiscover() {
         />
         
         <section className="discover-filters container">
-          <div className="search-box">
-            <Icon icon="fa-magnifying-glass" className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search anime..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="search-input"
-            />
-            {searchQuery && (
-              <button className="clear-search" onClick={() => setSearchQuery("")}>
-                <Icon icon="fa-xmark" />
-              </button>
-            )}
-          </div>
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Search anime..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="search-input"
+              />
+              <Icon icon="fa-magnifying-glass" className="search-icon" />
+              {searchQuery && (
+                <button className="clear-search" onClick={() => setSearchQuery("")}>
+                  <Icon icon="fa-xmark" />
+                </button>
+              )}
+            </div>
         </section>
 
         {error && (
@@ -148,6 +153,19 @@ function AnimeDiscover() {
 
         <section className="container">
           <div className="games-grid">
+            {loading && animeList.length === 0 && (
+              <>
+                {[...Array(12)].map((_, i) => (
+                  <div key={`skeleton-initial-${i}`} className="game-card skeleton">
+                    <div className="skeleton-image"></div>
+                    <div className="skeleton-content">
+                      <div className="skeleton-title"></div>
+                      <div className="skeleton-meta"></div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
             {animeList.map((anime) => (
               <AnimeCard key={anime.id} anime={anime} />
             ))}

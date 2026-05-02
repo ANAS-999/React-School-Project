@@ -45,6 +45,14 @@
   text-align: center;
   margin-bottom: 80px;
 
+  @media (max-width: 768px) {
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 40px;
+  }
+
   h2 {
     background: linear-gradient(
       135deg,
@@ -79,6 +87,10 @@
     grid-template-columns: 1fr;
     gap: 60px;
   }
+
+  @media (max-width: 480px) {
+    gap: 40px;
+  }
 }
 
 /* Contact Info */
@@ -87,6 +99,11 @@
     font-size: 28px;
     margin-bottom: 32px;
     color: var(--text-primary);
+
+    @media (max-width: 480px) {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
   }
 }
 
@@ -107,6 +124,16 @@
     transform: translateX(10px);
     background: rgba(255, 255, 255, 0.05);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 18px;
   }
 
   .icon {
@@ -145,6 +172,11 @@
   padding-top: 32px;
   border-top: 1px solid var(--border-light);
 
+  @media (max-width: 480px) {
+    margin-top: 32px;
+    padding-top: 24px;
+  }
+
   h4 {
     font-size: 18px;
     margin-bottom: 20px;
@@ -155,6 +187,11 @@
 .social-icons {
   display: flex;
   gap: 16px;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    gap: 12px;
+  }
 }
 
 .social-icon {
@@ -182,6 +219,12 @@
     transform: translateY(-5px) rotate(5deg);
     box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
   }
+
+  @media (max-width: 480px) {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
 }
 
 /* Contact Form */
@@ -196,6 +239,10 @@
 
   @media (max-width: 768px) {
     padding: 32px 24px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 24px 18px;
   }
 }
 
@@ -234,14 +281,22 @@
     &:focus {
       outline: none;
       border-color: var(--blue-light);
-      background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.5);
     }
   }
 
   textarea {
     resize: vertical;
     min-height: 120px;
+  }
+
+  @media (max-width: 480px) {
+    input,
+    textarea {
+      padding: 14px 16px;
+      font-size: 14px;
+    }
   }
 }
 
