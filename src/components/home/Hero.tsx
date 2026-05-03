@@ -122,24 +122,25 @@ export const Hero = () => {
           <div className="hero-spline-wrapper">
             <Suspense fallback={<SplineLoader />}>
               <Spline
-                scene="https://prod.spline.design/2DOFoxWjxcKxrFQ5/scene.splinecode"
+                scene="https://prod.spline.design/ZwrSyBnr9WFV6PSL/scene.splinecode"
                 onLoad={(spline) => (splineRef.current = spline)}
                 style={{ width: "100%", height: "100%", maxWidth: "100%" }}
               />
             </Suspense>
           </div>
-          <div className="hero-spline-overlay"></div>
+
 
           <div className="container">
-            <div className="hero-content">
-              <h1 className="hero-title gradient-text">
-                Discover Everything You Love
-              </h1>
+            <div className="hero-content-wrapper">
+              <div className="hero-content">
+                <h1 className="hero-title gradient-text">
+                  Discover Everything You Love
+                </h1>
 
-              <p className="hero-subtitle">
-                Stop jumping between different apps to manage your media. Keep
-                your entire catalog perfectly synced and beautifully displayed.
-              </p>
+                <p className="hero-subtitle">
+                  Stop jumping between different apps to manage your media. Keep
+                  your entire catalog perfectly synced and beautifully displayed.
+                </p>
 
               <div className="hero-stats">
                 <div className="stat-item">
@@ -184,6 +185,7 @@ export const Hero = () => {
               </div>
             </div>
           </div>
+        </div>
         </div>
         
         <div className="scroll-hint">
