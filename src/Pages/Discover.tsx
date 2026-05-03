@@ -74,12 +74,8 @@ function Discover() {
   const hasResults = filteredGames.length > 0;
 
   useEffect(() => {
-    // Restore scroll position after a slight delay to allow rendering
-    if (discoverCache.hasCachedData && discoverCache.scrollY > 0) {
-      setTimeout(() => {
-        window.scrollTo(0, discoverCache.scrollY);
-      }, 50);
-    }
+    // Header handles scroll to top on navigation, no need to restore
+    // Cache is still used for preserving filter state
 
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 500);
@@ -144,13 +140,7 @@ function Discover() {
         const gamesAPI = new GamesAPI();
         let data: GameModel[];
 
-        // Scroll to the content if we're further down the page and doing a fresh search
-        if (contentRef.current && offset === 0) {
-          const topOffset = contentRef.current.getBoundingClientRect().top + window.scrollY - 80; // 80px for header offset
-          if (window.scrollY > topOffset) {
-            window.scrollTo({ top: topOffset, behavior: "smooth" });
-          }
-        }
+        // Header handles scroll to top on navigation
 
         if (debouncedSearchQuery.trim() || debouncedGameType !== "" || debouncedPlatform !== "" || debouncedYear !== "" || debouncedGenre !== "" || debouncedStudio.trim() !== "") {
           data = await gamesAPI.getFilteredGames({

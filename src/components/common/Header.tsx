@@ -20,11 +20,9 @@ export const Header = () => {
     }
   };
 
-  const handleNavClick = (path: string) => {
+  const handleNavClick = () => {
     setMobileMenuOpen(false);
-    if (path === '/') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -36,10 +34,10 @@ export const Header = () => {
         </Link>
 
         <nav className={`nav ${mobileMenuOpen ? 'open' : ''}`}>
-          <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={() => handleNavClick('/')}>Home</Link>
-          <Link to="/discover" className={location.pathname === '/discover' ? 'active' : ''} onClick={() => handleNavClick('/discover')}>Games</Link>
-          <Link to="/movies" className={location.pathname === '/movies' ? 'active' : ''} onClick={() => handleNavClick('/movies')}>Movies</Link>
-          <Link to="/animes" className={location.pathname === '/animes' ? 'active' : ''} onClick={() => handleNavClick('/animes')}>Animes</Link>
+          <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={handleNavClick}>Home</Link>
+          <Link to="/discover" className={location.pathname === '/discover' ? 'active' : ''} onClick={handleNavClick}>Games</Link>
+          <Link to="/movies" className={location.pathname === '/movies' ? 'active' : ''} onClick={handleNavClick}>Movies</Link>
+          <Link to="/animes" className={location.pathname === '/animes' ? 'active' : ''} onClick={handleNavClick}>Animes</Link>
         </nav>
 
         <div className="header-actions">

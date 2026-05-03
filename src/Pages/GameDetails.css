@@ -695,3 +695,34 @@
 .watch-on-card span {
   font-size: 15px;
 }
+
+/* Empty State */
+.empty-state, .error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  text-align: center;
+  gap: 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state i, .error-message i {
+  font-size: 48px;
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.empty-state p, .error-message p {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.error-message {
+  color: var(--error);
+}
+
+.error-message i {
+  color: var(--error);
+}

@@ -1,11 +1,26 @@
 import type { AnimeModel } from "../models/AnimeModel";
 
+interface AnimeFilters {
+  type?: string;
+  status?: string;
+  rating?: string;
+  genre?: number;
+}
+
 class AnimeAPI {
   private baseUrl = "https://api.jikan.moe/v4";
 
-  async getPopularAnime(page: number = 1, limit: number = 25): Promise<{ anime: AnimeModel[]; total: number; hasMore: boolean }> {
+  async getPopularAnime(page: number = 1, limit: number = 25, filters?: AnimeFilters): Promise<{ anime: AnimeModel[]; total: number; hasMore: boolean }> {
     try {
-      const response = await fetch(`${this.baseUrl}/top/anime?filter=bypopularity&page=${page}&limit=${limit}`);
+      // Use /anime endpoint instead of /top/anime for better filter support
+      let url = `${this.baseUrl}/anime?page=${page}&limit=${limit}&order_by=popularity&sort=asc`;
+      
+      if (filters?.type) url += `&type=${filters.type}`;
+      if (filters?.status) url += `&status=${filters.status}`;
+      if (filters?.rating) url += `&rating=${filters.rating}`;
+      if (filters?.genre) url += `&genres=${filters.genre}`;
+      
+      const response = await fetch(url);
       
       if (!response.ok) {
         throw new Error("Failed to fetch anime");
@@ -42,9 +57,16 @@ class AnimeAPI {
     }
   }
 
-  async searchAnime(query: string, page: number = 1, limit: number = 25): Promise<{ anime: AnimeModel[]; total: number; hasMore: boolean }> {
+  async searchAnime(query: string, page: number = 1, limit: number = 25, filters?: AnimeFilters): Promise<{ anime: AnimeModel[]; total: number; hasMore: boolean }> {
     try {
-      const response = await fetch(`${this.baseUrl}/anime?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`);
+      let url = `${this.baseUrl}/anime?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
+      
+      if (filters?.type) url += `&type=${filters.type}`;
+      if (filters?.status) url += `&status=${filters.status}`;
+      if (filters?.rating) url += `&rating=${filters.rating}`;
+      if (filters?.genre) url += `&genres=${filters.genre}`;
+      
+      const response = await fetch(url);
       
       if (!response.ok) {
         throw new Error("Failed to search anime");
