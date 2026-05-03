@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Footer } from "../components/common/Footer";
 import { Header } from "../components/common/Header";
+import { Icon } from "../components/common/Icon";
 import { Contact } from "../components/home/Contact";
 import { ContentGrid } from "../components/home/ContentGrid";
 import { Hero } from "../components/home/Hero";
