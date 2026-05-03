@@ -115,12 +115,6 @@ export const ContentGrid = ({
                 <div className="card-meta">
                   {item.year && <span className="year">{item.year}</span>}
                   {item.genre && <span className="genre">{item.genre}</span>}
-                  {item.hypes !== undefined && (
-                    <span className="hyped">
-                      <Icon icon="fa-fire" size="sm" style={{ marginRight: '4px' }} />
-                      {item.hypes} Hypes
-                    </span>
-                  )}
                 </div>
                 {item.description && (
                   <p className="card-description">{item.description}</p>

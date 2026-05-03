@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Footer } from "../components/common/Footer";
 import { Header } from "../components/common/Header";
-import { Icon } from "../components/common/Icon";
 import { Contact } from "../components/home/Contact";
 import { ContentGrid } from "../components/home/ContentGrid";
 import { Hero } from "../components/home/Hero";
@@ -9,31 +8,32 @@ import { Hero } from "../components/home/Hero";
 // Sample data for games
 const GAMES = [
   {
-    id: 1020,
-    title: "Grand Theft Auto V",
-    image: "https://images.igdb.com/igdb/image/upload/t_1080p/co2lbd.jpg",
-    rating: 89.6,
-    year: 2013,
-    genre: "Action-Adventure",
-    hypes: 500,
+    id: 25076,
+    title: "Red Dead Redemption 2",
+    image: "https://images.igdb.com/igdb/image/upload/t_1080p/co1q1f.jpg",
+    rating: 93.0,
+    year: 2018,
+    genre: "Shooter",
+    hypes: 150,
   },
   {
-    id: 115,
-    title: "League of Legends",
-    image: "https://images.igdb.com/igdb/image/upload/t_1080p/co49wj.jpg",
-    rating: 85.0,
-    year: 2009,
-    genre: "MOBA",
+    id: 11156,
+    title: "Horizon Zero Dawn",
+    image: "https://images.igdb.com/igdb/image/upload/t_1080p/co2una.jpg",
+    rating: 87.0,
+    year: 2017,
+    genre: "Role-playing",
     hypes: 200,
   },
+
   {
-    id: 121,
-    title: "Minecraft",
-    image: "https://images.igdb.com/igdb/image/upload/t_1080p/co49x5.jpg",
-    rating: 88.0,
-    year: 2011,
-    genre: "Sandbox",
-    hypes: 150,
+    id: 1877,
+    title: "Cyberpunk 2077",
+    image: "https://images.igdb.com/igdb/image/upload/t_1080p/coaih8.jpg",
+    rating: 83.0,
+    year: 2020,
+    genre: "Shooter-Adventure",
+    hypes: 500,
   },
 ];
 
