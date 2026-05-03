@@ -3,8 +3,6 @@ import { GameType, GameGenre, GamesPopularStudios } from "../../types";
 import "./DiscoverFilters.css";
 
 interface DiscoverFiltersProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
   sortBy: string;
   setSortBy: (sort: string) => void;
   gameType: string;
@@ -21,8 +19,6 @@ interface DiscoverFiltersProps {
 }
 
 function DiscoverFilters({
-  searchQuery,
-  setSearchQuery,
   sortBy,
   setSortBy,
   gameType,
@@ -37,33 +33,13 @@ function DiscoverFilters({
   setStudio,
   onClear,
 }: DiscoverFiltersProps) {
-  const hasActiveFilter = searchQuery.trim().length > 0 || sortBy !== "popular" || gameType !== "" || platform !== "" || year !== "" || genre !== "" || studio.trim().length > 0;
+  const hasActiveFilter = sortBy !== "popular" || gameType !== "" || platform !== "" || year !== "" || genre !== "" || studio.trim().length > 0;
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 45 }, (_, i) => currentYear - i);
 
   return (
     <div className="discover-filters">
-      <div className="search-bar">
-        <Icon icon="fa-magnifying-glass" className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search games..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
-        />
-        {searchQuery && (
-          <button
-            className="clear-search"
-            onClick={() => setSearchQuery("")}
-            title="Clear search"
-          >
-            <Icon icon="fa-xmark" />
-          </button>
-        )}
-      </div>
-
       <div className="filter-options">
         <div className="filter-group">
           <label htmlFor="studio-select">

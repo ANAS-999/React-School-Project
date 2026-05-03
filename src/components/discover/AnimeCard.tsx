@@ -53,7 +53,7 @@ function AnimeCard({ anime }: AnimeCardProps) {
           {anime.genres.length > 0 && (
             <div className="game-card-genres">
               {anime.genres.slice(0, 2).map((genre, index) => (
-                <span key={index} className="genre-tag">{genre}</span>
+                <span key={index} className="genre-tag anime-genre-tag">{genre}</span>
               ))}
             </div>
           )}

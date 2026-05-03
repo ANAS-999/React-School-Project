@@ -258,3 +258,16 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
+
+/* Anime Genre Tags - Different Colors */
+.anime-genre-tag {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+  color: var(--pink-light);
+  border: 1px solid rgba(236, 72, 153, 0.25);
+}
+
+.game-card:hover .anime-genre-tag {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3) 0%, rgba(168, 85, 247, 0.3) 100%);
+  border-color: rgba(236, 72, 153, 0.5);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+}

@@ -207,9 +207,28 @@ function Discover() {
 
             <div className="discover-layout">
               <aside className="discover-sidebar">
+                <div className="sidebar-search">
+                  <div className="search-box">
+                    <Icon icon="fa-magnifying-glass" className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search games..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="search-input"
+                    />
+                    {searchQuery && (
+                      <button
+                        className="clear-search"
+                        onClick={() => setSearchQuery("")}
+                      >
+                        <Icon icon="fa-xmark" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
                 <DiscoverFilters
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
                   sortBy={sortBy}
                   setSortBy={setSortBy}
                   gameType={gameType}
