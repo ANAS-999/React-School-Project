@@ -234,14 +234,12 @@
 
 /* Title */
 .hero-title {
-  font-size: clamp(52px, 9vw, 90px);
+  font-size: clamp(36px, 10vw, 90px);
   font-weight: 900;
   line-height: 1.05;
   margin-bottom: 20px;
   letter-spacing: -4px;
-  text-shadow:
-    0 0 60px rgba(139, 92, 246, 0.4),
-    0 4px 30px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 60px rgba(139, 92, 246, 0.4), 0 4px 30px rgba(0, 0, 0, 0.5);
 }
 
 .gradient-text {
@@ -511,7 +509,9 @@
   }
 
   .hero-title {
-    font-size: 36px;
+    font-size: 42px;
+    letter-spacing: -1px;
+    word-spacing: 2px;
   }
 
   .hero-stats {
