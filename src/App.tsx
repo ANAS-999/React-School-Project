@@ -5,11 +5,13 @@ import GameDetails from "./Pages/GameDetails";
 import AnimeDiscover from "./Pages/AnimeDiscover";
 import AnimeDetails from "./Pages/AnimeDetails";
 import UnderDevelopment from "./Pages/UnderDevelopment";
+import About from "./Pages/About";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
       <Route path="/discover" element={<Discover />} />
       <Route path="/games/:id" element={<GameDetails />} />
       <Route path="/animes" element={<AnimeDiscover />} />

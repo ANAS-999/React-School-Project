@@ -1,0 +1,194 @@
+/* ============================================
+   KEYHOLE HERO — Portal Zoom Effect
+   ============================================ */
+
+.keyhole-hero {
+  position: relative;
+  width: 100%;
+  /* 2x viewport height gives us room to scroll & pin */
+  height: 200vh;
+}
+
+/* The inner wrapper is what gets pinned */
+.keyhole-hero__pinned {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ---- Background (Destination Image) ---- */
+.keyhole-hero__background {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.keyhole-hero__background img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  display: block;
+}
+
+/* Subtle vignette over the background */
+.keyhole-hero__background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(9, 11, 16, 0.4) 100%
+  );
+  pointer-events: none;
+}
+
+/* ---- Foreground SVG Overlay ---- */
+.keyhole-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.keyhole-hero__svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* ---- Typography on the Overlay ---- */
+.keyhole-hero__text {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.keyhole-hero__text-line {
+  font-family: var(--heading);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  line-height: 1.15;
+  color: var(--text-primary);
+  will-change: transform, opacity;
+}
+
+.keyhole-hero__text-line--top {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  opacity: 0.95;
+}
+
+.keyhole-hero__text-line--bottom {
+  font-size: clamp(2.8rem, 7vw, 6.5rem);
+  background: linear-gradient(
+    135deg,
+    var(--blue-light) 0%,
+    var(--accent-light) 40%,
+    var(--purple-light) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Decorative ring around keyhole */
+.keyhole-hero__ring {
+  position: absolute;
+  z-index: 3;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.keyhole-hero__ring--inner {
+  width: min(28vw, 28vh);
+  height: min(28vw, 28vh);
+}
+
+.keyhole-hero__ring--outer {
+  width: min(34vw, 34vh);
+  height: min(34vw, 34vh);
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Scroll prompt */
+.keyhole-hero__scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  will-change: opacity;
+}
+
+.keyhole-hero__scroll-hint span {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.keyhole-hero__scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  transform: rotate(45deg);
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: rotate(45deg) translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: rotate(45deg) translateY(6px);
+    opacity: 1;
+  }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .keyhole-hero__text-line {
+    letter-spacing: 3px;
+  }
+
+  .keyhole-hero__ring--inner {
+    width: min(40vw, 40vh);
+    height: min(40vw, 40vh);
+  }
+
+  .keyhole-hero__ring--outer {
+    width: min(48vw, 48vh);
+    height: min(48vw, 48vh);
+  }
+}
+
+@media (max-width: 480px) {
+  .keyhole-hero__text-line {
+    letter-spacing: 2px;
+  }
+}

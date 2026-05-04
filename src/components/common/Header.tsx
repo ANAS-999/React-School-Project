@@ -38,6 +38,7 @@ export const Header = () => {
           <Link to="/discover" className={location.pathname === '/discover' ? 'active' : ''} onClick={handleNavClick}>Games</Link>
           <Link to="/movies" className={location.pathname === '/movies' ? 'active' : ''} onClick={handleNavClick}>Movies</Link>
           <Link to="/animes" className={location.pathname === '/animes' ? 'active' : ''} onClick={handleNavClick}>Animes</Link>
+          <Link to="/about" className={location.pathname === '/about' ? 'active' : ''} onClick={handleNavClick}>About</Link>
         </nav>
 
         <div className="header-actions">

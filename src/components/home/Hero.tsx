@@ -104,6 +104,36 @@ export const Hero = () => {
           ease: "power2.out",
         },
       );
+
+      // Magnetic Buttons Animation
+      const buttons = gsap.utils.toArray<HTMLElement>(".hero-buttons button");
+      const strength = 0.5; // adjust strength of pull
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("mousemove", (e) => {
+          const rect = btn.getBoundingClientRect();
+          const x = gsap.utils.mapRange(rect.left, rect.right, -rect.width / 2, rect.width / 2, e.clientX);
+          const y = gsap.utils.mapRange(rect.top, rect.bottom, -rect.height / 2, rect.height / 2, e.clientY);
+
+          gsap.to(btn, {
+            x: x * strength,
+            y: y * strength,
+            duration: 0.4,
+            ease: "power2.out",
+            overwrite: "auto"
+          });
+        });
+
+        btn.addEventListener("mouseleave", () => {
+          gsap.to(btn, { 
+            x: 0, 
+            y: 0,
+            duration: 0.7,
+            ease: "elastic.out(1, 0.4)",
+            overwrite: "auto"
+          });
+        });
+      });
     },
     { scope: containerRef },
   );
@@ -134,7 +164,7 @@ export const Hero = () => {
             <div className="hero-content-wrapper">
               <div className="hero-content">
                 <h1 className="hero-title gradient-text">
-                  Discover Everything You Love
+                  Your Universe of Entertainment
                 </h1>
 
                 <p className="hero-subtitle">
