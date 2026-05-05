@@ -1,18 +1,18 @@
-import { useState, useRef } from 'react';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Icon } from './Icon';
-import './Contact.css';
+import { useState, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Icon } from "../common/Icon";
+import "./Contact.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const Contact = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -21,74 +21,81 @@ export const Contact = () => {
   const infoRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  useGSAP(() => {
-    // Header animation
-    gsap.fromTo(headerRef.current, 
-      { y: 30, opacity: 0 },
-      {
-        scrollTrigger: {
-          trigger: headerRef.current,
-          start: 'top 85%',
+  useGSAP(
+    () => {
+      // Header animation
+      gsap.fromTo(
+        headerRef.current,
+        { y: 30, opacity: 0 },
+        {
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: "top 85%",
+          },
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
         },
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: 'power3.out',
-      }
-    );
+      );
 
-    // Info section slide in from left
-    gsap.fromTo(infoRef.current, 
-      { x: -50, opacity: 0 },
-      {
-        scrollTrigger: {
-          trigger: infoRef.current,
-          start: 'top 85%',
+      // Info section slide in from left
+      gsap.fromTo(
+        infoRef.current,
+        { x: -50, opacity: 0 },
+        {
+          scrollTrigger: {
+            trigger: infoRef.current,
+            start: "top 85%",
+          },
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          delay: 0.2,
         },
-        x: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.2,
-      }
-    );
+      );
 
-    // Form section slide in from right
-    gsap.fromTo(formRef.current, 
-      { x: 50, opacity: 0 },
-      {
-        scrollTrigger: {
-          trigger: formRef.current,
-          start: 'top 85%',
+      // Form section slide in from right
+      gsap.fromTo(
+        formRef.current,
+        { x: 50, opacity: 0 },
+        {
+          scrollTrigger: {
+            trigger: formRef.current,
+            start: "top 85%",
+          },
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          delay: 0.4,
         },
-        x: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.4,
-      }
-    );
+      );
 
-    // Stagger social icons
-    gsap.fromTo('.social-icon', 
-      { scale: 0, opacity: 0 },
-      {
-        scrollTrigger: {
-          trigger: infoRef.current,
-          start: 'top 85%',
+      // Stagger social icons
+      gsap.fromTo(
+        ".social-icon",
+        { scale: 0, opacity: 0 },
+        {
+          scrollTrigger: {
+            trigger: infoRef.current,
+            start: "top 85%",
+          },
+          scale: 1,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+          delay: 0.6,
         },
-        scale: 1,
-        opacity: 1,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: 'back.out(1.7)',
-        delay: 0.6,
-      }
-    );
-  }, { scope: containerRef });
+      );
+    },
+    { scope: containerRef },
+  );
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -100,9 +107,9 @@ export const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would send the form data to your backend
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
     setSubmitted(true);
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setFormData({ name: "", email: "", subject: "", message: "" });
     setTimeout(() => setSubmitted(false), 3000);
   };
 
@@ -143,16 +150,16 @@ export const Contact = () => {
               <h4>Follow Us</h4>
               <div className="social-icons">
                 <a href="#" className="social-icon" aria-label="Twitter">
-                  <Icon icon="fa-x-twitter" size="md" />
+                  <i className="fab fa-twitter fa-lg"></i>
                 </a>
                 <a href="#" className="social-icon" aria-label="Discord">
-                  <Icon icon="fa-discord" size="md" />
+                  <i className="fab fa-discord fa-lg"></i>
                 </a>
                 <a href="#" className="social-icon" aria-label="GitHub">
-                  <Icon icon="fa-github" size="md" />
+                  <i className="fab fa-github fa-lg"></i>
                 </a>
                 <a href="#" className="social-icon" aria-label="Instagram">
-                  <Icon icon="fa-instagram" size="md" />
+                  <i className="fab fa-instagram fa-lg"></i>
                 </a>
               </div>
             </div>
@@ -212,13 +219,21 @@ export const Contact = () => {
             </div>
 
             <button type="submit" className="btn btn-primary btn-large">
-              <Icon icon="fa-paper-plane" size="sm" style={{ marginRight: '8px' }} />
+              <Icon
+                icon="fa-paper-plane"
+                size="sm"
+                style={{ marginRight: "8px" }}
+              />
               Send Message
             </button>
 
             {submitted && (
               <div className="success-message">
-                <Icon icon="fa-check-circle" size="sm" style={{ marginRight: '8px' }} />
+                <Icon
+                  icon="fa-check-circle"
+                  size="sm"
+                  style={{ marginRight: "8px" }}
+                />
                 Thank you! We'll get back to you soon.
               </div>
             )}
@@ -228,4 +243,3 @@ export const Contact = () => {
     </section>
   );
 };
-

@@ -103,6 +103,15 @@
         width: 100%;
       }
     }
+
+    &.active {
+      color: var(--blue-light);
+      font-weight: 600;
+
+      &::after {
+        width: 100%;
+      }
+    }
   }
 
   @media (max-width: 768px) {
@@ -273,4 +282,3 @@
     }
   }
 }
-

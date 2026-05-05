@@ -108,8 +108,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   position: relative;
 
   &::after {
@@ -120,6 +120,7 @@
     padding: 2px;
     background: linear-gradient(135deg, var(--blue-light), var(--purple-light));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -198,8 +199,8 @@
   align-items: center;
   padding: 8px 16px;
   background: rgba(15, 20, 25, 0.6);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 30px;
   margin-bottom: 0;

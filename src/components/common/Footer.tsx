@@ -36,10 +36,10 @@ export const Footer = () => {
             <h4>EntertainHub</h4>
             <p>Your ultimate entertainment discovery platform for games, movies, and animes.</p>
             <div className="footer-social">
-              <a href="#" aria-label="Twitter"><Icon icon="fa-x-twitter" size="sm" /></a>
-              <a href="#" aria-label="Discord"><Icon icon="fa-discord" size="sm" /></a>
-              <a href="#" aria-label="GitHub"><Icon icon="fa-github" size="sm" /></a>
-              <a href="#" aria-label="Instagram"><Icon icon="fa-instagram" size="sm" /></a>
+              <a href="#" aria-label="Twitter"><i className="fab fa-twitter fa-sm"></i></a>
+              <a href="#" aria-label="Discord"><i className="fab fa-discord fa-sm"></i></a>
+              <a href="#" aria-label="GitHub"><i className="fab fa-github fa-sm"></i></a>
+              <a href="#" aria-label="Instagram"><i className="fab fa-instagram fa-sm"></i></a>
             </div>
           </div>
 
@@ -76,7 +76,7 @@ export const Footer = () => {
 
         <div className="footer-bottom">
           <p>&copy; {currentYear} EntertainHub. All rights reserved.</p>
-          <p>Made with <Icon icon="fa-heart" size="sm" className="heart-icon" /> for entertainment enthusiasts</p>
+          <p>Made with <i className="fas fa-heart fa-sm heart-icon"></i> for entertainment enthusiasts</p>
         </div>
       </div>
     </footer>

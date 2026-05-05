@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Icon } from './Icon';
+import { Icon } from '../common/Icon';
 import './ContentCard.css';
 
 gsap.registerPlugin(ScrollTrigger);
