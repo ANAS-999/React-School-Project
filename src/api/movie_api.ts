@@ -61,56 +61,40 @@ class MoviesAPI {
    * Uses TMDB discover endpoint to search across all movies (not only popular list).
    */
   public async discoverMovies(options: { page?: number; sortBy?: string; year?: string; genre?: string } = {}): Promise<MovieModel[]> {
-    const { page = 1, sortBy = "popular", year, genre } = options;
-    try {
-      // Map our sortBy to TMDB discover sort_by values
-      let sort_by = "popularity.desc";
-      switch (sortBy) {
-        case "rating":
-          sort_by = "vote_average.desc";
-          break;
-        case "newest":
-          sort_by = "release_date.desc";
-          break;
-        case "oldest":
-          sort_by = "release_date.asc";
-          break;
-        case "az":
-          // There's no direct A-Z sort; fallback to title.asc which TMDB supports
-          sort_by = "original_title.asc";
-          break;
-        default:
-          sort_by = "popularity.desc";
-      }
-
-      const params = new URLSearchParams({ api_key: this.apiConfig.getApiKey(), page: String(page), sort_by });
-      if (year) params.set("year", String(year));
-      // TMDB discover expects with_genres as genre ids; we don't have a genre id mapping here,
-      // so attempt to use 'with_keywords' or include a simple query filter via 'with_original_language' is not appropriate.
-      // To keep changes minimal, if a genre name is provided we will attempt a basic search by that genre using the search endpoint instead.
-
-      // If no genre provided, use discover endpoint
-      if (!genre) {
-        const response = await fetch(`${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const rawData = await response.json();
-        return this.mapResponseToMovieModel(rawData.results || []);
-      }
-
-      // If a genre name is provided we will combine discover + client-side genre filtering by fetching multiple pages
-      // Simple approach: call discover without genre, then filter client-side by matching genre name in mapped genres
-      const response = await fetch(`${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const rawData = await response.json();
-      let mapped = this.mapResponseToMovieModel(rawData.results || []);
-      const genreLower = genre.toLowerCase();
-      mapped = mapped.filter((m) => Array.isArray(m.genres) && m.genres.map((g) => g.toLowerCase()).includes(genreLower));
-      return mapped;
-    } catch (error) {
-      console.error("Discover Movies error:", error);
-      throw error;
+  const { page = 1, sortBy = "popular", year, genre } = options;
+  try {
+    let sort_by = "popularity.desc";
+    switch (sortBy) {
+      case "rating": sort_by = "vote_average.desc"; break;
+      case "newest": sort_by = "release_date.desc"; break;
+      case "oldest": sort_by = "release_date.asc"; break;
+      case "az": sort_by = "original_title.asc"; break;
+      default: sort_by = "popularity.desc";
     }
+
+    const params = new URLSearchParams({ 
+      api_key: this.apiConfig.getApiKey(), 
+      page: String(page), 
+      sort_by 
+    });
+
+    if (year) params.set("primary_release_year", String(year));
+
+    if (genre) {
+      const genreId = this.GENRE_NAME_TO_ID[genre.toLowerCase()];
+      if (genreId) params.set("with_genres", String(genreId));
+    }
+
+    const response = await fetch(`${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const rawData = await response.json();
+    return this.mapResponseToMovieModel(rawData.results || []);
+
+  } catch (error) {
+    console.error("Discover Movies error:", error);
+    throw error;
   }
+}
 
   public async getMovieById(id: number | string): Promise<MovieModel | null> {
     try {
@@ -169,6 +153,17 @@ class MoviesAPI {
       throw error;
     }
   }
+  public   GENRE_MAP: Record<number, string> = {
+  28: "Action", 12: "Adventure", 16: "Animation",
+  35: "Comedy", 80: "Crime", 99: "Documentary",
+  18: "Drama", 10751: "Family", 14: "Fantasy",
+  36: "History", 27: "Horror", 10402: "Music",
+  9648: "Mystery", 10749: "Romance", 878: "Science Fiction",
+  10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western"
+  };
+  public  GENRE_NAME_TO_ID: Record<string, number> = Object.fromEntries(
+  Object.entries(this.GENRE_MAP).map(([id, name]) => [name.toLowerCase(), Number(id)])
+);
 
   private mapResponseToMovieModel(rawData: any[]): MovieModel[] {
     // Image base can be configured via env, fallback to TMDB default size
@@ -184,11 +179,11 @@ class MoviesAPI {
       const rating = typeof m.vote_average === "number" ? Math.round(m.vote_average * 10) : undefined;
 
       // Genres: details endpoint returns array of objects with name; list endpoints provide genre_ids
-        const genres = Array.isArray(m.genres)
-          ? m.genres.map((g: any) => g.name).filter(Boolean)
-          : Array.isArray(m.genre_ids)
-          ? []
-          : [];
+       const genres = Array.isArray(m.genres) && m.genres.length > 0
+         ? m.genres.map((g: any) => g.name).filter(Boolean)
+         : Array.isArray(m.genre_ids)
+          ? m.genre_ids.map((id: number) => this.GENRE_MAP[id]).filter(Boolean)  // ← map ids to names
+       : [];
 
         // Build videos info (if present). Keep original shape plus convenience trailerUrl for YouTube trailers
         const videos = m.videos?.results

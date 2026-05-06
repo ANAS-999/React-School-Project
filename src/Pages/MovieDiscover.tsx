@@ -62,9 +62,11 @@ function MovieDiscover() {
     if (searchQuery.trim() && !m.title.toLowerCase().includes(searchQuery.trim().toLowerCase())) return false;
     if (genre && m.genres && m.genres.length > 0 && !m.genres.map(g => g.toLowerCase()).includes(genre.toLowerCase())) return false;
     if (year && m.releaseYear && String(m.releaseYear) !== String(year)) return false;
+    console.log("Movie genres:", movies[0].genres);
+    console.log("Selected genre:", genre);
     return true;
   });
-
+  
   switch (sortBy) {
     case "rating":
       filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
