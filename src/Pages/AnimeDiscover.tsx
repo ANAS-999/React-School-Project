@@ -57,6 +57,11 @@ function AnimeDiscover() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Scroll to top on page mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
@@ -72,9 +77,19 @@ function AnimeDiscover() {
     }
   }, []);
 
+  const isInitialMount = useRef(true);
+  const initialDebounceSkipped = useRef(false);
+
   useEffect(() => {
-    // Skip on first run, only scroll on actual filter changes
-    if (!hasInitialized.current) return;
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (!initialDebounceSkipped.current && debouncedSearchQuery === "") {
+      initialDebounceSkipped.current = true;
+      return; // Skip the first debounced empty string update
+    }
 
     // When filters or search change, reset and fetch
     setPage(1);
@@ -176,7 +191,8 @@ function AnimeDiscover() {
     fetchAnime(true);
   };
 
-  const hasActiveFilters = debouncedSearchQuery || animeType || status || rating || genre;
+  const hasActiveFilters =
+    debouncedSearchQuery || animeType || status || rating || genre;
 
   return (
     <div>
@@ -187,114 +203,122 @@ function AnimeDiscover() {
           isSearching={!!debouncedSearchQuery}
         />
 
-        <section className="discover-content container">
-          <div className="content-header">
-            <h2>Discover Anime</h2>
-            <p>Find your next favorite anime</p>
-          </div>
+        <section className="discover-content">
+          <div className="container">
+            <div className="content-header">
+              <h2>Discover Anime</h2>
+              <p>Find your next favorite anime</p>
+            </div>
 
-          <div className="discover-layout">
-            <aside className="discover-sidebar">
-              <div className="sidebar-search">
-                <div className="search-box">
-                  <Icon icon="fa-magnifying-glass" className="search-icon" />
-                  <input
-                    type="text"
-                    placeholder="Search anime..."
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    className="search-input"
+            <div className="discover-layout">
+              <aside className="discover-sidebar">
+                <div className="sidebar-search">
+                  <div className="search-box">
+                    <Icon icon="fa-magnifying-glass" className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder="Search anime..."
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      className="search-input"
+                    />
+                    {searchQuery && (
+                      <button
+                        className="clear-search"
+                        onClick={() => setSearchQuery("")}
+                      >
+                        <Icon icon="fa-xmark" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <AnimeFilters
+                  animeType={animeType}
+                  setAnimeType={setAnimeType}
+                  status={status}
+                  setStatus={setStatus}
+                  rating={rating}
+                  setRating={setRating}
+                  genre={genre}
+                  setGenre={setGenre}
+                  onClear={clearFilters}
+                />
+              </aside>
+
+              <div className="discover-main" ref={gridRef}>
+                {error ? (
+                  <EmptyState
+                    type="error"
+                    message={error}
+                    onRetry={handleRetry}
                   />
-                  {searchQuery && (
-                    <button
-                      className="clear-search"
-                      onClick={() => setSearchQuery("")}
-                    >
-                      <Icon icon="fa-xmark" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <AnimeFilters
-                animeType={animeType}
-                setAnimeType={setAnimeType}
-                status={status}
-                setStatus={setStatus}
-                rating={rating}
-                setRating={setRating}
-                genre={genre}
-                setGenre={setGenre}
-                onClear={clearFilters}
-              />
-            </aside>
-
-            <div className="discover-main" ref={gridRef}>
-              {error ? (
-                <EmptyState
-                  type="error"
-                  message={error}
-                  onRetry={handleRetry}
-                />
-              ) : loading && animeList.length === 0 ? (
-                <div className="games-grid">
-                  {[...Array(12)].map((_, i) => (
-                    <div key={`skeleton-${i}`} className="game-card skeleton">
-                      <div className="skeleton-image"></div>
-                      <div className="skeleton-content">
-                        <div className="skeleton-title"></div>
-                        <div className="skeleton-meta"></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : !loading && animeList.length === 0 ? (
-                <EmptyState 
-                  message="No anime found" 
-                  subtext={hasActiveFilters ? "Try adjusting your filters or search query to find more results." : undefined}
-                  onClear={hasActiveFilters ? clearAllFilters : undefined} 
-                />
-              ) : (
-                <div className="games-grid">
-                  {animeList.map((anime, index) => (
-                    <AnimeCard key={`${anime.id}-${index}`} anime={anime} />
-                  ))}
-
-                  {isFetchingMore && (
-                    <>
-                      {[...Array(6)].map((_, i) => (
-                        <div
-                          key={`skeleton-${i}`}
-                          className="game-card skeleton"
-                        >
-                          <div className="skeleton-image"></div>
-                          <div className="skeleton-content">
-                            <div className="skeleton-title"></div>
-                            <div className="skeleton-meta"></div>
-                          </div>
+                ) : loading && animeList.length === 0 ? (
+                  <div className="games-grid">
+                    {[...Array(12)].map((_, i) => (
+                      <div key={`skeleton-${i}`} className="game-card skeleton">
+                        <div className="skeleton-image"></div>
+                        <div className="skeleton-content">
+                          <div className="skeleton-title"></div>
+                          <div className="skeleton-meta"></div>
                         </div>
-                      ))}
-                    </>
-                  )}
-                </div>
-              )}
+                      </div>
+                    ))}
+                  </div>
+                ) : !loading && animeList.length === 0 ? (
+                  <EmptyState
+                    message="No anime found"
+                    subtext={
+                      hasActiveFilters
+                        ? "Try adjusting your filters or search query to find more results."
+                        : undefined
+                    }
+                    onClear={hasActiveFilters ? clearAllFilters : undefined}
+                  />
+                ) : (
+                  <div className="games-grid">
+                    {animeList.map((anime, index) => (
+                      <AnimeCard key={`${anime.id}-${index}`} anime={anime} />
+                    ))}
 
-              {hasMore && !isFetchingMore && (
-                <div ref={observerTarget} className="observer-target" />
-              )}
+                    {isFetchingMore && (
+                      <>
+                        {[...Array(6)].map((_, i) => (
+                          <div
+                            key={`skeleton-${i}`}
+                            className="game-card skeleton"
+                          >
+                            <div className="skeleton-image"></div>
+                            <div className="skeleton-content">
+                              <div className="skeleton-title"></div>
+                              <div className="skeleton-meta"></div>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
 
-              {!loading && !error && animeList.length > 0 && (
-                <div className="scroll-top-wrapper">
-                  <button
-                    className={`scroll-top-btn ${showScrollTop ? "visible" : ""}`}
-                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                    aria-label="Scroll to top"
-                  >
-                    <Icon icon="fa-arrow-up" />
-                    <span>Back to Top</span>
-                  </button>
-                </div>
-              )}
+                {hasMore && !isFetchingMore && (
+                  <div ref={observerTarget} className="observer-target" />
+                )}
+
+                {!loading && !error && animeList.length > 0 && (
+                  <div className="scroll-top-wrapper">
+                    <button
+                      className={`scroll-top-btn ${showScrollTop ? "visible" : ""}`}
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                      aria-label="Scroll to top"
+                    >
+                      <Icon icon="fa-arrow-up" />
+                      <span>Back to Top</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>

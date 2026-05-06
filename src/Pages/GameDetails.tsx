@@ -234,7 +234,7 @@ function GameDetails() {
                 <Link to={`/games/${similar.id}`} key={similar.id} className="similar-game-card group">
                   <div className="similar-game-image">
                     {similar.imageId ? (
-                      <img src={getGameImageUrl(similar.imageId, GameImageSize.CoverBig)} alt={similar.title} loading="lazy" />
+                      <img src={getGameImageUrl(similar.imageId, GameImageSize.HD)} alt={similar.title} loading="lazy" />
                     ) : (
                       <div className="placeholder"><Icon icon="fa-gamepad" /></div>
                     )}

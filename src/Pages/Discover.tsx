@@ -73,10 +73,15 @@ function Discover() {
   const isSearching = debouncedSearchQuery.trim().length > 0 || debouncedGameType !== "" || debouncedPlatform !== "" || debouncedYear !== "" || debouncedGenre !== "" || debouncedStudio.trim().length > 0;
   const hasResults = filteredGames.length > 0;
 
-  useEffect(() => {
-    // Header handles scroll to top on navigation, no need to restore
-    // Cache is still used for preserving filter state
+  const isInitialMount = useRef(true);
+  const initialDebounceSkipped = useRef(false);
 
+  // Scroll to top on page mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 500);
       discoverCache.scrollY = window.scrollY; // Update cache with scroll position continuously
@@ -124,8 +129,26 @@ function Discover() {
   }, [searchQuery, gameType, platform, year, genre, studio]);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (!initialDebounceSkipped.current && debouncedSearchQuery === "" && debouncedGameType === "" && debouncedPlatform === "" && debouncedYear === "" && debouncedGenre === "" && debouncedStudio === "") {
+      initialDebounceSkipped.current = true;
+      return; // Skip the first debounced empty string update
+    }
+
     setOffset(0);
     setHasMore(true);
+
+    setTimeout(() => {
+      const contentElement = contentRef.current;
+      if (contentElement) {
+        const gridTop = contentElement.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: gridTop - 120, behavior: "smooth" });
+      }
+    }, 150);
   }, [debouncedSearchQuery, debouncedGameType, debouncedPlatform, debouncedYear, debouncedGenre, debouncedStudio]);
 
   useEffect(() => {
