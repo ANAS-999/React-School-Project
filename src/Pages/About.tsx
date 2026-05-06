@@ -559,14 +559,29 @@ const About: React.FC = () => {
 
       {/* CTA Section */}
       <section className="about-cta">
-        <div className="cta-content feature-card scroll-card">
-          <h2>Ready to start your journey?</h2>
-          <p>
-            Join thousands of users discovering new entertainment every day.
-          </p>
-          <Link to="/discover" className="cta-btn">
-            Browse Games
-          </Link>
+        <div className="cta-container">
+          <div className="cta-content scroll-card">
+            <div className="cta-glow"></div>
+            <div className="cta-icon-wrapper">
+              <Icon icon="fa-rocket" size="2xl" className="cta-icon" />
+            </div>
+            <h2>Ready to Start Your Journey?</h2>
+            <p>
+              Join thousands of users discovering new entertainment every day. 
+              Explore your next favorite game, movie, or anime.
+            </p>
+            <div className="cta-buttons">
+              <Link to="/discover" className="cta-btn-games">
+                <Icon icon="fa-gamepad" /> Games
+              </Link>
+              <Link to="/movies" className="cta-btn-movies">
+                <Icon icon="fa-film" /> Movies
+              </Link>
+              <Link to="/animes" className="cta-btn-animes">
+                <Icon icon="fa-tv" /> Animes
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
