@@ -29,8 +29,8 @@ export const Header = () => {
     <header className="header">
       <div className="header-content">
         <Link to="/" className="logo" onClick={handleLogoClick}>
-          <Icon icon="fa-gamepad" size="lg" className="logo-icon" />
-          <span className="logo-text">EntertainHub</span>
+          <Icon icon="fa-solid fa-gem" size="lg" className="logo-icon" />
+          <span className="logo-text">NeonHub</span>
         </Link>
 
         <nav className={`nav ${mobileMenuOpen ? 'open' : ''}`}>

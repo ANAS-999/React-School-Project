@@ -174,18 +174,18 @@ export const Hero = () => {
 
               <div className="hero-stats">
                 <div className="stat-item">
-                  <span className="stat-value">361K+</span>
+                  <span className="stat-value">430K+</span>
                   <span className="stat-label">Games</span>
                 </div>
                 <div className="stat-divider"></div>
                 <div className="stat-item">
-                  <span className="stat-value">50K+</span>
-                  <span className="stat-label">Movies</span>
+                  <span className="stat-value">1.25M+</span>
+                  <span className="stat-label">Movies / Series</span>
                 </div>
                 <div className="stat-divider"></div>
                 <div className="stat-item">
-                  <span className="stat-value">27K+</span>
-                  <span className="stat-label">Animes</span>
+                  <span className="stat-value">97K+</span>
+                  <span className="stat-label">Animes / Manga</span>
                 </div>
               </div>
 

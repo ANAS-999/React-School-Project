@@ -569,6 +569,10 @@
 }
 
 @media (max-width: 900px) {
+  .game-hero .container {
+    padding-top: 124px;
+  }
+
   .game-hero-content {
     flex-direction: column;
     align-items: center;
@@ -588,9 +592,16 @@
   .game-content {
     grid-template-columns: 1fr;
   }
+}
 
-  .game-hero .container {
-    padding-top: 124px;
+@media (max-width: 640px) {
+  .game-meta {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .meta-item {
+    font-size: 0.9rem;
   }
 }
 
