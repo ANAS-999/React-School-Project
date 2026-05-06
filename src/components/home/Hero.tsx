@@ -181,22 +181,22 @@ export const Hero = () => {
                   your entire catalog perfectly synced and beautifully displayed.
                 </p>
 
-              <div className="hero-stats">
-                <div className="stat-item">
-                  <span className="stat-value">430K+</span>
-                  <span className="stat-label">Games</span>
-                </div>
-                <div className="stat-divider"></div>
-                <div className="stat-item">
-                  <span className="stat-value">1.25M+</span>
-                  <span className="stat-label">Movies / Series</span>
-                </div>
-                <div className="stat-divider"></div>
-                <div className="stat-item">
-                  <span className="stat-value">97K+</span>
-                  <span className="stat-label">Animes / Manga</span>
-                </div>
-              </div>
+               <div className="hero-stats">
+                 <div className="stat-item">
+                   <span className="stat-value">430K+</span>
+                   <span className="stat-label">Games</span>
+                 </div>
+                 <div className="stat-divider"></div>
+                 <div className="stat-item">
+                   <span className="stat-value">1.25M+</span>
+                   <span className="stat-label"><span className="mobile-hide">Movies / Series</span><span className="mobile-show">Movies</span></span>
+                 </div>
+                 <div className="stat-divider"></div>
+                 <div className="stat-item">
+                   <span className="stat-value">97K+</span>
+                   <span className="stat-label"><span className="mobile-hide">Animes / Manga</span><span className="mobile-show">Animes</span></span>
+                 </div>
+               </div>
 
               <div className="hero-buttons">
                 <button
