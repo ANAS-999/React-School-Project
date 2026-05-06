@@ -102,6 +102,10 @@
   flex: 0 0 45%;
   height: 550px;
   max-width: 550px;
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .hero-spline-wrapper .spline-loader {
@@ -231,6 +235,8 @@
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
+  will-change: auto;
+  image-rendering: auto;
 }
 
 .hero-spline-overlay {

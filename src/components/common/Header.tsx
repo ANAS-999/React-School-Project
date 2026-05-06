@@ -14,9 +14,14 @@ export const Header = () => {
   };
 
   const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (location.pathname === '/') {
-      e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 0);
     }
   };
 

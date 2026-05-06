@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, Suspense } from "react";
+import { useRef, useState, useEffect, Suspense, lazy } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,6 +19,7 @@ export const Hero = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const benefitsRef = useRef<HTMLDivElement>(null);
   const splineRef = useRef<any>(null);
+  const [splineLoaded, setSplineLoaded] = useState(false);
 
   useGSAP(
     () => {
@@ -73,67 +74,72 @@ export const Hero = () => {
           "-=0.2",
         );
 
-      // Benefits Section Animations
-      gsap.fromTo(
-        ".benefits-section .section-header",
-        { y: 30, opacity: 0 },
-        {
-          scrollTrigger: {
-            trigger: benefitsRef.current,
-            start: "top 85%",
-          },
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          ease: "power2.out",
-        },
-      );
-
-      gsap.fromTo(
-        ".benefit-card",
-        { y: 50, opacity: 0 },
-        {
-          scrollTrigger: {
-            trigger: benefitsRef.current,
-            start: "top 85%",
-          },
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "power2.out",
-        },
-      );
-
-      // Magnetic Buttons Animation
-      const buttons = gsap.utils.toArray<HTMLElement>(".hero-buttons button");
-      const strength = 0.5; // adjust strength of pull
-
-      buttons.forEach((btn) => {
-        btn.addEventListener("mousemove", (e) => {
-          const rect = btn.getBoundingClientRect();
-          const x = gsap.utils.mapRange(rect.left, rect.right, -rect.width / 2, rect.width / 2, e.clientX);
-          const y = gsap.utils.mapRange(rect.top, rect.bottom, -rect.height / 2, rect.height / 2, e.clientY);
-
-          gsap.to(btn, {
-            x: x * strength,
-            y: y * strength,
-            duration: 0.4,
-            ease: "power2.out",
-            overwrite: "auto"
-          });
-        });
-
-        btn.addEventListener("mouseleave", () => {
-          gsap.to(btn, { 
-            x: 0, 
+      // Defer benefits section animations until scroll
+      setTimeout(() => {
+        // Benefits Section Animations
+        gsap.fromTo(
+          ".benefits-section .section-header",
+          { y: 30, opacity: 0 },
+          {
+            scrollTrigger: {
+              trigger: benefitsRef.current,
+              start: "top 85%",
+            },
             y: 0,
-            duration: 0.7,
-            ease: "elastic.out(1, 0.4)",
-            overwrite: "auto"
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.out",
+          },
+        );
+
+        gsap.fromTo(
+          ".benefit-card",
+          { y: 50, opacity: 0 },
+          {
+            scrollTrigger: {
+              trigger: benefitsRef.current,
+              start: "top 85%",
+            },
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power2.out",
+          },
+        );
+      }, 300);
+
+      // Magnetic Buttons Animation - Defer for performance
+      setTimeout(() => {
+        const buttons = gsap.utils.toArray<HTMLElement>(".hero-buttons button");
+        const strength = 0.5;
+
+        buttons.forEach((btn) => {
+          btn.addEventListener("mousemove", (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = gsap.utils.mapRange(rect.left, rect.right, -rect.width / 2, rect.width / 2, e.clientX);
+            const y = gsap.utils.mapRange(rect.top, rect.bottom, -rect.height / 2, rect.height / 2, e.clientY);
+
+            gsap.to(btn, {
+              x: x * strength,
+              y: y * strength,
+              duration: 0.4,
+              ease: "power2.out",
+              overwrite: "auto"
+            });
+          });
+
+          btn.addEventListener("mouseleave", () => {
+            gsap.to(btn, { 
+              x: 0, 
+              y: 0,
+              duration: 0.7,
+              ease: "elastic.out(1, 0.4)",
+              overwrite: "auto"
+            });
           });
         });
-      });
+      }, 500);
     },
     { scope: containerRef },
   );
@@ -149,15 +155,18 @@ export const Hero = () => {
             <div className="grid-pattern"></div>
           </div>
 
-          <div className="hero-spline-wrapper">
-            <Suspense fallback={<SplineLoader />}>
-              <Spline
-                scene="https://prod.spline.design/ZwrSyBnr9WFV6PSL/scene.splinecode"
-                onLoad={(spline) => (splineRef.current = spline)}
-                style={{ width: "100%", height: "100%", maxWidth: "100%" }}
-              />
-            </Suspense>
-          </div>
+           <div className="hero-spline-wrapper">
+             <Suspense fallback={<SplineLoader />}>
+               <Spline
+                 scene="https://prod.spline.design/ZwrSyBnr9WFV6PSL/scene.splinecode"
+                 onLoad={(spline) => {
+                   splineRef.current = spline;
+                   setSplineLoaded(true);
+                 }}
+                 style={{ width: "100%", height: "100%", maxWidth: "100%" }}
+               />
+             </Suspense>
+           </div>
 
 
           <div className="container">
