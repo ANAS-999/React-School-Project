@@ -250,7 +250,18 @@
       transform: translateY(0);
     }
   }
+  &.SignOut-btn{
+      background: rgba(220, 38, 38);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(10px);
 
+    &:hover {
+      background: rgba(220, 38, 38);
+      border-color: var(--blue-light);
+      box-shadow: 0 0 15px rgba(96, 165, 250, 0.2);
+    }
+  }
   &.btn-secondary {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-primary);

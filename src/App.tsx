@@ -8,6 +8,9 @@ import UnderDevelopment from "./Pages/UnderDevelopment";
 import MovieHero from "./components/discover/MovieHero";
 import MovieDiscover from "./Pages/MovieDiscover";
 import MovieDetails from "./Pages/MovieDetails";
+import SignIn from "./Sign/SignIn";
+import SignUp from "./Sign/SignUp";
+import ResetPassword from "./Sign/ResetPassword";
 
 function App() {
   return (
@@ -19,6 +22,10 @@ function App() {
       <Route path="/anime/:id" element={<AnimeDetails />} />
       <Route path="/movies" element={<MovieDiscover />} />
       <Route path="/movies/:id" element={<MovieDetails />} />
+      <Route path="/signin" element={<SignIn />}/>
+      <Route path="/signup" element={<SignUp/>}/>
+      <Route path="/signin/reset" element={<ResetPassword/>}/>
+
     </Routes>
   );
 }

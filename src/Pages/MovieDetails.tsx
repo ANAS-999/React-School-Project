@@ -7,12 +7,49 @@ import MoviesAPI from "../api/movie_api";
 import type { MovieModel } from "../models/MovieModel";
 import "./GameDetails.css";
 import MovieCard from "../components/discover/MovieCard";
+import { addMovieTolibrary, removeMovieFromLibrary, fetchMovieToLibrary } from "../firebase/FirebaseService";
+import { getAuth } from "firebase/auth";
 
 function MovieDetails() {
   const { id } = useParams<{ id: string }>();
   const [movie, setMovie] = useState<MovieModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [details, setDetails] = useState<MovieModel | null>(null);
+  const [savedMovie,setSsavedMovie]=useState<string[]>([]);
+
+
+  const handleAdd = async () => {
+    if (!movie) return;
+    const auth = getAuth();
+    if (auth.currentUser) {
+      await addMovieTolibrary({ id: movie.id, title: movie.title, image: movie.posterUrl });
+    } else {
+      try {
+        const raw = localStorage.getItem("savedMovies");
+        const local: string[] = raw ? JSON.parse(raw) : [];
+        if (!local.includes(movie.id as string)) {
+          local.push(movie.id as string);
+          localStorage.setItem("savedMovies", JSON.stringify(local));
+        }
+      } catch (e) {}
+    }
+    setSaved(true);
+  };
+
+const handleDelete = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+
+  await removeMovieFromLibrary(displayed.id);
+
+  setSsavedMovie((prev) =>
+    prev.filter((id) => id !== displayed.id.toString())
+  );
+  setSaved(false)
+};
+ const displayed= details ?? movie
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -42,6 +79,27 @@ function MovieDetails() {
 
     if (id) fetchMovieDetails();
   }, [id]);
+
+  // when movie is loaded, determine saved state
+  useEffect(() => {
+    const checkSaved = async () => {
+      if (!movie) return;
+      const auth = getAuth();
+      if (auth.currentUser) {
+        const movies = await fetchMovieToLibrary();
+        setSaved(movies.includes(movie.id as string));
+        return;
+      }
+      try {
+        const raw = localStorage.getItem("savedMovies");
+        const local: string[] = raw ? JSON.parse(raw) : [];
+        setSaved(local.includes(movie.id as string));
+      } catch (e) {
+        setSaved(false);
+      }
+    };
+    checkSaved();
+  }, [movie]);
   
 
   if (loading) {
@@ -101,9 +159,22 @@ function MovieDetails() {
               </div>
               <div className="game-info">
                 <h1>{movie.title}</h1>
-                <div className="game-meta">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div className="game-meta">
                   {movie.releaseYear && <span className="meta-item"><Icon icon="fa-calendar" /> {movie.releaseYear}</span>}
                   {movie.rating && <span className="meta-item rating"><Icon icon="fa-star" /> {movie.rating}%</span>}
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button className={`library-btn ${saved ? 'library-btn--saved' : ''}`} onClick={handleAdd} title={saved ? 'Added to library' : 'Add to library'}>
+                      <Icon icon={saved ? 'fa-check' : 'fa-plus'} />
+                      <span style={{ marginLeft: 6 }}>{saved ? 'Saved' : 'Add to Library'}</span>
+                    </button>
+                    {saved && (
+                      <button className="unsave-btn"  title="Remove from library" onClick={handleDelete}>
+                        <Icon icon="fa-times" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {movie.genres && movie.genres.length > 0 && (
                   <div className="game-tags">

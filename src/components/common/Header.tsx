@@ -2,11 +2,15 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
 import './Header.css';
+import { auth } from '../../firebase/FirebaseConfig';
+import { useEffect } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const [user,setUser]=useState<any>(null);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -26,7 +30,28 @@ export const Header = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+  const handleSignIn=()=>{
+      navigate('/signin');
+  }
+  const handleSignUp=()=>{
+      navigate('/signin');
+  }
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+    });
+    return unsubscribe;
+  }, []);
+   const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      // onAuthStateChanged will update the UI; navigate home afterwards
+      navigate('/');
+    } catch (err) {
+      console.error('Sign out error', err);
+    }
+  };
   return (
     <header className="header">
       <div className="header-content">
@@ -43,9 +68,19 @@ export const Header = () => {
         </nav>
 
         <div className="header-actions">
-          <button className="btn btn-secondary">Sign In</button>
-          <button className="btn btn-primary">Sign Up</button>
-        </div>
+          {user ? (
+            // When signed in show greeting with the user's display name or email prefix and a sign out button
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div className="header-greeting">Hello {user.displayName || (user.email && user.email.split('@')[0])}</div>
+              <button className="btn SignOut-btn" onClick={handleSignOut}>Sign Out</button>
+            </div>
+          ) : (
+            <>
+              <button className="btn btn-secondary"  onClick={()=>navigate("/signin")} >Sign In</button>
+              <button className="btn btn-primary" onClick={()=>navigate("/signup")}>Sign Up</button>
+            </>
+          )}
+          </div>
 
         <button 
           className={`hamburger ${mobileMenuOpen ? 'open' : ''}`}
