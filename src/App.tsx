@@ -1,11 +1,17 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
+
 import Home from "./Pages/Home";
 import Discover from "./Pages/Discover";
 import GameDetails from "./Pages/GameDetails";
 import AnimeDiscover from "./Pages/AnimeDiscover";
 import AnimeDetails from "./Pages/AnimeDetails";
-import UnderDevelopment from "./Pages/UnderDevelopment";
+import MovieDiscover from "./Pages/MovieDiscover";
+import MovieDetails from "./Pages/MovieDetails";
+import SignIn from "./Sign/SignIn";
+import SignUp from "./Sign/SignUp";
+import ResetPassword from "./Sign/ResetPassword";
+
 import About from "./Pages/About";
 import { clearDiscoverCache } from "./utils/discoverCache";
 
@@ -19,8 +25,8 @@ function App() {
 
     // Check if we are leaving the Games context
     // The Games context includes "/discover" (Games page) and "/games/:id" (Game Details page)
-    const isLeavingGames = 
-      (prevPath.startsWith("/discover") || prevPath.startsWith("/games")) && 
+    const isLeavingGames =
+      (prevPath.startsWith("/discover") || prevPath.startsWith("/games")) &&
       !(currPath.startsWith("/discover") || currPath.startsWith("/games"));
 
     if (isLeavingGames) {
@@ -38,7 +44,11 @@ function App() {
       <Route path="/games/:id" element={<GameDetails />} />
       <Route path="/animes" element={<AnimeDiscover />} />
       <Route path="/anime/:id" element={<AnimeDetails />} />
-      <Route path="/movies" element={<UnderDevelopment />} />
+      <Route path="/movies" element={<MovieDiscover />} />
+      <Route path="/movies/:id" element={<MovieDetails />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/signin/reset" element={<ResetPassword />} />
     </Routes>
   );
 }
