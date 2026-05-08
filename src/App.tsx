@@ -23,8 +23,6 @@ function App() {
     const prevPath = prevPathRef.current;
     const currPath = location.pathname;
 
-    // Check if we are leaving the Games context
-    // The Games context includes "/discover" (Games page) and "/games/:id" (Game Details page)
     const isLeavingGames =
       (prevPath.startsWith("/discover") || prevPath.startsWith("/games")) &&
       !(currPath.startsWith("/discover") || currPath.startsWith("/games"));

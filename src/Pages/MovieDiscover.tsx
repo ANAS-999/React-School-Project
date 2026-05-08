@@ -14,16 +14,18 @@ function MovieDiscover() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const skeletonCards = useMemo(() => Array.from({ length: 12 }, (_, i) => i), []);
+  const skeletonCards = useMemo(
+    () => Array.from({ length: 12 }, (_, i) => i),
+    [],
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("popular");
   const [year, setYear] = useState("");
   const [genre, setGenre] = useState("");
 
   // (no debouncing implemented for movies discovery)
-  useEffect(() => {
- 
-}, []);
+  useEffect(() => {}, []);
+
   useEffect(() => {
     const fetchMovies = async () => {
       setLoading(true);
@@ -34,18 +36,29 @@ function MovieDiscover() {
         // If user has typed a search query use the search endpoint which searches all movies
         if (searchQuery.trim().length > 0) {
           data = await api.searchMovies(searchQuery.trim(), 1);
-        } else {
+        } else {          
           // No search query: use discover endpoint which can filter/sort across all movies
           try {
-            data = await api.discoverMovies({ page: 1, sortBy, year: year || undefined, genre: genre || undefined });
+            data = await api.getPopularMovies(1);
+            
           } catch (e) {
             // Fallback to popular if discover fails for some reason
-            console.warn("discoverMovies failed, falling back to getPopularMovies", e);
-            data = await api.getPopularMovies(1);
+            console.warn(
+              "discoverMovies failed, falling back to getPopularMovies",
+              e,
+            );
+            data = await api.discoverMovies({
+              page: 1,
+              sortBy,
+              year: year || undefined,
+              genre: genre || undefined,
+            });
           }
         }
 
         setMovies(data || []);
+
+        // load user library : remove all other data except movie id
       } catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : "Failed to load movies");
@@ -59,23 +72,38 @@ function MovieDiscover() {
 
   // client-side filtered list
   const filtered = movies.filter((m) => {
-    if (searchQuery.trim() && !m.title.toLowerCase().includes(searchQuery.trim().toLowerCase())) return false;
-    if (genre && m.genres && m.genres.length > 0 && !m.genres.map(g => g.toLowerCase()).includes(genre.toLowerCase())) return false;
-    if (year && m.releaseYear && String(m.releaseYear) !== String(year)) return false;
+    if (
+      searchQuery.trim() &&
+      !m.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    )
+      return false;
+    if (
+      genre &&
+      m.genres &&
+      m.genres.length > 0 &&
+      !m.genres.map((g) => g.toLowerCase()).includes(genre.toLowerCase())
+    )
+      return false;
+    if (year && m.releaseYear && String(m.releaseYear) !== String(year))
+      return false;
     console.log("Movie genres:", movies[0].genres);
     console.log("Selected genre:", genre);
     return true;
   });
-  
+
   switch (sortBy) {
     case "rating":
       filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       break;
     case "newest":
-      filtered.sort((a, b) => (Number(b.releaseYear) || 0) - (Number(a.releaseYear) || 0));
+      filtered.sort(
+        (a, b) => (Number(b.releaseYear) || 0) - (Number(a.releaseYear) || 0),
+      );
       break;
     case "oldest":
-      filtered.sort((a, b) => (Number(a.releaseYear) || 0) - (Number(b.releaseYear) || 0));
+      filtered.sort(
+        (a, b) => (Number(a.releaseYear) || 0) - (Number(b.releaseYear) || 0),
+      );
       break;
     case "az":
       filtered.sort((a, b) => a.title.localeCompare(b.title));
@@ -108,7 +136,12 @@ function MovieDiscover() {
                   setYear={setYear}
                   genre={genre}
                   setGenre={setGenre}
-                  onClear={() => { setSearchQuery(""); setSortBy("popular"); setYear(""); setGenre(""); }}
+                  onClear={() => {
+                    setSearchQuery("");
+                    setSortBy("popular");
+                    setYear("");
+                    setGenre("");
+                  }}
                 />
               </aside>
 
@@ -131,7 +164,7 @@ function MovieDiscover() {
                   <div className="games-grid">
                     {filtered.length > 0 ? (
                       filtered.map((movie, idx) => (
-                        <MovieCard key={`${movie.id}-${idx}`} movie={movie} />
+                        <MovieCard key={`${movie.id}-${idx}`} movie={movie} /> // add props inLibrary={list.include(movie.id)}
                       ))
                     ) : (
                       <div className="no-results">

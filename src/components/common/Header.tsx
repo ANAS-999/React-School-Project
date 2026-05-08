@@ -34,6 +34,8 @@ export const Header = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
+      console.log("User : " + u?.displayName);
+      
     });
     return unsubscribe;
   }, []);

@@ -1,99 +1,114 @@
-import React, { useState } from 'react';
-import { Form, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Form, useNavigate } from "react-router-dom";
 // @ts-ignore
-import { auth, db, githubProvider } from '../firebase/FirebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import {doc,setDoc} from 'firebase/firestore'
-import { GoogleAuthProvider,signInWithPopup } from "firebase/auth";
-import './SignUp.css';
-
+import { auth, db, githubProvider } from "../firebase/FirebaseConfig";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import "./SignUp.css";
 
 /* ── Password strength helper ── */
 function getStrength(pw) {
-  if (!pw) return { score: 0, label: '' };
+  if (!pw) return { score: 0, label: "" };
   let s = 0;
   if (pw.length >= 8) s++;
   if (/[A-Z]/.test(pw)) s++;
   if (/[0-9]/.test(pw)) s++;
   if (/[^A-Za-z0-9]/.test(pw)) s++;
-  return { score: s, label: ['', 'Weak', 'Fair', 'Good', 'Strong'][s] };
+  return { score: s, label: ["", "Weak", "Fair", "Good", "Strong"][s] };
 }
 
 export const SignUp = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '',
-    password: '', confirm: '', terms: false,
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirm: "",
+    terms: false,
   });
   const [showPw, setShowPw] = useState(false);
   const [showCf, setShowCf] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
-  const handleSignUp=async(e:React.FormEvent)=>{
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    try{
-      const userCredential=await createUserWithEmailAndPassword(auth,form.email,form.password);
-      const user=userCredential.user;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password,
+      );
+      const user = userCredential.user;
 
-      await setDoc(doc(db,"users",user.uid),{
-        firstName:form.firstName,
-        lastName:form.lastName,
-        email:form.email,
-        createdAt:new Date()
+      await updateProfile(user, {
+        displayName: `${form.firstName} ${form.lastName}`,
       });
-        setLoading(false);
-        setSuccess(true);
-    }catch(error){
+
+      await setDoc(doc(db, "users", user.uid), {});
+
+      /* await setDoc(doc(db, "users", user.uid), {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        createdAt: new Date(),
+      }); */
+
       setLoading(false);
-      if(error instanceof Error){
-        console.error("Error signing up :",error.message);
+      setSuccess(true);
+    } catch (error) {
+      setLoading(false);
+      if (error instanceof Error) {
+        console.error("Error signing up :", error.message);
         alert(error.message);
-      }else{
-        setError("An unexpected error occurred")
+      } else {
+        setError("An unexpected error occurred");
       }
     }
-  }
+  };
 
-  const set = key => e =>
-    setForm(f => ({ ...f, [key]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
+  const set = (key) => (e) =>
+    setForm((f) => ({
+      ...f,
+      [key]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
+    }));
 
   const strength = getStrength(form.password);
 
-  const segClass = i => {
-    if (!form.password) return 'signup-strength-seg';
-    const map = { 1: 'weak', 2: 'medium', 3: 'medium', 4: 'strong' };
+  const segClass = (i) => {
+    if (!form.password) return "signup-strength-seg";
+    const map = { 1: "weak", 2: "medium", 3: "medium", 4: "strong" };
     return i <= strength.score
       ? `signup-strength-seg ${map[strength.score]}`
-      : 'signup-strength-seg';
+      : "signup-strength-seg";
   };
   const handleGoogle = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
 
-    console.log(result.user); 
+      console.log(result.user);
 
-    navigate('/');
-  } catch (error) {
-    console.log(error);
-  }
-};
-const handleGithub =async(e)=>{
-    console.log("Provider check",githubProvider);
-    try{
-      const result =await signInWithPopup(auth,githubProvider);
-      const user =result.user;
-      alert(`Welcome ${user.displayName}`);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
     }
-    catch (error: any) {
-          console.error("Full error:", error);
-        console.error("Error code:", error.code);
-        console.error("Error message:", error.message);
+  };
+  const handleGithub = async (e) => {
+    console.log("Provider check", githubProvider);
+    try {
+      const result = await signInWithPopup(auth, githubProvider);
+      const user = result.user;
+      alert(`Welcome ${user.displayName}`);
+    } catch (error: any) {
+      console.error("Full error:", error);
+      console.error("Error code:", error.code);
+      console.error("Error message:", error.message);
 
       switch (error.code) {
         case "auth/popup-blocked":
@@ -112,32 +127,40 @@ const handleGithub =async(e)=>{
           alert(`Error (${error.code}): ${error.message}`);
       }
     }
-  }
-   const handleGoHome=()=>{
-      navigate('/');
-  }
-  if (success) return (
-    <div className="signup-page">
-      <div className="signup-bg">
-        <div className="signup-bg-grid" />
-        <div className="signup-bg-orb signup-bg-orb-1" />
-        <div className="signup-bg-orb signup-bg-orb-2" />
-      </div>
-      <div className="signup-card">
-        <div className="signup-success">
-          <div className="signup-success-icon">🎉</div>
-          <h2>You're in, {form.firstName}!</h2>
-          <p>Your account has been created.<br />Start exploring your favorites.</p>
-          <button className="signup-btn" style={{ marginTop: 28 }} onClick={() => navigate('/signin')}>
-            Go to Sign In →
-          </button>
+  };
+  const handleGoHome = () => {
+    navigate("/");
+  };
+  if (success)
+    return (
+      <div className="signup-page">
+        <div className="signup-bg">
+          <div className="signup-bg-grid" />
+          <div className="signup-bg-orb signup-bg-orb-1" />
+          <div className="signup-bg-orb signup-bg-orb-2" />
+        </div>
+        <div className="signup-card">
+          <div className="signup-success">
+            <div className="signup-success-icon">🎉</div>
+            <h2>You're in, {form.firstName}!</h2>
+            <p>
+              Your account has been created.
+              <br />
+              Start exploring your favorites.
+            </p>
+            <button
+              className="signup-btn"
+              style={{ marginTop: 28 }}
+              onClick={() => navigate("/signin")}
+            >
+              Go to Sign In →
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 
   return (
-    
     <div className="signup-page">
       {/* Background */}
       <div className="signup-bg">
@@ -148,16 +171,19 @@ const handleGithub =async(e)=>{
 
       {/* Card */}
       <div className="signup-card">
-
         {/* Logo */}
         <div className="signup-logo">
           <div className="signup-logo-icon">🎮</div>
-          <span className="signup-logo-name" onClick={handleGoHome}>EntertainHub</span>
+          <span className="signup-logo-name" onClick={handleGoHome}>
+            EntertainHub
+          </span>
         </div>
 
         {/* Heading */}
         <div className="signup-heading">
-          <h1>Join the <span>Hub</span></h1>
+          <h1>
+            Join the <span>Hub</span>
+          </h1>
           <p>Create your free account and start exploring</p>
         </div>
 
@@ -170,17 +196,29 @@ const handleGithub =async(e)=>{
             <div className="signup-field">
               <label className="signup-label">First Name</label>
               <div className="signup-input-wrap">
-                <input className="signup-input" placeholder="Alex"
-                  value={form.firstName} onChange={set('firstName')} />
-                <span className="signup-input-icon"><i className="fas fa-user" aria-hidden="true" /></span>
+                <input
+                  className="signup-input"
+                  placeholder="Alex"
+                  value={form.firstName}
+                  onChange={set("firstName")}
+                />
+                <span className="signup-input-icon">
+                  <i className="fas fa-user" aria-hidden="true" />
+                </span>
               </div>
             </div>
             <div className="signup-field">
               <label className="signup-label">Last Name</label>
               <div className="signup-input-wrap">
-                <input className="signup-input" placeholder="Rivera"
-                  value={form.lastName} onChange={set('lastName')} />
-                <span className="signup-input-icon"><i className="fas fa-user" aria-hidden="true" /></span>
+                <input
+                  className="signup-input"
+                  placeholder="Rivera"
+                  value={form.lastName}
+                  onChange={set("lastName")}
+                />
+                <span className="signup-input-icon">
+                  <i className="fas fa-user" aria-hidden="true" />
+                </span>
               </div>
             </div>
           </div>
@@ -189,9 +227,16 @@ const handleGithub =async(e)=>{
           <div className="signup-field">
             <label className="signup-label">Email</label>
             <div className="signup-input-wrap">
-              <input className="signup-input" type="email" placeholder="you@example.com"
-                value={form.email} onChange={set('email')} />
-               <span className="signup-input-icon"><i className="fas fa-envelope" aria-hidden="true" /></span>
+              <input
+                className="signup-input"
+                type="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={set("email")}
+              />
+              <span className="signup-input-icon">
+                <i className="fas fa-envelope" aria-hidden="true" />
+              </span>
             </div>
           </div>
 
@@ -199,20 +244,38 @@ const handleGithub =async(e)=>{
           <div className="signup-field">
             <label className="signup-label">Password</label>
             <div className="signup-input-wrap">
-              <input className="signup-input" type={showPw ? 'text' : 'password'}
-                placeholder="Min. 8 characters" value={form.password}
-                onChange={set('password')} style={{ paddingRight: 38 }} />
-               <span className="signup-input-icon"><i className="fas fa-lock" aria-hidden="true" /></span>
-               <button className="signup-eye" onClick={() => setShowPw(v => !v)} type="button">
-                 <i className={showPw ? 'fas fa-eye-slash' : 'fas fa-eye'} aria-hidden="true" />
-               </button>
+              <input
+                className="signup-input"
+                type={showPw ? "text" : "password"}
+                placeholder="Min. 8 characters"
+                value={form.password}
+                onChange={set("password")}
+                style={{ paddingRight: 38 }}
+              />
+              <span className="signup-input-icon">
+                <i className="fas fa-lock" aria-hidden="true" />
+              </span>
+              <button
+                className="signup-eye"
+                onClick={() => setShowPw((v) => !v)}
+                type="button"
+              >
+                <i
+                  className={showPw ? "fas fa-eye-slash" : "fas fa-eye"}
+                  aria-hidden="true"
+                />
+              </button>
             </div>
             {form.password && (
               <>
                 <div className="signup-strength">
-                  {[1, 2, 3, 4].map(i => <div key={i} className={segClass(i)} />)}
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className={segClass(i)} />
+                  ))}
                 </div>
-                <div className="signup-strength-label">{strength.label} password</div>
+                <div className="signup-strength-label">
+                  {strength.label} password
+                </div>
               </>
             )}
           </div>
@@ -221,28 +284,52 @@ const handleGithub =async(e)=>{
           <div className="signup-field">
             <label className="signup-label">Confirm Password</label>
             <div className="signup-input-wrap">
-              <input className="signup-input" type={showCf ? 'text' : 'password'}
-                placeholder="Re-enter password" value={form.confirm}
-                onChange={set('confirm')} style={{ paddingRight: 38 }} />
-               <span className="signup-input-icon"><i className="fas fa-lock" aria-hidden="true" /></span>
-              <button className="signup-eye" onClick={() => setShowCf(v => !v)} type="button">
-                <i className={showCf ? 'fas fa-eye-slash' : 'fas fa-eye'} aria-hidden="true" />
+              <input
+                className="signup-input"
+                type={showCf ? "text" : "password"}
+                placeholder="Re-enter password"
+                value={form.confirm}
+                onChange={set("confirm")}
+                style={{ paddingRight: 38 }}
+              />
+              <span className="signup-input-icon">
+                <i className="fas fa-lock" aria-hidden="true" />
+              </span>
+              <button
+                className="signup-eye"
+                onClick={() => setShowCf((v) => !v)}
+                type="button"
+              >
+                <i
+                  className={showCf ? "fas fa-eye-slash" : "fas fa-eye"}
+                  aria-hidden="true"
+                />
               </button>
             </div>
           </div>
 
           {/* Terms */}
           <div className="signup-terms">
-            <input className="signup-terms-check" type="checkbox" id="terms"
-              checked={form.terms} onChange={set('terms')} />
+            <input
+              className="signup-terms-check"
+              type="checkbox"
+              id="terms"
+              checked={form.terms}
+              onChange={set("terms")}
+            />
             <label className="signup-terms-text" htmlFor="terms">
-              I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+              I agree to the <a href="#">Terms of Service</a> and{" "}
+              <a href="#">Privacy Policy</a>
             </label>
           </div>
 
           {/* Submit */}
-          <button className="signup-btn" onClick={handleSignUp} disabled={loading}>
-            {loading ? 'Creating account…' : 'Create Account →'}
+          <button
+            className="signup-btn"
+            onClick={handleSignUp}
+            disabled={loading}
+          >
+            {loading ? "Creating account…" : "Create Account →"}
           </button>
 
           {/* Divider */}
@@ -254,15 +341,19 @@ const handleGithub =async(e)=>{
 
           {/* Social */}
           <div className="signup-social">
-            <button className="signup-social-btn" onClick={handleGoogle}><i className="fab fa-google" aria-hidden="true" /> Google</button>
-            <button className="signup-social-btn" onClick={handleGithub}><i className="fab fa-github" aria-hidden="true" /> GitHub</button>
+            <button className="signup-social-btn" onClick={handleGoogle}>
+              <i className="fab fa-google" aria-hidden="true" /> Google
+            </button>
+            <button className="signup-social-btn" onClick={handleGithub}>
+              <i className="fab fa-github" aria-hidden="true" /> GitHub
+            </button>
           </div>
         </div>
 
         {/* Footer */}
         <div className="signup-footer">
-          Already have an account?{' '}
-          <button onClick={() => navigate('/signin')}>Sign in</button>
+          Already have an account?{" "}
+          <button onClick={() => navigate("/signin")}>Sign in</button>
         </div>
       </div>
     </div>

@@ -7,8 +7,13 @@ import MoviesAPI from "../api/movie_api";
 import type { MovieModel } from "../models/MovieModel";
 import "./GameDetails.css";
 import MovieCard from "../components/discover/MovieCard";
-import { addMovieTolibrary, removeMovieFromLibrary, fetchMovieToLibrary } from "../firebase/FirebaseService";
-import { getAuth } from "firebase/auth";
+import {
+  addMovieTolibrary,
+  removeMovieFromLibrary,
+  fetchMovieToLibrary,
+} from "../firebase/FirebaseService";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { log } from "firebase/firestore/pipelines";
 
 function MovieDetails() {
   const { id } = useParams<{ id: string }>();
@@ -17,14 +22,17 @@ function MovieDetails() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [details, setDetails] = useState<MovieModel | null>(null);
-  const [savedMovie,setSsavedMovie]=useState<string[]>([]);
-
+  const [savedMovie, setSsavedMovie] = useState<string[]>([]);
 
   const handleAdd = async () => {
     if (!movie) return;
     const auth = getAuth();
     if (auth.currentUser) {
-      await addMovieTolibrary({ id: movie.id, title: movie.title, image: movie.posterUrl });
+      await addMovieTolibrary({
+        id: movie.id,
+        title: movie.title,
+        image: movie.posterUrl,
+      });
     } else {
       try {
         const raw = localStorage.getItem("savedMovies");
@@ -38,18 +46,17 @@ function MovieDetails() {
     setSaved(true);
   };
 
-const handleDelete = async (e: React.MouseEvent) => {
-  e.stopPropagation();
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
 
-  await removeMovieFromLibrary(displayed.id);
+    await removeMovieFromLibrary(displayed.id);
 
-  setSsavedMovie((prev) =>
-    prev.filter((id) => id !== displayed.id.toString())
-  );
-  setSaved(false)
-};
- const displayed= details ?? movie
-
+    setSsavedMovie((prev) =>
+      prev.filter((id) => id !== displayed.id.toString()),
+    );
+    setSaved(false);
+  };
+  const displayed = details ?? movie;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -85,22 +92,27 @@ const handleDelete = async (e: React.MouseEvent) => {
     const checkSaved = async () => {
       if (!movie) return;
       const auth = getAuth();
-      if (auth.currentUser) {
-        const movies = await fetchMovieToLibrary();
-        setSaved(movies.includes(movie.id as string));
-        return;
-      }
-      try {
+
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          if (auth.currentUser) {
+            const movies = await fetchMovieToLibrary();
+            setSaved(movies.includes(`${movie.id}`));
+            return;
+          }
+        }
+      });
+
+      /*  try {
         const raw = localStorage.getItem("savedMovies");
         const local: string[] = raw ? JSON.parse(raw) : [];
         setSaved(local.includes(movie.id as string));
       } catch (e) {
         setSaved(false);
-      }
+      } */
     };
     checkSaved();
   }, [movie]);
-  
 
   if (loading) {
     return (
@@ -126,7 +138,9 @@ const handleDelete = async (e: React.MouseEvent) => {
             <Icon icon="fa-triangle-exclamation" size="2xl" />
             <h2>Oops!</h2>
             <p>{error}</p>
-            <Link to="/movies" className="btn btn-primary">Back to Movies</Link>
+            <Link to="/movies" className="btn btn-primary">
+              Back to Movies
+            </Link>
           </div>
         </main>
         <Footer />
@@ -140,9 +154,7 @@ const handleDelete = async (e: React.MouseEvent) => {
       <main className="game-details-page">
         <div className="game-hero">
           <div className="game-hero-bg">
-            {movie.posterUrl && (
-              <img src={movie.posterUrl} alt="" />
-            )}
+            {movie.posterUrl && <img src={movie.posterUrl} alt="" />}
             <div className="overlay"></div>
           </div>
           <div className="container">
@@ -154,23 +166,49 @@ const handleDelete = async (e: React.MouseEvent) => {
                 {movie.posterUrl ? (
                   <img src={movie.posterUrl} alt={movie.title} />
                 ) : (
-                  <div className="placeholder-cover"><Icon icon="fa-film" size="2xl" /></div>
+                  <div className="placeholder-cover">
+                    <Icon icon="fa-film" size="2xl" />
+                  </div>
                 )}
               </div>
               <div className="game-info">
                 <h1>{movie.title}</h1>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <div className="game-meta">
-                  {movie.releaseYear && <span className="meta-item"><Icon icon="fa-calendar" /> {movie.releaseYear}</span>}
-                  {movie.rating && <span className="meta-item rating"><Icon icon="fa-star" /> {movie.rating}%</span>}
+                    {movie.releaseYear && (
+                      <span className="meta-item">
+                        <Icon icon="fa-calendar" /> {movie.releaseYear}
+                      </span>
+                    )}
+                    {movie.rating && (
+                      <span className="meta-item rating">
+                        <Icon icon="fa-star" /> {movie.rating}%
+                      </span>
+                    )}
                   </div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button className={`library-btn ${saved ? 'library-btn--saved' : ''}`} onClick={handleAdd} title={saved ? 'Added to library' : 'Add to library'}>
-                      <Icon icon={saved ? 'fa-check' : 'fa-plus'} />
-                      <span style={{ marginLeft: 6 }}>{saved ? 'Saved' : 'Add to Library'}</span>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button
+                      className={`library-btn ${saved ? "library-btn--saved" : ""}`}
+                      onClick={handleAdd}
+                      title={saved ? "Added to library" : "Add to library"}
+                    >
+                      <Icon icon={saved ? "fa-check" : "fa-plus"} />
+                      <span style={{ marginLeft: 6 }}>
+                        {saved ? "Saved" : "Add to Library"}
+                      </span>
                     </button>
                     {saved && (
-                      <button className="unsave-btn"  title="Remove from library" onClick={handleDelete}>
+                      <button
+                        className="unsave-btn"
+                        title="Remove from library"
+                        onClick={handleDelete}
+                      >
                         <Icon icon="fa-times" />
                       </button>
                     )}
@@ -178,7 +216,11 @@ const handleDelete = async (e: React.MouseEvent) => {
                 </div>
                 {movie.genres && movie.genres.length > 0 && (
                   <div className="game-tags">
-                    {movie.genres.map(g => <span key={g} className="tag">{g}</span>)}
+                    {movie.genres.map((g) => (
+                      <span key={g} className="tag">
+                        {g}
+                      </span>
+                    ))}
                   </div>
                 )}
               </div>
@@ -190,7 +232,9 @@ const handleDelete = async (e: React.MouseEvent) => {
           <div className="main-col">
             <section className="about-section">
               <h2>About</h2>
-              <p className="summary">{movie.summary || "No description available."}</p>
+              <p className="summary">
+                {movie.summary || "No description available."}
+              </p>
             </section>
 
             {/* Trailer/embed section */}
@@ -222,11 +266,15 @@ const handleDelete = async (e: React.MouseEvent) => {
                       {c.profileUrl ? (
                         <img src={c.profileUrl} alt={c.name} />
                       ) : (
-                        <div className="cast-placeholder"><Icon icon="fa-user" /></div>
+                        <div className="cast-placeholder">
+                          <Icon icon="fa-user" />
+                        </div>
                       )}
                       <div className="cast-meta">
                         <div className="cast-name">{c.name}</div>
-                        {c.character && <div className="cast-character">as {c.character}</div>}
+                        {c.character && (
+                          <div className="cast-character">as {c.character}</div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -242,23 +290,36 @@ const handleDelete = async (e: React.MouseEvent) => {
                   {(() => {
                     const results = movie.watchProviders.results;
                     // prefer US providers, fallback to the first available region
-                    const regionKey = results.US ? 'US' : Object.keys(results)[0];
+                    const regionKey = results.US
+                      ? "US"
+                      : Object.keys(results)[0];
                     const region = results[regionKey];
-                    if (!region) return <div className="no-results">No providers available</div>;
+                    if (!region)
+                      return (
+                        <div className="no-results">No providers available</div>
+                      );
 
                     const list: any[] = [];
-                    ['flatrate', 'rent', 'buy'].forEach((k) => {
-                      if (Array.isArray(region[k])) region[k].forEach((p: any) => list.push({ ...p, kind: k }));
+                    ["flatrate", "rent", "buy"].forEach((k) => {
+                      if (Array.isArray(region[k]))
+                        region[k].forEach((p: any) =>
+                          list.push({ ...p, kind: k }),
+                        );
                     });
 
                     // unique by provider_id
                     const unique = list.reduce((acc: any[], cur) => {
-                      if (!acc.find((a) => a.provider_id === cur.provider_id)) acc.push(cur);
+                      if (!acc.find((a) => a.provider_id === cur.provider_id))
+                        acc.push(cur);
                       return acc;
                     }, [] as any[]);
 
                     return unique.map((p) => (
-                      <div key={p.provider_id} className="watch-on-card" title={p.provider_name}>
+                      <div
+                        key={p.provider_id}
+                        className="watch-on-card"
+                        title={p.provider_name}
+                      >
                         <Icon icon="fa-play-circle" size="xl" />
                         <span>{p.provider_name}</span>
                       </div>
@@ -281,7 +342,9 @@ const handleDelete = async (e: React.MouseEvent) => {
                 {movie.genres && movie.genres.length > 0 && (
                   <div className="fact-item">
                     <span className="fact-label">Genres</span>
-                    <span className="fact-value">{movie.genres.join(", ")}</span>
+                    <span className="fact-value">
+                      {movie.genres.join(", ")}
+                    </span>
                   </div>
                 )}
               </div>
@@ -301,9 +364,12 @@ const handleDelete = async (e: React.MouseEvent) => {
             </section>
           </div>
         )}
-                
+
         <div className="return-to-top-container">
-          <button className="return-to-top-btn" onClick={() => window.scrollTo(0, 0)}>
+          <button
+            className="return-to-top-btn"
+            onClick={() => window.scrollTo(0, 0)}
+          >
             <Icon icon="fa-arrow-up" /> Return to Top
           </button>
         </div>

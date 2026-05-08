@@ -36,10 +36,10 @@ class MoviesAPI {
     this.apiConfig = new MoviesAPIConfig();
   }
 
-  public async getPopularMovies(page: number =1 ): Promise<MovieModel[]> {
+  public async getPopularMovies(page: number = 1): Promise<MovieModel[]> {
     try {
       const response = await fetch(
-        `${this.apiConfig.getApiUrl()}movie/popular?api_key=${this.apiConfig.getApiKey()}&page=${page}`
+        `${this.apiConfig.getApiUrl()}discover/movie?api_key=${this.apiConfig.getApiKey()}&sort_by=vote_count.desc&language=en-US&page=${page}`,
       );
 
       if (!response.ok) {
@@ -60,47 +60,69 @@ class MoviesAPI {
    * Accepts optional filters: sortBy ("popular" | "rating" | ...), year, genre (name)
    * Uses TMDB discover endpoint to search across all movies (not only popular list).
    */
-  public async discoverMovies(options: { page?: number; sortBy?: string; year?: string; genre?: string } = {}): Promise<MovieModel[]> {
-  const { page = 1, sortBy = "popular", year, genre } = options;
-  try {
-    let sort_by = "popularity.desc";
-    switch (sortBy) {
-      case "rating": sort_by = "vote_average.desc"; break;
-      case "newest": sort_by = "release_date.desc"; break;
-      case "oldest": sort_by = "release_date.asc"; break;
-      case "az": sort_by = "original_title.asc"; break;
-      default: sort_by = "popularity.desc";
+  public async discoverMovies(
+    options: {
+      page?: number;
+      sortBy?: string;
+      year?: string;
+      genre?: string;
+    } = {},
+  ): Promise<MovieModel[]> {
+    const { page = 1, sortBy = "popular", year, genre } = options;
+    try {
+      let sort_by = "popularity.desc";
+      switch (sortBy) {
+        case "rating":
+          sort_by = "vote_average.desc";
+          break;
+        case "newest":
+          sort_by = "release_date.desc";
+          break;
+        case "oldest":
+          sort_by = "release_date.asc";
+          break;
+        case "az":
+          sort_by = "original_title.asc";
+          break;
+        default:
+          sort_by = "popularity.desc";
+      }
+
+      const params = new URLSearchParams({
+        api_key: this.apiConfig.getApiKey(),
+        page: String(page),
+        sort_by,
+      });
+
+      if (year) params.set("primary_release_year", String(year));
+
+      if (genre) {
+        const genreId = this.GENRE_NAME_TO_ID[genre.toLowerCase()];
+        if (genreId) params.set("with_genres", String(genreId));
+      }
+
+      console.log(
+        `${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`,
+      );
+
+      const response = await fetch(
+        `${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`,
+      );
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      const rawData = await response.json();
+      return this.mapResponseToMovieModel(rawData.results || []);
+    } catch (error) {
+      console.error("Discover Movies error:", error);
+      throw error;
     }
-
-    const params = new URLSearchParams({ 
-      api_key: this.apiConfig.getApiKey(), 
-      page: String(page), 
-      sort_by 
-    });
-
-    if (year) params.set("primary_release_year", String(year));
-
-    if (genre) {
-      const genreId = this.GENRE_NAME_TO_ID[genre.toLowerCase()];
-      if (genreId) params.set("with_genres", String(genreId));
-    }
-
-    const response = await fetch(`${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const rawData = await response.json();
-    return this.mapResponseToMovieModel(rawData.results || []);
-
-  } catch (error) {
-    console.error("Discover Movies error:", error);
-    throw error;
   }
-}
 
   public async getMovieById(id: number | string): Promise<MovieModel | null> {
     try {
       // Request additional related data (videos, credits, similar movies) in one call
       const response = await fetch(
-        `${this.apiConfig.getApiUrl()}movie/${id}?api_key=${this.apiConfig.getApiKey()}&append_to_response=videos,credits,similar`
+        `${this.apiConfig.getApiUrl()}movie/${id}?api_key=${this.apiConfig.getApiKey()}&append_to_response=videos,credits,similar`,
       );
 
       if (!response.ok) {
@@ -120,7 +142,7 @@ class MoviesAPI {
   public async getWatchProviders(id: number | string): Promise<any | null> {
     try {
       const response = await fetch(
-        `${this.apiConfig.getApiUrl()}movie/${id}/watch/providers?api_key=${this.apiConfig.getApiKey()}`
+        `${this.apiConfig.getApiUrl()}movie/${id}/watch/providers?api_key=${this.apiConfig.getApiKey()}`,
       );
 
       if (!response.ok) {
@@ -135,10 +157,13 @@ class MoviesAPI {
     }
   }
 
-  public async searchMovies(query: string, page: number = 1): Promise<MovieModel[]> {
+  public async searchMovies(
+    query: string,
+    page: number = 1,
+  ): Promise<MovieModel[]> {
     try {
       const response = await fetch(
-        `${this.apiConfig.getApiUrl()}search/movie?api_key=${this.apiConfig.getApiKey()}&query=${encodeURIComponent(query)}&page=${page}`
+        `${this.apiConfig.getApiUrl()}search/movie?api_key=${this.apiConfig.getApiKey()}&query=${encodeURIComponent(query)}&page=${page}`,
       );
 
       if (!response.ok) {
@@ -153,79 +178,115 @@ class MoviesAPI {
       throw error;
     }
   }
-  public   GENRE_MAP: Record<number, string> = {
-  28: "Action", 12: "Adventure", 16: "Animation",
-  35: "Comedy", 80: "Crime", 99: "Documentary",
-  18: "Drama", 10751: "Family", 14: "Fantasy",
-  36: "History", 27: "Horror", 10402: "Music",
-  9648: "Mystery", 10749: "Romance", 878: "Science Fiction",
-  10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western"
+  public GENRE_MAP: Record<number, string> = {
+    28: "Action",
+    12: "Adventure",
+    16: "Animation",
+    35: "Comedy",
+    80: "Crime",
+    99: "Documentary",
+    18: "Drama",
+    10751: "Family",
+    14: "Fantasy",
+    36: "History",
+    27: "Horror",
+    10402: "Music",
+    9648: "Mystery",
+    10749: "Romance",
+    878: "Science Fiction",
+    10770: "TV Movie",
+    53: "Thriller",
+    10752: "War",
+    37: "Western",
   };
-  public  GENRE_NAME_TO_ID: Record<string, number> = Object.fromEntries(
-  Object.entries(this.GENRE_MAP).map(([id, name]) => [name.toLowerCase(), Number(id)])
-);
+  public GENRE_NAME_TO_ID: Record<string, number> = Object.fromEntries(
+    Object.entries(this.GENRE_MAP).map(([id, name]) => [
+      name.toLowerCase(),
+      Number(id),
+    ]),
+  );
 
   private mapResponseToMovieModel(rawData: any[]): MovieModel[] {
     // Image base can be configured via env, fallback to TMDB default size
-    const imageBase = (import.meta.env.VITE_MOVIES_IMAGE_BASE as string) || "https://image.tmdb.org/t/p/w500";
+    const imageBase =
+      (import.meta.env.VITE_MOVIES_IMAGE_BASE as string) ||
+      "https://image.tmdb.org/t/p/w500";
 
-      return rawData.map((m) => {
-        const posterPath = m.poster_path ?? m.backdrop_path ?? null;
-        const posterUrl = posterPath ? `${imageBase}${posterPath}` : undefined;
+    return rawData.map((m) => {
+      const posterPath = m.poster_path ?? m.backdrop_path ?? null;
+      const posterUrl = posterPath ? `${imageBase}${posterPath}` : undefined;
 
-        const releaseYear = m.release_date ? String(m.release_date).split("-")[0] : undefined;
+      const releaseYear = m.release_date
+        ? String(m.release_date).split("-")[0]
+        : undefined;
 
       // vote_average is usually 0-10 float, convert to percentage (0-100)
-      const rating = typeof m.vote_average === "number" ? Math.round(m.vote_average * 10) : undefined;
+      const rating =
+        typeof m.vote_average === "number"
+          ? Math.round(m.vote_average * 10)
+          : undefined;
 
       // Genres: details endpoint returns array of objects with name; list endpoints provide genre_ids
-       const genres = Array.isArray(m.genres) && m.genres.length > 0
-         ? m.genres.map((g: any) => g.name).filter(Boolean)
-         : Array.isArray(m.genre_ids)
-          ? m.genre_ids.map((id: number) => this.GENRE_MAP[id]).filter(Boolean)  // ← map ids to names
-       : [];
+      const genres =
+        Array.isArray(m.genres) && m.genres.length > 0
+          ? m.genres.map((g: any) => g.name).filter(Boolean)
+          : Array.isArray(m.genre_ids)
+            ? m.genre_ids
+                .map((id: number) => this.GENRE_MAP[id])
+                .filter(Boolean) // ← map ids to names
+            : [];
 
-        // Build videos info (if present). Keep original shape plus convenience trailerUrl for YouTube trailers
-        const videos = m.videos?.results
-          ? m.videos.results.map((v: any) => ({
-              id: v.id,
-              key: v.key,
-              name: v.name,
-              type: v.type,
-              site: v.site,
-              official: v.official,
-              published_at: v.published_at,
-            }))
-          : undefined;
+      // Build videos info (if present). Keep original shape plus convenience trailerUrl for YouTube trailers
+      const videos = m.videos?.results
+        ? m.videos.results.map((v: any) => ({
+            id: v.id,
+            key: v.key,
+            name: v.name,
+            type: v.type,
+            site: v.site,
+            official: v.official,
+            published_at: v.published_at,
+          }))
+        : undefined;
 
-        let trailerUrl: string | undefined = undefined;
-        if (videos && videos.length) {
-          const yt = videos.find((v: any) => v.type === "Trailer" && String(v.site).toLowerCase() === "youtube");
-          if (yt && yt.key) {
-            trailerUrl = `https://www.youtube.com/watch?v=${yt.key}`;
-          }
+      let trailerUrl: string | undefined = undefined;
+      if (videos && videos.length) {
+        const yt = videos.find(
+          (v: any) =>
+            v.type === "Trailer" && String(v.site).toLowerCase() === "youtube",
+        );
+        if (yt && yt.key) {
+          trailerUrl = `https://www.youtube.com/watch?v=${yt.key}`;
         }
+      }
 
-        // Build credits (cast) - compute a profileUrl for the cast members if profile_path exists
-        const profileBase = (import.meta.env.VITE_MOVIES_IMAGE_PROFILE_BASE as string) || "https://image.tmdb.org/t/p/w185";
-        const credits = m.credits
-          ? {
-              cast: Array.isArray(m.credits.cast)
-                ? m.credits.cast.map((c: any) => ({
-                    id: c.id,
-                    name: c.name,
-                    character: c.character,
-                    profile_path: c.profile_path,
-                    profileUrl: c.profile_path ? `${profileBase}${c.profile_path}` : undefined,
-                  }))
-                : [],
-            }
+      // Build credits (cast) - compute a profileUrl for the cast members if profile_path exists
+      const profileBase =
+        (import.meta.env.VITE_MOVIES_IMAGE_PROFILE_BASE as string) ||
+        "https://image.tmdb.org/t/p/w185";
+      const credits = m.credits
+        ? {
+            cast: Array.isArray(m.credits.cast)
+              ? m.credits.cast.map((c: any) => ({
+                  id: c.id,
+                  name: c.name,
+                  character: c.character,
+                  profile_path: c.profile_path,
+                  profileUrl: c.profile_path
+                    ? `${profileBase}${c.profile_path}`
+                    : undefined,
+                }))
+              : [],
+          }
+        : undefined;
+
+      // Similar movies: map similar.results through the same mapper so they become MovieModel entries
+      const similar =
+        m.similar && Array.isArray(m.similar.results)
+          ? this.mapResponseToMovieModel(m.similar.results)
           : undefined;
 
-        // Similar movies: map similar.results through the same mapper so they become MovieModel entries
-        const similar = m.similar && Array.isArray(m.similar.results) ? this.mapResponseToMovieModel(m.similar.results) : undefined;
-
-        return {
+      return {
         // original raw fields
         adult: m.adult,
         backdrop_path: m.backdrop_path,
@@ -247,14 +308,14 @@ class MoviesAPI {
         releaseYear,
         rating,
         genres,
-          // include nested/related data
-          videos: videos ? { results: videos } : undefined,
-          trailerUrl,
-          credits,
-          similar,
-        } as MovieModel;
-      });
-    }
+        // include nested/related data
+        videos: videos ? { results: videos } : undefined,
+        trailerUrl,
+        credits,
+        similar,
+      } as MovieModel;
+    });
   }
+}
 
 export default MoviesAPI;
