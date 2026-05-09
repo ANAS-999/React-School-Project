@@ -23,7 +23,12 @@ class AnimeAPI {
       if (filters?.rating) url += `&rating=${filters.rating}`;
       if (filters?.genre) url += `&genres=${filters.genre}`;
 
-      const response = await fetch(url);
+      let response = await fetch(url);
+
+      if (response.status === 504) {
+        url = `${this.baseUrl}/anime?page=${page}&limit=${limit}`;
+        response = await fetch(url);
+      }
 
       if (!response.ok) {
         throw new Error("Failed to fetch anime");

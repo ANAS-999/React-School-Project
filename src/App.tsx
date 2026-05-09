@@ -11,6 +11,8 @@ import MovieDetails from "./Pages/MovieDetails";
 import SignIn from "./Sign/SignIn";
 import SignUp from "./Sign/SignUp";
 import ResetPassword from "./Sign/ResetPassword";
+import NotFound from "./Pages/NotFound";
+import Library from "./Pages/Library";
 
 import About from "./Pages/About";
 import { clearDiscoverCache } from "./utils/discoverCache";
@@ -37,6 +39,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/library" element={<Library />} />
       <Route path="/about" element={<About />} />
       <Route path="/discover" element={<Discover />} />
       <Route path="/games/:id" element={<GameDetails />} />
@@ -47,6 +50,7 @@ function App() {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin/reset" element={<ResetPassword />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

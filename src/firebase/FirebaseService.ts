@@ -82,6 +82,21 @@ export const addGameToLibrary = async (game: LibraryModel) => {
   }
 };
 
+export const checkIfGameInLibrary = async (gameId: string | number): Promise<boolean> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return false;
+
+  try {
+    const docRef = doc(db, "users", user.uid, "Games-Library", gameId.toString());
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const removeGameFromLibrary = async (GameId: string | number) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -90,13 +105,28 @@ export const removeGameFromLibrary = async (GameId: string | number) => {
 
   try {
     await deleteDoc(
-      doc(db, "users", user.uid, "Game-Library", GameId.toString()),
+      doc(db, "users", user.uid, "Games-Library", GameId.toString()),
     );
 
     console.log("Game removed ");
   } catch (error) {
     console.error(error);
   }
+};
+
+export const fetchGameToLibrary = async (): Promise<LibraryModel[]> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return [];
+  
+  const snapshot = await getDocs(
+    collection(db, "users", user.uid, "Games-Library"),
+  );
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    title: doc.data().title,
+    image: doc.data().image,
+  }));
 };
 
 export const addAnimeTolibrary = async (anime: LibraryModel) => {
@@ -122,6 +152,21 @@ export const addAnimeTolibrary = async (anime: LibraryModel) => {
   }
 };
 
+export const checkIfAnimeInLibrary = async (animeId: string | number): Promise<boolean> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return false;
+
+  try {
+    const docRef = doc(db, "users", user.uid, "Animes-Library", animeId.toString());
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const removeAnimeFromLibrary = async (AnimeId: string | number) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -130,11 +175,26 @@ export const removeAnimeFromLibrary = async (AnimeId: string | number) => {
 
   try {
     await deleteDoc(
-      doc(db, "users", user.uid, "Anime-Library", AnimeId.toString()),
+      doc(db, "users", user.uid, "Animes-Library", AnimeId.toString()),
     );
 
     console.log("Anime removed ");
   } catch (error) {
     console.error(error);
   }
+};
+
+export const fetchAnimeToLibrary = async (): Promise<LibraryModel[]> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return [];
+  
+  const snapshot = await getDocs(
+    collection(db, "users", user.uid, "Animes-Library"),
+  );
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    title: doc.data().title,
+    image: doc.data().image,
+  }));
 };

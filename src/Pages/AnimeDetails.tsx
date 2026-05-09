@@ -1,18 +1,31 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
 import AnimeAPI from "../api/anime_api";
 import type { AnimeModel } from "../models/AnimeModel";
+import {
+  addAnimeTolibrary,
+  checkIfAnimeInLibrary,
+  removeAnimeFromLibrary,
+} from "../firebase/FirebaseService";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import type { LibraryModel } from "../models/LibraryModel";
 import "./GameDetails.css";
 
 function AnimeDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [anime, setAnime] = useState<AnimeModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [playTrailer, setPlayTrailer] = useState(false);
+  const [isInLibrary, setIsInLibrary] = useState(false);
+  const [isBtnHovered, setIsBtnHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingLibrary, setIsCheckingLibrary] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
 
   const cleanText = (text: string | null | undefined) => {
     if (!text) return '';
@@ -48,6 +61,83 @@ function AnimeDetails() {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (!anime) return;
+
+    const checkLibrary = async () => {
+      setIsCheckingLibrary(true);
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        const inLibrary = await checkIfAnimeInLibrary(anime.id);
+        setIsInLibrary(inLibrary);
+      } else {
+        setIsInLibrary(false);
+      }
+      setIsCheckingLibrary(false);
+    };
+
+    checkLibrary();
+
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (anime) {
+        if (user) {
+          const inLibrary = await checkIfAnimeInLibrary(anime.id);
+          setIsInLibrary(inLibrary);
+        } else {
+          setIsInLibrary(false);
+        }
+        setIsCheckingLibrary(false);
+      }
+    });
+
+    return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anime?.id]);
+
+  const handleAddToLibrary = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      setShowDialog(true);
+      return;
+    }
+
+    if (isLoading || isCheckingLibrary) return;
+    setIsLoading(true);
+
+    try {
+      if (isInLibrary) {
+        await removeAnimeFromLibrary(anime!.id);
+        setIsInLibrary(false);
+      } else {
+        const libraryAnime: LibraryModel = {
+          id: anime!.id,
+          title: anime!.title,
+          image: anime!.imageId || undefined,
+        };
+
+        await addAnimeTolibrary(libraryAnime);
+        setIsInLibrary(true);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const closeDialog = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDialog(false);
+  };
+
+  const goToLogin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate("/signin");
+  };
+
   if (loading) {
     return (
       <div>
@@ -68,12 +158,15 @@ function AnimeDetails() {
       <div>
         <Header />
         <main className="game-details-page error">
-          <div className="container">
-            <Icon icon="fa-triangle-exclamation" size="2xl" />
+          <div className="error-content">
+            <div className="error-icon">
+              <Icon icon="fa-solid fa-ghost" size="2xl" />
+            </div>
             <h2>Oops!</h2>
-            <p>{error}</p>
+            <p className="error-message">{error}</p>
             <Link to="/animes" className="btn btn-primary">
-              Back to Anime
+              <Icon icon="fa-solid fa-film" />
+              Back to Animes
             </Link>
           </div>
         </main>
@@ -104,6 +197,39 @@ function AnimeDetails() {
                 ) : (
                   <div className="placeholder-cover"><Icon icon="fa-film" size="2xl" /></div>
                 )}
+                <button
+                  className={`add-to-library-btn cover-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
+                  onClick={handleAddToLibrary}
+                  onMouseEnter={() => setIsBtnHovered(true)}
+                  onMouseLeave={() => setIsBtnHovered(false)}
+                  title={
+                    isInLibrary ? "Remove from Library" : "Add to Library"
+                  }
+                  disabled={isLoading || isCheckingLibrary}
+                >
+                  {isLoading || isCheckingLibrary ? (
+                    <Icon icon="fas fa-spinner fa-spin" />
+                  ) : (
+                    <Icon
+                      icon={
+                        isInLibrary
+                          ? isBtnHovered
+                            ? "fas fa-times"
+                            : "fas fa-check"
+                          : "fas fa-plus"
+                      }
+                    />
+                  )}
+                  <span className="btn-text">
+                    {isCheckingLibrary
+                      ? " Loading..."
+                      : isInLibrary
+                        ? isBtnHovered
+                          ? " Remove"
+                          : " In Library"
+                        : " Add to Library"}
+                  </span>
+                </button>
               </div>
               <div className="game-info">
                 <h1>{anime.title}</h1>
@@ -407,6 +533,24 @@ function AnimeDetails() {
           </button>
         </div>
       </main>
+
+      {showDialog && (
+        <div className="auth-dialog-overlay" onClick={closeDialog}>
+          <div className="auth-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Login Required</h3>
+            <p>You must be logged in to add anime to your library.</p>
+            <div className="auth-dialog-buttons">
+              <button className="auth-dialog-btn cancel" onClick={closeDialog}>
+                Cancel
+              </button>
+              <button className="auth-dialog-btn login" onClick={goToLogin}>
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );

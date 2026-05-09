@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
@@ -7,19 +7,34 @@ import GamesAPI from "../api/games_api";
 import { getGameImageUrl } from "../utils/imageUtils";
 import { GameImageSize } from "../types";
 import type { GameModel } from "../models/GameModel";
+import {
+  addGameToLibrary,
+  checkIfGameInLibrary,
+  removeGameFromLibrary,
+} from "../firebase/FirebaseService";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import type { LibraryModel } from "../models/LibraryModel";
 import "./GameDetails.css";
 
 function GameDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [game, setGame] = useState<GameModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedScreenshotIndex, setSelectedScreenshotIndex] = useState<number | null>(null);
+  const [selectedScreenshotIndex, setSelectedScreenshotIndex] = useState<
+    number | null
+  >(null);
+  const [isInLibrary, setIsInLibrary] = useState(false);
+  const [isBtnHovered, setIsBtnHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingLibrary, setIsCheckingLibrary] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
     // Scroll to top when the component mounts or when the id changes
     window.scrollTo(0, 0);
-    
+
     // We should implement getGameById in GamesAPI
     const fetchGameDetails = async () => {
       setLoading(true);
@@ -44,6 +59,84 @@ function GameDetails() {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (!game) return;
+
+    const checkLibrary = async () => {
+      setIsCheckingLibrary(true);
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        const inLibrary = await checkIfGameInLibrary(game.id);
+        setIsInLibrary(inLibrary);
+      } else {
+        setIsInLibrary(false);
+      }
+      setIsCheckingLibrary(false);
+    };
+
+    checkLibrary();
+
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (game) {
+        if (user) {
+          const inLibrary = await checkIfGameInLibrary(game.id);
+          setIsInLibrary(inLibrary);
+        } else {
+          setIsInLibrary(false);
+        }
+        setIsCheckingLibrary(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [game?.id]);
+
+  const handleAddToLibrary = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      setShowDialog(true);
+      return;
+    }
+
+    if (isLoading || isCheckingLibrary) return;
+    setIsLoading(true);
+
+    try {
+      if (isInLibrary) {
+        await removeGameFromLibrary(game!.id);
+        setIsInLibrary(false);
+      } else {
+        const libraryGame: LibraryModel = {
+          id: game!.id,
+          title: game!.title,
+          image: game!.imageId
+            ? getGameImageUrl(game!.imageId, GameImageSize.FHD)
+            : undefined,
+        };
+
+        await addGameToLibrary(libraryGame);
+        setIsInLibrary(true);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const closeDialog = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDialog(false);
+  };
+
+  const goToLogin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate("/signin");
+  };
+
   if (loading) {
     return (
       <div>
@@ -64,11 +157,16 @@ function GameDetails() {
       <div>
         <Header />
         <main className="game-details-page error">
-          <div className="container">
-            <Icon icon="fa-triangle-exclamation" size="2xl" />
+          <div className="error-content">
+            <div className="error-icon">
+              <Icon icon="fa-solid fa-ghost" size="2xl" />
+            </div>
             <h2>Oops!</h2>
-            <p>{error}</p>
-            <Link to="/discover" className="btn btn-primary">Back to Discover</Link>
+            <p className="error-message">{error}</p>
+            <Link to="/discover" className="btn btn-primary">
+              <Icon icon="fa-solid fa-gamepad" />
+              Back to Games
+            </Link>
           </div>
         </main>
         <Footer />
@@ -84,7 +182,10 @@ function GameDetails() {
         <div className="game-hero">
           <div className="game-hero-bg">
             {game.imageId && (
-              <img src={getGameImageUrl(game.imageId, GameImageSize.FHD)} alt="" />
+              <img
+                src={getGameImageUrl(game.imageId, GameImageSize.FHD)}
+                alt=""
+              />
             )}
             <div className="overlay"></div>
           </div>
@@ -95,25 +196,79 @@ function GameDetails() {
             <div className="game-hero-content">
               <div className="game-cover">
                 {game.imageId ? (
-                  <img src={getGameImageUrl(game.imageId, GameImageSize.CoverBig)} alt={game.title} />
+                  <img
+                    src={getGameImageUrl(game.imageId, GameImageSize.CoverBig)}
+                    alt={game.title}
+                  />
                 ) : (
-                  <div className="placeholder-cover"><Icon icon="fa-gamepad" size="2xl" /></div>
+                  <div className="placeholder-cover">
+                    <Icon icon="fa-gamepad" size="2xl" />
+                  </div>
                 )}
+                <button
+                  className={`add-to-library-btn cover-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
+                  onClick={handleAddToLibrary}
+                  onMouseEnter={() => setIsBtnHovered(true)}
+                  onMouseLeave={() => setIsBtnHovered(false)}
+                  title={
+                    isInLibrary ? "Remove from Library" : "Add to Library"
+                  }
+                  disabled={isLoading || isCheckingLibrary}
+                >
+                  {isLoading || isCheckingLibrary ? (
+                    <Icon icon="fas fa-spinner fa-spin" />
+                  ) : (
+                    <Icon
+                      icon={
+                        isInLibrary
+                          ? isBtnHovered
+                            ? "fas fa-times"
+                            : "fas fa-check"
+                          : "fas fa-plus"
+                      }
+                    />
+                  )}
+                  <span className="btn-text">
+                    {isCheckingLibrary
+                      ? " Loading..."
+                      : isInLibrary
+                        ? isBtnHovered
+                          ? " Remove"
+                          : " In Library"
+                        : " Add to Library"}
+                  </span>
+                </button>
               </div>
               <div className="game-info">
                 <h1>{game.title}</h1>
                 <div className="game-meta">
-                  {game.releaseYear && <span className="meta-item"><Icon icon="fa-calendar" /> {game.releaseYear}</span>}
-                  {game.rating && <span className="meta-item rating"><Icon icon="fa-star" /> {game.rating}%</span>}
+                  {game.releaseYear && (
+                    <span className="meta-item">
+                      <Icon icon="fa-calendar" /> {game.releaseYear}
+                    </span>
+                  )}
+                  {game.rating && (
+                    <span className="meta-item rating">
+                      <Icon icon="fa-star" /> {game.rating}%
+                    </span>
+                  )}
                 </div>
                 {game.genres && game.genres.length > 0 && (
                   <div className="game-tags">
-                    {game.genres.map(g => <span key={g} className="tag">{g}</span>)}
+                    {game.genres.map((g) => (
+                      <span key={g} className="tag">
+                        {g}
+                      </span>
+                    ))}
                   </div>
                 )}
                 {game.platforms && game.platforms.length > 0 && (
                   <div className="game-platforms-list">
-                    {game.platforms.map(p => <span key={p} className="platform-badge">{p}</span>)}
+                    {game.platforms.map((p) => (
+                      <span key={p} className="platform-badge">
+                        {p}
+                      </span>
+                    ))}
                   </div>
                 )}
               </div>
@@ -126,7 +281,9 @@ function GameDetails() {
           <div className="main-col">
             <section className="about-section">
               <h2>About</h2>
-              <p className="summary">{game.summary || "No description available."}</p>
+              <p className="summary">
+                {game.summary || "No description available."}
+              </p>
               {game.storyline && (
                 <>
                   <h3 className="section-subtitle">Storyline</h3>
@@ -149,7 +306,7 @@ function GameDetails() {
                     ></iframe>
                     <p className="video-title">{game.videos[0].name}</p>
                   </div>
-                  {game.videos.slice(1).map(video => (
+                  {game.videos.slice(1).map((video) => (
                     <div key={video.videoId} className="video-wrapper">
                       <iframe
                         src={`https://www.youtube.com/embed/${video.videoId}`}
@@ -170,22 +327,29 @@ function GameDetails() {
                 <h2>Screenshots</h2>
                 <div className="screenshots-viewer">
                   <div className="screenshot-main">
-                    <img 
+                    <img
                       src={getGameImageUrl(
-                        game.screenshots[selectedScreenshotIndex ?? 0], 
-                        GameImageSize.FHD
-                      )} 
-                      alt="Selected Screenshot" 
+                        game.screenshots[selectedScreenshotIndex ?? 0],
+                        GameImageSize.FHD,
+                      )}
+                      alt="Selected Screenshot"
                     />
                   </div>
                   <div className="screenshots-grid">
                     {game.screenshots.map((screenshot, index) => (
-                      <div 
-                        key={screenshot} 
-                        className={`screenshot-thumb ${selectedScreenshotIndex === index || (selectedScreenshotIndex === null && index === 0) ? 'active' : ''}`}
+                      <div
+                        key={screenshot}
+                        className={`screenshot-thumb ${selectedScreenshotIndex === index || (selectedScreenshotIndex === null && index === 0) ? "active" : ""}`}
                         onClick={() => setSelectedScreenshotIndex(index)}
                       >
-                        <img src={getGameImageUrl(screenshot, GameImageSize.ScreenshotMed)} alt={`Screenshot ${index + 1}`} loading="lazy" />
+                        <img
+                          src={getGameImageUrl(
+                            screenshot,
+                            GameImageSize.ScreenshotMed,
+                          )}
+                          alt={`Screenshot ${index + 1}`}
+                          loading="lazy"
+                        />
                       </div>
                     ))}
                   </div>
@@ -194,35 +358,39 @@ function GameDetails() {
             )}
           </div>
           <div className="side-col">
-             <div className="info-card">
-               <h3>Quick Facts</h3>
-               <div className="fact-list">
-                 {game.developers && game.developers.length > 0 && (
-                   <div className="fact-item">
-                     <span className="fact-label">Developer</span>
-                     <span className="fact-value">{game.developers.join(", ")}</span>
-                   </div>
-                 )}
-                 {game.publishers && game.publishers.length > 0 && (
-                   <div className="fact-item">
-                     <span className="fact-label">Publisher</span>
-                     <span className="fact-value">{game.publishers.join(", ")}</span>
-                   </div>
-                 )}
-                 {game.releaseYear && (
-                   <div className="fact-item">
-                     <span className="fact-label">Release Year</span>
-                     <span className="fact-value">{game.releaseYear}</span>
-                   </div>
-                 )}
-                 {game.genres && game.genres.length > 0 && (
-                   <div className="fact-item">
-                     <span className="fact-label">Genres</span>
-                     <span className="fact-value">{game.genres.join(", ")}</span>
-                   </div>
-                 )}
-               </div>
-             </div>
+            <div className="info-card">
+              <h3>Quick Facts</h3>
+              <div className="fact-list">
+                {game.developers && game.developers.length > 0 && (
+                  <div className="fact-item">
+                    <span className="fact-label">Developer</span>
+                    <span className="fact-value">
+                      {game.developers.join(", ")}
+                    </span>
+                  </div>
+                )}
+                {game.publishers && game.publishers.length > 0 && (
+                  <div className="fact-item">
+                    <span className="fact-label">Publisher</span>
+                    <span className="fact-value">
+                      {game.publishers.join(", ")}
+                    </span>
+                  </div>
+                )}
+                {game.releaseYear && (
+                  <div className="fact-item">
+                    <span className="fact-label">Release Year</span>
+                    <span className="fact-value">{game.releaseYear}</span>
+                  </div>
+                )}
+                {game.genres && game.genres.length > 0 && (
+                  <div className="fact-item">
+                    <span className="fact-label">Genres</span>
+                    <span className="fact-value">{game.genres.join(", ")}</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -230,13 +398,23 @@ function GameDetails() {
           <section className="container similar-games-section">
             <h2>Similar Games You Might Like</h2>
             <div className="similar-games-grid">
-              {game.similarGames.map(similar => (
-                <Link to={`/games/${similar.id}`} key={similar.id} className="similar-game-card group">
+              {game.similarGames.map((similar) => (
+                <Link
+                  to={`/games/${similar.id}`}
+                  key={similar.id}
+                  className="similar-game-card group"
+                >
                   <div className="similar-game-image">
                     {similar.imageId ? (
-                      <img src={getGameImageUrl(similar.imageId, GameImageSize.HD)} alt={similar.title} loading="lazy" />
+                      <img
+                        src={getGameImageUrl(similar.imageId, GameImageSize.HD)}
+                        alt={similar.title}
+                        loading="lazy"
+                      />
                     ) : (
-                      <div className="placeholder"><Icon icon="fa-gamepad" /></div>
+                      <div className="placeholder">
+                        <Icon icon="fa-gamepad" />
+                      </div>
                     )}
                   </div>
                   <div className="similar-game-info">
@@ -249,11 +427,32 @@ function GameDetails() {
         )}
 
         <div className="return-to-top-container">
-          <button className="return-to-top-btn" onClick={() => window.scrollTo(0, 0)}>
+          <button
+            className="return-to-top-btn"
+            onClick={() => window.scrollTo(0, 0)}
+          >
             <Icon icon="fa-arrow-up" /> Return to Top
           </button>
         </div>
       </main>
+
+      {showDialog && (
+        <div className="auth-dialog-overlay" onClick={closeDialog}>
+          <div className="auth-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Login Required</h3>
+            <p>You must be logged in to add games to your library.</p>
+            <div className="auth-dialog-buttons">
+              <button className="auth-dialog-btn cancel" onClick={closeDialog}>
+                Cancel
+              </button>
+              <button className="auth-dialog-btn login" onClick={goToLogin}>
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );

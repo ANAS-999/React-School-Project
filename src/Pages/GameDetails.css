@@ -30,13 +30,47 @@
   justify-content: center;
   text-align: center;
   padding: 100px 20px;
+  min-height: calc(100vh - 180px);
 }
 
-.game-details-page.loading p,
-.game-details-page.error p {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  color: var(--text-secondary);
+.game-details-page .error-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.game-details-page .error-icon {
+  margin-bottom: 24px;
+  color: var(--orange-light);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.game-details-page .error-content h2 {
+  font-size: 32px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.game-details-page .error-content .error-message {
+  color: var(--text-tertiary);
+  margin-bottom: 32px;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0;
+}
+
+.game-details-page .error-content .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .game-hero {
@@ -800,4 +834,139 @@
 
 .error-message i {
   color: var(--error);
+}
+
+/* Add to Library Button - Cover */
+.game-details-page .add-to-library-btn.cover-btn {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.562);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.game-details-page .add-to-library-btn.cover-btn:hover {
+  background: rgba(59, 131, 246, 0.068);
+  transform: translateX(-50%) scale(1.02);
+}
+
+.game-details-page .add-to-library-btn.cover-btn:disabled,
+.game-details-page .add-to-library-btn.cover-btn.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.game-details-page .add-to-library-btn.cover-btn.in-library {
+  color: rgb(202, 255, 237);
+  background: rgba(16, 185, 129, 0.144);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.game-details-page .add-to-library-btn.cover-btn.in-library:hover {
+  color: rgb(255, 193, 193);
+  background: rgba(239, 68, 68, 0.034);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.game-cover {
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .game-details-page .add-to-library-btn.cover-btn {
+    position: static;
+    transform: none;
+    width: 100%;
+    margin-top: 16px;
+  }
+}
+
+/* Auth Dialog */
+.game-details-page .auth-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-details-page .auth-dialog {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+}
+
+.game-details-page .auth-dialog h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+
+.game-details-page .auth-dialog p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.game-details-page .auth-dialog-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.game-details-page .auth-dialog-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.game-details-page .auth-dialog-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.game-details-page .auth-dialog-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.game-details-page .auth-dialog-btn.login {
+  background: var(--blue-main);
+  color: white;
+}
+
+.game-details-page .auth-dialog-btn.login:hover {
+  background: var(--blue-light);
 }

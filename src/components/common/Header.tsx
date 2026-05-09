@@ -9,6 +9,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -42,12 +43,15 @@ export const Header = () => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      // onAuthStateChanged will update the UI; navigate home afterwards
+      setUserMenuOpen(false);
       navigate("/");
     } catch (err) {
       console.error("Sign out error", err);
     }
   };
+
+  const userName = user?.displayName || (user?.email && user.email.split("@")[0]);
+
   return (
     <header className="header">
       <div className="header-content">
@@ -86,6 +90,13 @@ export const Header = () => {
             Animes
           </Link>
           <Link
+            to="/library"
+            className={location.pathname === "/library" ? "active" : ""}
+            onClick={handleNavClick}
+          >
+            Library
+          </Link>
+          <Link
             to="/about"
             className={location.pathname === "/about" ? "active" : ""}
             onClick={handleNavClick}
@@ -96,15 +107,30 @@ export const Header = () => {
 
         <div className="header-actions">
           {user ? (
-            // When signed in show greeting with the user's display name or email prefix and a sign out button
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <div className="header-greeting">
-                Hello{" "}
-                {user.displayName || (user.email && user.email.split("@")[0])}
-              </div>
-              <button className="btn SignOut-btn" onClick={handleSignOut}>
-                Sign Out
+            <div className="user-menu-container">
+              <button 
+                className="user-menu-trigger"
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+              >
+                <Icon icon="fa-solid fa-user" className="user-icon" />
+                <span className="user-name">{userName}</span>
+                <Icon 
+                  icon={userMenuOpen ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down"} 
+                  className="chevron-icon" 
+                />
               </button>
+              {userMenuOpen && (
+                <div className="user-dropdown">
+                  <button className="dropdown-item" onClick={() => { setUserMenuOpen(false); navigate("/library"); }}>
+                    <Icon icon="fa-solid fa-bookmark" />
+                    <span>My Library</span>
+                  </button>
+                  <button className="dropdown-item sign-out" onClick={handleSignOut}>
+                    <Icon icon="fa-solid fa-sign-out-alt" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <>

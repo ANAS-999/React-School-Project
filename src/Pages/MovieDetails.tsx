@@ -134,11 +134,14 @@ function MovieDetails() {
       <div>
         <Header />
         <main className="game-details-page error">
-          <div className="container">
-            <Icon icon="fa-triangle-exclamation" size="2xl" />
+          <div className="error-content">
+            <div className="error-icon">
+              <Icon icon="fa-solid fa-ghost" size="2xl" />
+            </div>
             <h2>Oops!</h2>
-            <p>{error}</p>
+            <p className="error-message">{error}</p>
             <Link to="/movies" className="btn btn-primary">
+              <Icon icon="fa-solid fa-film" />
               Back to Movies
             </Link>
           </div>

@@ -505,6 +505,15 @@ const About: React.FC = () => {
                     <p>Anime Data</p>
                   </div>
                 </div>
+                <div className="tech-card" data-color="#FFCA28">
+                  <div className="tech-icon">
+                    <Icon icon="fa-solid fa-fire" />
+                  </div>
+                  <div className="tech-info">
+                    <h4>Firebase</h4>
+                    <p>Auth & Database</p>
+                  </div>
+                </div>
               </div>
             </div>
 
