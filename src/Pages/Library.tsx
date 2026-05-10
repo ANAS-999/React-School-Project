@@ -14,6 +14,7 @@ import {
 } from "../firebase/FirebaseService";
 import type { LibraryModel } from "../models/LibraryModel";
 import "./Library.css";
+import "../components/discover/GameCard.css";
 
 type TabType = "games" | "movies" | "animes";
 
@@ -281,60 +282,48 @@ if (!user) {
               {filteredItems.map((item) => (
                 <div
                   key={`${item.type}-${item.id}`}
-                  className="library-card"
+                  className="game-card group"
                   onClick={() => handleItemClick(item)}
                 >
-                  <div className="library-card-image">
-                    {item.image ? (
-                      <img src={item.image} alt={item.title} />
-                    ) : (
-                      <div className="library-card-placeholder">
-                        <Icon
-                          icon={
-                            item.type === "games"
-                              ? "fa-gamepad"
-                              : item.type === "movies"
-                                ? "fa-film"
-                                : "fa-tv"
-                          }
-                          size="2xl"
-                        />
+                  <div className="game-card-inner">
+                    <div className="game-card-image">
+                      {item.image ? (
+                        <img src={item.image} alt={item.title} loading="lazy" />
+                      ) : (
+                        <div className="game-card-placeholder">
+                          <Icon
+                            icon={item.type === "games" ? "fa-gamepad" : item.type === "movies" ? "fa-film" : "fa-tv"}
+                            size="2xl"
+                          />
+                        </div>
+                      )}
+
+                      <div className="card-overlay">
+                        <button
+                          className="remove-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemove(item.id, item.type);
+                          }}
+                          title="Remove from library"
+                        >
+                          <Icon icon="fa-solid fa-trash" />
+                          <span>Remove</span>
+                        </button>
                       </div>
-                    )}
-                    <div className="card-overlay">
-                      <button
-                        className="remove-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemove(item.id, item.type);
-                        }}
-                        title="Remove from library"
-                      >
-                        <Icon icon="fa-solid fa-trash" />
-                        <span>Remove</span>
-                      </button>
+
+                      <div className="card-type-badge">
+                        <Icon icon={item.type === "games" ? "fa-gamepad" : item.type === "movies" ? "fa-film" : "fa-tv"} />
+                      </div>
                     </div>
-                    <div className="card-type-badge">
-                      <Icon
-                        icon={
-                          item.type === "games"
-                            ? "fa-gamepad"
-                            : item.type === "movies"
-                              ? "fa-film"
-                              : "fa-tv"
-                        }
-                      />
+
+                    <div className="game-card-content">
+                      <h3 className="game-card-title">{item.title}</h3>
+                      <div className="game-card-info">
+                        {/* show a simple label for type on the right */}
+                        <span className="game-card-genre">{item.type === "games" ? "Game" : item.type === "movies" ? "Movie" : "Anime"}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="library-card-content">
-                    <h3>{item.title}</h3>
-                    <span className="card-type-label">
-                      {item.type === "games"
-                        ? "Game"
-                        : item.type === "movies"
-                          ? "Movie"
-                          : "Anime"}
-                    </span>
                   </div>
                 </div>
               ))}

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState  } from "react";
+import { useParams, Link ,useNavigate } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
@@ -7,56 +7,22 @@ import MoviesAPI from "../api/movie_api";
 import type { MovieModel } from "../models/MovieModel";
 import "./GameDetails.css";
 import MovieCard from "../components/discover/MovieCard";
-import {
-  addMovieTolibrary,
-  removeMovieFromLibrary,
-  fetchMovieToLibrary,
-} from "../firebase/FirebaseService";
+import {addMovieTolibrary,checkIfMovieInLibrary,removeMovieFromLibrary } from "../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { log } from "firebase/firestore/pipelines";
+import type { LibraryModel } from "../models/LibraryModel";
 
 function MovieDetails() {
   const { id } = useParams<{ id: string }>();
   const [movie, setMovie] = useState<MovieModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [details, setDetails] = useState<MovieModel | null>(null);
-  const [savedMovie, setSsavedMovie] = useState<string[]>([]);
+  const [isInLibrary,setIsInLibrary]=useState(false);
+  const [isBtnHovered, setIsBtnHovered] = useState(false);
+  const [isLoading,setIsLoading]=useState(false);
+  const [isCheckingLibrary, setIsCheckingLibrary] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
+  const navigate=useNavigate();
 
-  const handleAdd = async () => {
-    if (!movie) return;
-    const auth = getAuth();
-    if (auth.currentUser) {
-      await addMovieTolibrary({
-        id: movie.id,
-        title: movie.title,
-        image: movie.posterUrl,
-      });
-    } else {
-      try {
-        const raw = localStorage.getItem("savedMovies");
-        const local: string[] = raw ? JSON.parse(raw) : [];
-        if (!local.includes(movie.id as string)) {
-          local.push(movie.id as string);
-          localStorage.setItem("savedMovies", JSON.stringify(local));
-        }
-      } catch (e) {}
-    }
-    setSaved(true);
-  };
-
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    await removeMovieFromLibrary(displayed.id);
-
-    setSsavedMovie((prev) =>
-      prev.filter((id) => id !== displayed.id.toString()),
-    );
-    setSaved(false);
-  };
-  const displayed = details ?? movie;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -87,32 +53,62 @@ function MovieDetails() {
     if (id) fetchMovieDetails();
   }, [id]);
 
-  // when movie is loaded, determine saved state
-  useEffect(() => {
-    const checkSaved = async () => {
+    useEffect(() => {
       if (!movie) return;
-      const auth = getAuth();
-
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          if (auth.currentUser) {
-            const movies = await fetchMovieToLibrary();
-            setSaved(movies.includes(`${movie.id}`));
-            return;
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            const inLibrary = await checkIfMovieInLibrary(movie!.id);
+            setIsInLibrary(inLibrary);
+          } else {
+            setIsInLibrary(false);
+          }
+          setIsCheckingLibrary(false);
+        });
+        return () => unsubscribe();
+      }, [movie]);
+  
+    const handleAddToLibrary = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const auth = getAuth();
+        if (!auth.currentUser) {
+          setShowDialog(true);
+          return;
+        }
+        
+        if (isLoading) return;
+        setIsLoading(true);
+    
+        try {
+          if (isInLibrary ) {
+            await removeMovieFromLibrary(movie!.id);
+            setIsInLibrary(false);
+          } else {
+            if(movie){
+            const libraryMovie: LibraryModel = {
+              id: movie.id,
+              title: movie.title,
+              image: movie.posterUrl
+            };
+          
+            
+            await addMovieTolibrary(libraryMovie);
+            setIsInLibrary(true);
           }
         }
-      });
-
-      /*  try {
-        const raw = localStorage.getItem("savedMovies");
-        const local: string[] = raw ? JSON.parse(raw) : [];
-        setSaved(local.includes(movie.id as string));
-      } catch (e) {
-        setSaved(false);
-      } */
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      const closeDialog = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setShowDialog(false);
     };
-    checkSaved();
-  }, [movie]);
+  
+    const goToLogin = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      navigate("/signin");
+    };
 
   if (loading) {
     return (
@@ -159,8 +155,10 @@ function MovieDetails() {
           <div className="game-hero-bg">
             {movie.posterUrl && <img src={movie.posterUrl} alt="" />}
             <div className="overlay"></div>
+            
           </div>
           <div className="container">
+            
             <Link to="/movies" className="back-link">
               <Icon icon="fa-arrow-left" /> Back to Movies
             </Link>
@@ -171,8 +169,43 @@ function MovieDetails() {
                 ) : (
                   <div className="placeholder-cover">
                     <Icon icon="fa-film" size="2xl" />
+                    
                   </div>
+                  
                 )}
+                 <button
+                  className={`add-to-library-btn cover-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
+                  onClick={handleAddToLibrary}
+                  onMouseEnter={() => setIsBtnHovered(true)}
+                  onMouseLeave={() => setIsBtnHovered(false)}
+                  title={
+                    isInLibrary ? "Remove from Library" : "Add to Library"
+                  }
+                  disabled={isLoading || isCheckingLibrary}
+                >
+                  {isLoading || isCheckingLibrary ? (
+                    <Icon icon="fas fa-spinner fa-spin" />
+                  ) : (
+                    <Icon
+                      icon={
+                        isInLibrary
+                          ? isBtnHovered
+                            ? "fas fa-times"
+                            : "fas fa-check"
+                          : "fas fa-plus"
+                      }
+                    />
+                  )}
+                  <span className="btn-text">
+                    {isCheckingLibrary
+                      ? " Loading..."
+                      : isInLibrary
+                        ? isBtnHovered
+                          ? " Remove"
+                          : " In Library"
+                        : " Add to Library"}
+                  </span>
+                </button>
               </div>
               <div className="game-info">
                 <h1>{movie.title}</h1>
@@ -196,25 +229,6 @@ function MovieDetails() {
                     )}
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <button
-                      className={`library-btn ${saved ? "library-btn--saved" : ""}`}
-                      onClick={handleAdd}
-                      title={saved ? "Added to library" : "Add to library"}
-                    >
-                      <Icon icon={saved ? "fa-check" : "fa-plus"} />
-                      <span style={{ marginLeft: 6 }}>
-                        {saved ? "Saved" : "Add to Library"}
-                      </span>
-                    </button>
-                    {saved && (
-                      <button
-                        className="unsave-btn"
-                        title="Remove from library"
-                        onClick={handleDelete}
-                      >
-                        <Icon icon="fa-times" />
-                      </button>
-                    )}
                   </div>
                 </div>
                 {movie.genres && movie.genres.length > 0 && (
@@ -377,6 +391,22 @@ function MovieDetails() {
           </button>
         </div>
       </main>
+      {showDialog && (
+        <div className="auth-dialog-overlay" onClick={closeDialog}>
+          <div className="auth-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Login Required</h3>
+            <p>You must be logged in to add games to your library.</p>
+            <div className="auth-dialog-buttons">
+              <button className="auth-dialog-btn cancel" onClick={closeDialog}>
+                Cancel
+              </button>
+              <button className="auth-dialog-btn login" onClick={goToLogin}>
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

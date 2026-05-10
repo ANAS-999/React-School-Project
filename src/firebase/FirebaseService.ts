@@ -81,6 +81,20 @@ export const addGameToLibrary = async (game: LibraryModel) => {
     console.error(error);
   }
 };
+export const checkIfMovieInLibrary = async (movieId: string | number): Promise<boolean> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return false;
+
+  try {
+    const docRef = doc(db, "users", user.uid, "Movies-Library", movieId.toString());
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
 
 export const checkIfGameInLibrary = async (gameId: string | number): Promise<boolean> => {
   const auth = getAuth();
