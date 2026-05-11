@@ -13,9 +13,11 @@ import SignUp from "./Sign/SignUp";
 import ResetPassword from "./Sign/ResetPassword";
 import NotFound from "./Pages/NotFound";
 import Library from "./Pages/Library";
+import ConfigError from "./Pages/ConfigError";
 
 import About from "./Pages/About";
 import { clearDiscoverCache } from "./utils/discoverCache";
+import { isFirebaseConfigured } from "./firebase/FirebaseConfig";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -47,6 +49,10 @@ function App() {
 
     prevPathRef.current = currPath;
   }, [location.pathname]);
+
+  if (!isFirebaseConfigured) {
+    return <ConfigError />;
+  }
 
   return (
     <>

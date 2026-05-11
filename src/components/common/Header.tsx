@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "./Icon";
 import "./Header.css";
 
-import { auth } from "../../firebase/FirebaseConfig";
+import { auth, isFirebaseConfigured } from "../../firebase/FirebaseConfig";
 import { useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
@@ -33,14 +33,15 @@ export const Header = () => {
   };
 
   useEffect(() => {
+    if (!isFirebaseConfigured || !auth) return;
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       console.log("User : " + u?.displayName);
-      
     });
     return unsubscribe;
   }, []);
   const handleSignOut = async () => {
+    if (!auth) return;
     try {
       await signOut(auth);
       setUserMenuOpen(false);
