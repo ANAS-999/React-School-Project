@@ -90,15 +90,31 @@ function MovieCard({ movie }: MovieCardProps) {
     <>
       <div className="game-card group" onClick={() => navigate(`/movies/${movie.id}`)}>
         <div className="game-card-inner">
-          <div className="game-card-image">
-            {movie.posterUrl ? (
-              <img src={movie.posterUrl} alt={movie.title} />
-            ) : (
-              <div className="game-card-placeholder">
-                <Icon icon="fa-film" size="2xl" />
-              </div>
-            )}
- <button 
+<div className="game-card-image">
+              {movie.posterUrl ? (
+                <div className="image-container">
+                  <img 
+                    src={movie.posterUrl} 
+                    alt={movie.title} 
+                    loading="lazy"
+                    onLoad={(e) => {
+                      (e.target as HTMLImageElement).classList.add('loaded');
+                    }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).parentElement?.classList.add('image-error');
+                    }}
+                  />
+                  <div className="game-card-placeholder loading-placeholder">
+                    <Icon icon="fa-film" size="2xl" />
+                  </div>
+                </div>
+              ) : (
+                <div className="game-card-placeholder">
+                  <Icon icon="fa-film" size="2xl" />
+                </div>
+              )}
+            <button
               className={`add-to-library-btn ${isInLibrary ? 'in-library' : ''} ${isLoading ? 'loading' : ''} ${isCheckingLibrary ? 'checking' : ''}`} 
               onClick={handleAddToLibrary} 
               onMouseEnter={() => setIsBtnHovered(true)}

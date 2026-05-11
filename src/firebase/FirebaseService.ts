@@ -40,9 +40,12 @@ export const fetchMovieToLibrary = async () => {
   const snapshot = await getDocs(
     collection(db, "users", user.uid, "Movies-Library"),
   );
-  return snapshot.docs.map((doc) => doc.id);
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    title: doc.data().title,
+    image: doc.data().image,
+  }));
 };
-
 export const removeMovieFromLibrary = async (movieId: string | number) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -59,6 +62,29 @@ export const removeMovieFromLibrary = async (movieId: string | number) => {
     console.error(error);
   }
 };
+export const checkIfMovieInLibrary = async (
+  movieId: string | number,
+): Promise<boolean> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return false;
+
+  try {
+    const docRef = doc(
+      db,
+      "users",
+      user.uid,
+      "Movies-Library",
+      movieId.toString(),
+    );
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const addGameToLibrary = async (game: LibraryModel) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -81,13 +107,21 @@ export const addGameToLibrary = async (game: LibraryModel) => {
     console.error(error);
   }
 };
-export const checkIfMovieInLibrary = async (movieId: string | number): Promise<boolean> => {
+export const checkIfGameInLibrary = async (
+  gameId: string | number,
+): Promise<boolean> => {
   const auth = getAuth();
   const user = auth.currentUser;
   if (!user) return false;
 
   try {
-    const docRef = doc(db, "users", user.uid, "Movies-Library", movieId.toString());
+    const docRef = doc(
+      db,
+      "users",
+      user.uid,
+      "Games-Library",
+      gameId.toString(),
+    );
     const docSnap = await getDoc(docRef);
     return docSnap.exists();
   } catch (error) {
@@ -95,22 +129,6 @@ export const checkIfMovieInLibrary = async (movieId: string | number): Promise<b
     return false;
   }
 };
-
-export const checkIfGameInLibrary = async (gameId: string | number): Promise<boolean> => {
-  const auth = getAuth();
-  const user = auth.currentUser;
-  if (!user) return false;
-
-  try {
-    const docRef = doc(db, "users", user.uid, "Games-Library", gameId.toString());
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists();
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
-
 export const removeGameFromLibrary = async (GameId: string | number) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -127,12 +145,11 @@ export const removeGameFromLibrary = async (GameId: string | number) => {
     console.error(error);
   }
 };
-
 export const fetchGameToLibrary = async (): Promise<LibraryModel[]> => {
   const auth = getAuth();
   const user = auth.currentUser;
   if (!user) return [];
-  
+
   const snapshot = await getDocs(
     collection(db, "users", user.uid, "Games-Library"),
   );
@@ -165,14 +182,21 @@ export const addAnimeTolibrary = async (anime: LibraryModel) => {
     console.error(error);
   }
 };
-
-export const checkIfAnimeInLibrary = async (animeId: string | number): Promise<boolean> => {
+export const checkIfAnimeInLibrary = async (
+  animeId: string | number,
+): Promise<boolean> => {
   const auth = getAuth();
   const user = auth.currentUser;
   if (!user) return false;
 
   try {
-    const docRef = doc(db, "users", user.uid, "Animes-Library", animeId.toString());
+    const docRef = doc(
+      db,
+      "users",
+      user.uid,
+      "Animes-Library",
+      animeId.toString(),
+    );
     const docSnap = await getDoc(docRef);
     return docSnap.exists();
   } catch (error) {
@@ -180,7 +204,6 @@ export const checkIfAnimeInLibrary = async (animeId: string | number): Promise<b
     return false;
   }
 };
-
 export const removeAnimeFromLibrary = async (AnimeId: string | number) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -197,12 +220,11 @@ export const removeAnimeFromLibrary = async (AnimeId: string | number) => {
     console.error(error);
   }
 };
-
 export const fetchAnimeToLibrary = async (): Promise<LibraryModel[]> => {
   const auth = getAuth();
   const user = auth.currentUser;
   if (!user) return [];
-  
+
   const snapshot = await getDocs(
     collection(db, "users", user.uid, "Animes-Library"),
   );

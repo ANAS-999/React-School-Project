@@ -17,6 +17,18 @@ import Library from "./Pages/Library";
 import About from "./Pages/About";
 import { clearDiscoverCache } from "./utils/discoverCache";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   const location = useLocation();
   const prevPathRef = useRef(location.pathname);
@@ -37,7 +49,9 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/library" element={<Library />} />
       <Route path="/about" element={<About />} />
@@ -52,6 +66,7 @@ function App() {
       <Route path="/signin/reset" element={<ResetPassword />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </>
   );
 }
 

@@ -157,6 +157,7 @@ if (!user) {
     <div>
       <Header />
       <main className="library-page">
+        <div className="library-hero"></div>
         <div className="container">
           <div className="library-header">
             <div className="library-header-content">
@@ -165,18 +166,21 @@ if (!user) {
                 <p>Your collection of games, movies, and anime</p>
               </div>
               <div className="library-stats">
-                <span className="stat-item">
-                  <Icon icon="fa-gamepad" />
-                  <strong>{counts.games}</strong> Games
-                </span>
-                <span className="stat-item">
-                  <Icon icon="fa-film" />
-                  <strong>{counts.movies}</strong> Movies
-                </span>
-                <span className="stat-item">
-                  <Icon icon="fa-tv" />
-                  <strong>{counts.animes}</strong> Anime
-                </span>
+                <div className="stat-item">
+                  <Icon icon="fa-solid fa-gamepad" />
+                  <strong>{counts.games}</strong>
+                  <span>Games</span>
+                </div>
+                <div className="stat-item">
+                  <Icon icon="fa-solid fa-film" />
+                  <strong>{counts.movies}</strong>
+                  <span>Movies</span>
+                </div>
+                <div className="stat-item">
+                  <Icon icon="fa-solid fa-tv" />
+                  <strong>{counts.animes}</strong>
+                  <span>Anime</span>
+                </div>
               </div>
             </div>
           </div>
@@ -187,7 +191,7 @@ if (!user) {
                 className={`tab-btn ${activeTab === "games" ? "active" : ""}`}
                 onClick={() => setActiveTab("games")}
               >
-                <Icon icon="fa-gamepad" />
+                <Icon icon="fa-solid fa-gamepad" />
                 <span>Games</span>
                 {counts.games > 0 && <span className="tab-count">{counts.games}</span>}
               </button>
@@ -195,7 +199,7 @@ if (!user) {
                 className={`tab-btn ${activeTab === "movies" ? "active" : ""}`}
                 onClick={() => setActiveTab("movies")}
               >
-                <Icon icon="fa-film" />
+                <Icon icon="fa-solid fa-film" />
                 <span>Movies</span>
                 {counts.movies > 0 && <span className="tab-count">{counts.movies}</span>}
               </button>
@@ -203,8 +207,8 @@ if (!user) {
                 className={`tab-btn ${activeTab === "animes" ? "active" : ""}`}
                 onClick={() => setActiveTab("animes")}
               >
-                <Icon icon="fa-tv" />
-                <span>Animes</span>
+                <Icon icon="fa-solid fa-tv" />
+                <span>Anime</span>
                 {counts.animes > 0 && <span className="tab-count">{counts.animes}</span>}
               </button>
             </div>
@@ -288,11 +292,30 @@ if (!user) {
                   <div className="game-card-inner">
                     <div className="game-card-image">
                       {item.image ? (
-                        <img src={item.image} alt={item.title} loading="lazy" />
+                        <div className="image-container">
+                          <img 
+                            src={item.image} 
+                            alt={item.title} 
+                            loading="lazy"
+                            onLoad={(e) => {
+                              (e.target as HTMLImageElement).classList.add('loaded');
+                            }}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              (e.target as HTMLImageElement).parentElement?.classList.add('image-error');
+                            }}
+                          />
+                          <div className="game-card-placeholder loading-placeholder">
+                            <Icon
+                              icon={item.type === "games" ? "fa-solid fa-gamepad" : item.type === "movies" ? "fa-solid fa-film" : "fa-solid fa-tv"}
+                              size="2xl"
+                            />
+                          </div>
+                        </div>
                       ) : (
                         <div className="game-card-placeholder">
                           <Icon
-                            icon={item.type === "games" ? "fa-gamepad" : item.type === "movies" ? "fa-film" : "fa-tv"}
+                            icon={item.type === "games" ? "fa-solid fa-gamepad" : item.type === "movies" ? "fa-solid fa-film" : "fa-solid fa-tv"}
                             size="2xl"
                           />
                         </div>
@@ -313,17 +336,11 @@ if (!user) {
                       </div>
 
                       <div className="card-type-badge">
-                        <Icon icon={item.type === "games" ? "fa-gamepad" : item.type === "movies" ? "fa-film" : "fa-tv"} />
+                        <Icon icon={item.type === "games" ? "fa-solid fa-gamepad" : item.type === "movies" ? "fa-solid fa-film" : "fa-solid fa-tv"} />
                       </div>
                     </div>
 
-                    <div className="game-card-content">
-                      <h3 className="game-card-title">{item.title}</h3>
-                      <div className="game-card-info">
-                        {/* show a simple label for type on the right */}
-                        <span className="game-card-genre">{item.type === "games" ? "Game" : item.type === "movies" ? "Movie" : "Anime"}</span>
-                      </div>
-                    </div>
+                    <h3 className="library-card-title">{item.title}</h3>
                   </div>
                 </div>
               ))}

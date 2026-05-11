@@ -86,7 +86,7 @@ class GamesAPI {
 
       const listGames: GameModel[] = this.mapResponseToGameModel(rawData);
       console.log(listGames.length);
-      
+
       return listGames;
     } catch (error) {
       console.error("Fetch error:", error);
@@ -101,7 +101,6 @@ class GamesAPI {
         headers: this.apiConfig.getHeaders(),
         body: this.getGameByIdQuery(id),
       });
-      
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -139,15 +138,32 @@ class GamesAPI {
 
       // Detail fields
       storyline: game.storyline || null,
-      screenshots: game.screenshots ? game.screenshots.map((s: any) => s.image_id) : [],
-      videos: game.videos ? game.videos.map((v: any) => ({ name: v.name, videoId: v.video_id })) : [],
-      developers: game.involved_companies ? game.involved_companies.filter((c: any) => c.developer).map((c: any) => c.company.name) : [],
-      publishers: game.involved_companies ? game.involved_companies.filter((c: any) => c.publisher).map((c: any) => c.company.name) : [],
-      similarGames: game.similar_games ? game.similar_games.map((sg: any) => ({
-        id: sg.id,
-        title: sg.name,
-        imageId: sg.cover?.image_id || null
-      })) : [],
+      screenshots: game.screenshots
+        ? game.screenshots.map((s: any) => s.image_id)
+        : [],
+      websites: game.websites
+        ? game.websites.map((w: any) => ({ type: w.type, url: w.url, trusted: w.trusted }))
+        : [],
+      videos: game.videos
+        ? game.videos.map((v: any) => ({ name: v.name, videoId: v.video_id }))
+        : [],
+      developers: game.involved_companies
+        ? game.involved_companies
+            .filter((c: any) => c.developer)
+            .map((c: any) => c.company.name)
+        : [],
+      publishers: game.involved_companies
+        ? game.involved_companies
+            .filter((c: any) => c.publisher)
+            .map((c: any) => c.company.name)
+        : [],
+      similarGames: game.similar_games
+        ? game.similar_games.map((sg: any) => ({
+            id: sg.id,
+            title: sg.name,
+            imageId: sg.cover?.image_id || null,
+          }))
+        : [],
     }));
   }
 
@@ -164,9 +180,6 @@ class GamesAPI {
     const offset = `offset ${gameFilter.offset || 0};`;
     const sort = "sort total_rating_count desc;";
     const whereParts: string[] = ["cover != null"];
-
-    console.log(gameFilter);
-    
 
     if (gameFilter.title) {
       whereParts.push(`name ~ *"${gameFilter.title}"*`);
@@ -189,24 +202,28 @@ class GamesAPI {
     }
 
     if (gameFilter.year) {
-      const startOfYear = Math.floor(new Date(`${gameFilter.year}-01-01T00:00:00Z`).getTime() / 1000);
-      const endOfYear = Math.floor(new Date(`${gameFilter.year}-12-31T23:59:59Z`).getTime() / 1000);
+      const startOfYear = Math.floor(
+        new Date(`${gameFilter.year}-01-01T00:00:00Z`).getTime() / 1000,
+      );
+      const endOfYear = Math.floor(
+        new Date(`${gameFilter.year}-12-31T23:59:59Z`).getTime() / 1000,
+      );
       whereParts.push(`first_release_date >= ${startOfYear}`);
       whereParts.push(`first_release_date <= ${endOfYear}`);
     }
 
     const where = `where ${whereParts.join(" & ")};`;
-    const fields = "fields id, name, cover.image_id, rating, first_release_date, genres.name, platforms.name, summary, category;";
+    const fields =
+      "fields id, name, cover.image_id, rating, first_release_date, genres.name, platforms.name, summary, category;";
     const query = where + fields + sort + limit + offset;
 
     console.log(query);
-    
 
     return query;
   }
 
-  private getGameByIdQuery(id:number){
-    return `fields name, summary, storyline, first_release_date, rating, cover.image_id, screenshots.image_id, videos.name, videos.video_id, genres.name, platforms.name, involved_companies.developer, involved_companies.publisher, involved_companies.company.name, similar_games.name, similar_games.cover.image_id, category; where id = ${id};`
+  private getGameByIdQuery(id: number) {
+    return `fields name, summary, storyline, first_release_date, rating, cover.image_id, screenshots.image_id, videos.name, videos.video_id, genres.name, platforms.name, involved_companies.developer, involved_companies.publisher, involved_companies.company.name, similar_games.name, similar_games.cover.image_id, category, websites.url, websites.type, websites.trusted; where id = ${id};`;
   }
 }
 

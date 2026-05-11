@@ -3,9 +3,11 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
+import VerifiedBadge from "../components/common/VerifiedBadge";
+import { YouTubeVideo } from "../components/common/YouTubeVideo";
 import GamesAPI from "../api/games_api";
 import { getGameImageUrl } from "../utils/imageUtils";
-import { GameImageSize } from "../types";
+import { GAME_WEBSITES_DATA, GameImageSize, GameWebsite } from "../types";
 import type { GameModel } from "../models/GameModel";
 import {
   addGameToLibrary,
@@ -15,6 +17,38 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import type { LibraryModel } from "../models/LibraryModel";
 import "./GameDetails.css";
+
+const PLATFORM_ICKS: Record<string, string> = {
+  PC: "fa-brands fa-windows",
+  "PC (Windows)": "fa-brands fa-windows",
+  PlayStation: "fa-brands fa-playstation",
+  "PlayStation 5": "fa-brands fa-playstation",
+  "PlayStation 4": "fa-brands fa-playstation",
+  "PlayStation 3": "fa-brands fa-playstation",
+  "PlayStation 2": "fa-brands fa-playstation",
+  "PlayStation 1": "fa-brands fa-playstation",
+  Xbox: "fa-brands fa-xbox",
+  "Xbox Series X": "fa-brands fa-xbox",
+  "Xbox Series S": "fa-brands fa-xbox",
+  "Xbox One": "fa-brands fa-xbox",
+  "Xbox 360": "fa-brands fa-xbox",
+  "Xbox 180": "fa-brands fa-xbox",
+  Nintendo: "fa-solid fa-gamepad",
+  Switch: "fa-solid fa-gamepad",
+  "Nintendo Switch": "fa-solid fa-gamepad",
+  Wii: "fa-solid fa-gamepad",
+  WiiU: "fa-solid fa-gamepad",
+  "GameCube": "fa-solid fa-gamepad",
+  "Nintendo 3DS": "fa-solid fa-gamepad",
+  "Nintendo DS": "fa-solid fa-gamepad",
+  iOS: "fa-brands fa-apple",
+  Android: "fa-brands fa-android",
+  Linux: "fa-brands fa-linux",
+  macOS: "fa-brands fa-apple",
+  "Mac OS": "fa-brands fa-apple",
+  Web: "fa-solid fa-globe",
+  Browser: "fa-solid fa-globe",
+};
 
 function GameDetails() {
   const { id } = useParams<{ id: string }>();
@@ -61,12 +95,13 @@ function GameDetails() {
 
   useEffect(() => {
     if (!game) return;
+    console.log(game.websites);
 
     const checkLibrary = async () => {
       setIsCheckingLibrary(true);
       const auth = getAuth();
       const user = auth.currentUser;
-      
+
       if (user) {
         const inLibrary = await checkIfGameInLibrary(game.id);
         setIsInLibrary(inLibrary);
@@ -190,9 +225,18 @@ function GameDetails() {
             <div className="overlay"></div>
           </div>
           <div className="container">
-            <Link to="/discover" className="back-link">
-              <Icon icon="fa-arrow-left" /> Back to Discover
-            </Link>
+            <button 
+              className="back-link"
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  navigate('/discover');
+                }
+              }}
+            >
+              <Icon icon="fa-arrow-left" /> Back
+            </button>
             <div className="game-hero-content">
               <div className="game-cover">
                 {game.imageId ? (
@@ -205,39 +249,6 @@ function GameDetails() {
                     <Icon icon="fa-gamepad" size="2xl" />
                   </div>
                 )}
-                <button
-                  className={`add-to-library-btn cover-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
-                  onClick={handleAddToLibrary}
-                  onMouseEnter={() => setIsBtnHovered(true)}
-                  onMouseLeave={() => setIsBtnHovered(false)}
-                  title={
-                    isInLibrary ? "Remove from Library" : "Add to Library"
-                  }
-                  disabled={isLoading || isCheckingLibrary}
-                >
-                  {isLoading || isCheckingLibrary ? (
-                    <Icon icon="fas fa-spinner fa-spin" />
-                  ) : (
-                    <Icon
-                      icon={
-                        isInLibrary
-                          ? isBtnHovered
-                            ? "fas fa-times"
-                            : "fas fa-check"
-                          : "fas fa-plus"
-                      }
-                    />
-                  )}
-                  <span className="btn-text">
-                    {isCheckingLibrary
-                      ? " Loading..."
-                      : isInLibrary
-                        ? isBtnHovered
-                          ? " Remove"
-                          : " In Library"
-                        : " Add to Library"}
-                  </span>
-                </button>
               </div>
               <div className="game-info">
                 <h1>{game.title}</h1>
@@ -260,15 +271,75 @@ function GameDetails() {
                         {g}
                       </span>
                     ))}
-                  </div>
+</div>
                 )}
-                {game.platforms && game.platforms.length > 0 && (
-                  <div className="game-platforms-list">
-                    {game.platforms.map((p) => (
-                      <span key={p} className="platform-badge">
-                        {p}
+{game && (
+                  <div className="game-hero-websites">
+                    <div className="game-hero-btns-group">
+                      {game.websites &&
+                        game.websites
+                          .filter(
+                            (w) =>
+                              w.type === GameWebsite.Steam ||
+                              w.type === GameWebsite.EpicGames,
+                          )
+                          .map((w) => (
+                            <a
+                              key={w.type}
+                              href={w.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hero-website-btn"
+                            >
+                              <Icon
+                                icon={
+                                  GAME_WEBSITES_DATA[w.type]?.iconClass ||
+                                  "fa-solid fa-gamepad"
+                                }
+                              />
+                              <span>
+                                {GAME_WEBSITES_DATA[w.type]?.title || "Store"}
+                              </span>
+                              <Icon
+                                icon="fa-solid fa-arrow-up-right-from-square"
+                                className="btn-icon"
+                              />
+                            </a>
+                          ))}
+                    </div>
+                    <button
+                      className={`add-to-library-details-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
+                      onClick={handleAddToLibrary}
+                      onMouseEnter={() => setIsBtnHovered(true)}
+                      onMouseLeave={() => setIsBtnHovered(false)}
+                      title={
+                        isInLibrary ? "Remove from Library" : "Add to Library"
+                      }
+                      disabled={isLoading || isCheckingLibrary}
+                    >
+                      {isLoading || isCheckingLibrary ? (
+                        <Icon icon="fas fa-spinner fa-spin" />
+                      ) : (
+                        <Icon
+                          icon={
+                            isInLibrary
+                              ? isBtnHovered
+                                ? "fas fa-times"
+                                : "fas fa-check"
+                              : "fas fa-plus"
+                          }
+                        />
+                      )}
+                      <span className="btn-text">
+                        {isCheckingLibrary
+                          ? " Loading..."
+                          : isInLibrary
+                            ? isBtnHovered
+                              ? " Remove"
+                              : " In Library"
+                            : " Add to Library"}
                       </span>
-                    ))}
+                    </button>
                   </div>
                 )}
               </div>
@@ -297,24 +368,18 @@ function GameDetails() {
                 <h2>Videos & Trailers</h2>
                 <div className="videos-grid">
                   <div className="video-wrapper video-main">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${game.videos[0].videoId}`}
+                    <YouTubeVideo
+                      videoId={game.videos[0].videoId}
                       title={game.videos[0].name}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
+                    />
                     <p className="video-title">{game.videos[0].name}</p>
                   </div>
                   {game.videos.slice(1).map((video) => (
                     <div key={video.videoId} className="video-wrapper">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${video.videoId}`}
+                      <YouTubeVideo
+                        videoId={video.videoId}
                         title={video.name}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
+                      />
                       <p className="video-title">{video.name}</p>
                     </div>
                   ))}
@@ -356,8 +421,55 @@ function GameDetails() {
                 </div>
               </section>
             )}
+
+            {game.websites && game.websites.filter(w => ![GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any)).length > 0 && (
+              <section className="media-section websites-section">
+                <h2>Websites & Socials</h2>
+                <div className="websites-grid">
+                  {game.websites
+                    .filter(w => ![GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any))
+                    .map((w) => (
+                    <a
+                      key={w.type}
+                      href={w.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="website-btn"
+                    >
+                      <Icon
+                        icon={
+                          GAME_WEBSITES_DATA[w.type]?.iconClass ||
+                          "fa-solid fa-link"
+                        }
+                      />
+                      <span className="website-name">
+                        {GAME_WEBSITES_DATA[w.type]?.title || "Website"}
+                      </span>
+                      {w.trusted && <VerifiedBadge />}
+                      <Icon
+                        icon="fa-solid fa-arrow-up-right-from-square"
+                        className="external-link-icon"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
           <div className="side-col">
+            {game.platforms && game.platforms.length > 0 && (
+              <div className="info-card platforms-card">
+                <h3>Platforms</h3>
+                <div className="platforms-grid">
+                  {game.platforms.map((p) => (
+                    <span key={p} className="platform-badge">
+                      <Icon icon={PLATFORM_ICKS[p] || "fa-solid fa-gamepad"} />
+                      <span className="platform-name">{p}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="info-card">
               <h3>Quick Facts</h3>
               <div className="fact-list">
@@ -391,6 +503,38 @@ function GameDetails() {
                 )}
               </div>
             </div>
+            {game.websites && game.websites.filter(w => [GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any)).length > 0 && (
+              <div className="info-card stores-card">
+                <h3>Buy From</h3>
+                <div className="stores-grid">
+                  {game.websites
+                    .filter(w => [GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any))
+                    .map((w) => (
+                      <a
+                        key={w.type}
+                        href={w.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="store-btn"
+                      >
+                        <div className="store-icon-wrapper">
+                          <Icon
+                            icon={
+                              GAME_WEBSITES_DATA[w.type]?.iconClass ||
+                              "fa-solid fa-store"
+                            }
+                          />
+                        </div>
+                        <span className="store-name">
+                          {GAME_WEBSITES_DATA[w.type]?.title || "Store"}
+                        </span>
+                        {w.trusted && <VerifiedBadge />}
+                        <Icon icon="fa-solid fa-chevron-right" className="store-action-icon" />
+                      </a>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -401,22 +545,30 @@ function GameDetails() {
               {game.similarGames.map((similar) => (
                 <Link
                   to={`/games/${similar.id}`}
-                  key={similar.id}
+key={similar.id}
                   className="similar-game-card group"
                 >
                   <div className="similar-game-image">
-                    {similar.imageId ? (
-                      <img
-                        src={getGameImageUrl(similar.imageId, GameImageSize.HD)}
-                        alt={similar.title}
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="placeholder">
-                        <Icon icon="fa-gamepad" />
-                      </div>
-                    )}
-                  </div>
+                      {similar.imageId ? (
+                        <div className="image-container">
+                          <img
+                            src={getGameImageUrl(similar.imageId, GameImageSize.HD)}
+                            alt={similar.title}
+                            loading="lazy"
+                            onLoad={(e) => {
+                              (e.target as HTMLImageElement).classList.add('loaded');
+                            }}
+                          />
+                          <div className="placeholder loading-placeholder">
+                            <Icon icon="fa-gamepad" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="placeholder">
+                          <Icon icon="fa-gamepad" />
+                        </div>
+                      )}
+                    </div>
                   <div className="similar-game-info">
                     <h4>{similar.title}</h4>
                   </div>

@@ -105,7 +105,23 @@ return (
         <div className="game-card-inner">
           <div className="game-card-image">
             {game.imageId ? (
-              <img src={getGameImageUrl(game.imageId, GameImageSize.FHD)} alt={game.title} />
+              <div className="image-container">
+                <img 
+                  src={getGameImageUrl(game.imageId, GameImageSize.FHD)} 
+                  alt={game.title} 
+                  loading="lazy"
+                  onLoad={(e) => {
+                    (e.target as HTMLImageElement).classList.add('loaded');
+                  }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    (e.target as HTMLImageElement).parentElement?.classList.add('image-error');
+                  }}
+                />
+                <div className="game-card-placeholder loading-placeholder">
+                  <Icon icon="fa-gamepad" size="2xl" />
+                </div>
+              </div>
             ) : (
               <div className="game-card-placeholder">
                 <Icon icon="fa-gamepad" size="2xl" />

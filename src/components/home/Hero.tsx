@@ -117,25 +117,37 @@ export const Hero = () => {
         buttons.forEach((btn) => {
           btn.addEventListener("mousemove", (e) => {
             const rect = btn.getBoundingClientRect();
-            const x = gsap.utils.mapRange(rect.left, rect.right, -rect.width / 2, rect.width / 2, e.clientX);
-            const y = gsap.utils.mapRange(rect.top, rect.bottom, -rect.height / 2, rect.height / 2, e.clientY);
+            const x = gsap.utils.mapRange(
+              rect.left,
+              rect.right,
+              -rect.width / 2,
+              rect.width / 2,
+              e.clientX,
+            );
+            const y = gsap.utils.mapRange(
+              rect.top,
+              rect.bottom,
+              -rect.height / 2,
+              rect.height / 2,
+              e.clientY,
+            );
 
             gsap.to(btn, {
               x: x * strength,
               y: y * strength,
               duration: 0.4,
               ease: "power2.out",
-              overwrite: "auto"
+              overwrite: "auto",
             });
           });
 
           btn.addEventListener("mouseleave", () => {
-            gsap.to(btn, { 
-              x: 0, 
+            gsap.to(btn, {
+              x: 0,
               y: 0,
               duration: 0.7,
               ease: "elastic.out(1, 0.4)",
-              overwrite: "auto"
+              overwrite: "auto",
             });
           });
         });
@@ -155,19 +167,18 @@ export const Hero = () => {
             <div className="grid-pattern"></div>
           </div>
 
-           <div className="hero-spline-wrapper">
-             <Suspense fallback={<SplineLoader />}>
-               <Spline
-                 scene="https://prod.spline.design/ZwrSyBnr9WFV6PSL/scene.splinecode"
-                 onLoad={(spline) => {
-                   splineRef.current = spline;
-                   setSplineLoaded(true);
-                 }}
-                 style={{ width: "100%", height: "100%", maxWidth: "100%" }}
-               />
-             </Suspense>
-           </div>
-
+          <div className="hero-spline-wrapper">
+            <Suspense fallback={<SplineLoader />}>
+              <Spline
+                scene="https://prod.spline.design/ZwrSyBnr9WFV6PSL/scene.splinecode"
+                onLoad={(spline) => {
+                  splineRef.current = spline;
+                  setSplineLoaded(true);
+                }}
+                style={{ width: "100%", height: "100%", maxWidth: "100%" }}
+              />
+            </Suspense>
+          </div>
 
           <div className="container">
             <div className="hero-content-wrapper">
@@ -178,55 +189,62 @@ export const Hero = () => {
 
                 <p className="hero-subtitle">
                   Stop jumping between different apps to manage your media. Keep
-                  your entire catalog perfectly synced and beautifully displayed.
+                  your entire catalog perfectly synced and beautifully
+                  displayed.
                 </p>
 
-               <div className="hero-stats">
-                 <div className="stat-item">
-                   <span className="stat-value">430K+</span>
-                   <span className="stat-label">Games</span>
-                 </div>
-                 <div className="stat-divider"></div>
-                 <div className="stat-item">
-                   <span className="stat-value">1.25M+</span>
-                   <span className="stat-label"><span className="mobile-hide">Movies / Series</span><span className="mobile-show">Movies</span></span>
-                 </div>
-                 <div className="stat-divider"></div>
-                 <div className="stat-item">
-                   <span className="stat-value">97K+</span>
-                   <span className="stat-label"><span className="mobile-hide">Animes / Manga</span><span className="mobile-show">Animes</span></span>
-                 </div>
-               </div>
+                <div className="hero-stats">
+                  <div className="stat-item">
+                    <span className="stat-value">430K+</span>
+                    <span className="stat-label">Games</span>
+                  </div>
+                  <div className="stat-divider"></div>
+                  <div className="stat-item">
+                    <span className="stat-value">1.25M+</span>
+                    <span className="stat-label">
+                      <span className="mobile-hide">Movies / Series</span>
+                      <span className="mobile-show">Movies</span>
+                    </span>
+                  </div>
+                  <div className="stat-divider"></div>
+                  <div className="stat-item">
+                    <span className="stat-value">97K+</span>
+                    <span className="stat-label">
+                      <span className="mobile-hide">Animes / Manga</span>
+                      <span className="mobile-show">Animes</span>
+                    </span>
+                  </div>
+                </div>
 
-              <div className="hero-buttons">
-                <button
-                  className="btn btn-primary btn-large"
-                  onClick={() =>
-                    document
-                      .getElementById("games")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  <Icon icon="fa-compass" />
-                  Start Exploring
-                </button>
-                <button
-                  className="btn btn-outline btn-large"
-                  onClick={() =>
-                    document
-                      .getElementById("benefits")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  <Icon icon="fa-play" />
-                  See How It Works
-                </button>
+                <div className="hero-buttons">
+                  <button
+                    className="btn btn-primary btn-large"
+                    onClick={() =>
+                      document
+                        .getElementById("games")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                  >
+                    <Icon icon="fa-compass" />
+                    Start Exploring
+                  </button>
+                  <button
+                    className="btn btn-outline btn-large"
+                    onClick={() =>
+                      document
+                        .getElementById("benefits")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                  >
+                    <Icon icon="fa-play" />
+                    See How It Works
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        </div>
-        
+
         <div className="scroll-hint">
           <div className="scroll-mouse">
             <div className="scroll-wheel"></div>

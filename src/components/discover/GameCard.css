@@ -64,12 +64,25 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s ease, opacity 0.3s ease;
   display: block;
+  opacity: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.game-card-image img.loaded {
+  opacity: 1;
 }
 
 .game-card:hover .game-card-image img {
   transform: scale(1.1);
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .game-card-placeholder {
@@ -78,7 +91,44 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.15) 0%, rgba(30, 30, 40, 0.8) 100%);
   color: var(--text-tertiary);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(123, 97, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(123, 97, 255, 0.1) 0%, transparent 50%);
+}
+
+.loading-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.image-error .loading-placeholder {
+  z-index: 2;
+}
+
+.placeholder-title {
+  position: relative;
+  z-index: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
 }
 
 .add-to-library-btn {

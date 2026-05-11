@@ -18,19 +18,11 @@
 
 .game-details-page.loading,
 .game-details-page.error {
-  @media (max-width: 768px) {
-    padding-top: 70px;
-  }
-}
-
-.game-details-page.loading,
-.game-details-page.error {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 100px 20px;
-  min-height: calc(100vh - 180px);
+  min-height: 100vh;
 }
 
 .game-details-page .error-content {
@@ -45,7 +37,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -79,7 +72,7 @@
   display: flex;
   align-items: flex-end;
   padding: 60px 0;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 
   @media (max-width: 768px) {
     padding-top: 70px;
@@ -132,6 +125,11 @@
   font-weight: 600;
   margin-bottom: 30px;
   transition: color 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 0;
 }
 
 .back-link:hover {
@@ -222,12 +220,155 @@
 }
 
 .platform-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.platforms-card .platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.stores-card .stores-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.store-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.store-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: all 0.6s ease;
+}
+
+.store-btn:hover::before {
+  left: 150%;
+}
+
+.store-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.store-icon-wrapper i {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: transform 0.3s ease;
+}
+
+.store-name {
+  flex-grow: 1;
+  transition: color 0.3s ease;
+}
+
+.store-action-icon {
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.store-btn:hover {
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.15) 0%, rgba(123, 97, 255, 0.05) 100%);
+  border-color: rgba(123, 97, 255, 0.5);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(123, 97, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.store-btn:hover .store-icon-wrapper {
+  background: var(--primary-color, rgba(123, 97, 255, 0.3));
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 0 12px rgba(123, 97, 255, 0.4);
+}
+
+.store-btn:hover .store-icon-wrapper i {
+  color: #fff;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+}
+
+.store-btn:hover .store-name {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.store-btn:hover .store-action-icon {
+  color: #fff !important;
+  transform: translateX(4px) scale(1.2);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
+
+.store-btn .verified-badge-svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.platform-badge .fa-gamepad,
+.platform-badge .fa-windows,
+.platform-badge .fa-playstation,
+.platform-badge .fa-xbox,
+.platform-badge .fa-apple,
+.platform-badge .fa-android,
+.platform-badge .fa-linux,
+.platform-badge .fa-globe {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.game-platforms-section {
+  padding: 0 0 24px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 40px;
+}
+
+.game-platforms-section .platforms-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
 }
 
 .game-content {
@@ -240,6 +381,8 @@
 .about-section h2 {
   font-size: 2rem;
   margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .about-section {
@@ -269,6 +412,10 @@
 }
 
 .section-subtitle {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
   font-size: 1.5rem;
   margin: 30px 0 16px;
 }
@@ -577,7 +724,30 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s ease, opacity 0.3s ease;
+  opacity: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.similar-game-image img.loaded {
+  opacity: 1;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.15) 0%, rgba(30, 30, 40, 0.8) 100%);
+  z-index: 0;
 }
 
 .similar-game-card:hover .similar-game-image img {
@@ -590,8 +760,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.15) 0%, rgba(30, 30, 40, 0.8) 100%);
   color: var(--text-tertiary);
   font-size: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.similar-game-image .placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(123, 97, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(123, 97, 255, 0.1) 0%, transparent 50%);
+}
+
+.similar-game-image .placeholder i {
+  position: relative;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.placeholder-title {
+  position: relative;
+  z-index: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
 }
 
 .similar-game-info {
@@ -837,47 +1040,60 @@
 }
 
 /* Add to Library Button - Cover */
-.game-details-page .add-to-library-btn.cover-btn {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 24px);
+.game-details-page .add-to-library-details-btn {
+  width: 200px;
+  position: static;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: rgba(0, 0, 0, 0.562);
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.2) 0%, rgba(123, 97, 255, 0.08) 100%);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: var(--text-primary);
+  border: 1px solid rgba(123, 97, 255, 0.4);
+  border-radius: 12px;
+  color: #fff;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 15px rgba(123, 97, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-.game-details-page .add-to-library-btn.cover-btn:hover {
-  background: rgba(59, 131, 246, 0.068);
-  transform: translateX(-50%) scale(1.02);
+.game-details-page .add-to-library-details-btn:hover {
+background: linear-gradient(135deg, rgba(123, 97, 255, 0.35) 0%, rgba(123, 97, 255, 0.2) 100%);
+  border-color: rgba(123, 97, 255, 0.7);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(123, 97, 255, 0.3), 0 0 20px rgba(123, 97, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.game-details-page .add-to-library-btn.cover-btn:disabled,
-.game-details-page .add-to-library-btn.cover-btn.disabled {
+.game-details-page .add-to-library-details-btn.in-library {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.game-details-page .add-to-library-details-btn.in-library:hover {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0.1) 100%);
+  border-color: rgba(239, 68, 68, 0.6);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2), 0 0 20px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.game-details-page .add-to-library-details-btn:disabled,
+.game-details-page .add-to-library-details-btn.disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.game-details-page .add-to-library-btn.cover-btn.in-library {
+.game-details-page .add-to-library-details-btn.in-library {
   color: rgb(202, 255, 237);
   background: rgba(16, 185, 129, 0.144);
   border-color: rgba(16, 185, 129, 0.4);
 }
 
-.game-details-page .add-to-library-btn.cover-btn.in-library:hover {
+.game-details-page .add-to-library-details-btn.in-library:hover {
   color: rgb(255, 193, 193);
   background: rgba(239, 68, 68, 0.034);
   border-color: rgba(239, 68, 68, 0.4);
@@ -888,7 +1104,7 @@
 }
 
 @media (max-width: 900px) {
-  .game-details-page .add-to-library-btn.cover-btn {
+  .game-details-page .add-to-library-details-btn {
     position: static;
     transform: none;
     width: 100%;
@@ -969,4 +1185,217 @@
 
 .game-details-page .auth-dialog-btn.login:hover {
   background: var(--blue-light);
+}
+
+.game-hero-websites {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game-hero-websites .game-hero-btns-group {
+  display: flex;
+  gap: 12px;
+}
+
+.game-hero-websites .add-to-library-details-btn {
+  margin-left: auto;
+}
+
+.website-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(20, 20, 25, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #e2e2e2;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  justify-content: space-between;
+}
+
+.website-btn .website-name {
+  flex-grow: 1;
+}
+
+.website-btn i:first-child {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  transition: transform 0.3s ease;
+}
+
+.external-link-icon {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  margin-left: 4px;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease !important;
+}
+
+.website-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  color: #fff;
+  box-shadow:
+    0 8px 15px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(123, 97, 255, 0.1);
+}
+
+.website-btn:hover i:first-child {
+  transform: scale(1.1);
+}
+
+.website-btn:hover .external-link-icon {
+  color: rgba(255, 255, 255, 0.8) !important;
+  transform: translate(2px, -2px) !important;
+}
+
+.hero-website-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.2) 0%, rgba(123, 97, 255, 0.08) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(123, 97, 255, 0.4);
+  border-radius: 12px;
+  color: #fff !important;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 15px rgba(123, 97, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.hero-website-btn i:first-child {
+  font-size: 1.1rem;
+  color: #fff !important;
+}
+
+.hero-website-btn:hover {
+  background: linear-gradient(135deg, rgba(123, 97, 255, 0.35) 0%, rgba(123, 97, 255, 0.2) 100%) !important;
+  border-color: rgba(123, 97, 255, 0.7) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(123, 97, 255, 0.3), 0 0 20px rgba(123, 97, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.hero-website-btn:hover span,
+.hero-website-btn:hover i {
+  color: #fff !important;
+}
+
+.hero-website-btn:hover i:first-child {
+  transform: scale(1.1);
+}
+
+.hero-website-btn:hover .btn-icon {
+  color: #fff !important;
+  transform: translate(2px, -2px);
+}
+
+.hero-website-btn .btn-icon {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.websites-section .websites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.game-hero-websites {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.website-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(20, 20, 25, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #e2e2e2;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  justify-content: space-between;
+}
+
+.website-btn .website-name {
+  flex-grow: 1;
+}
+
+.website-btn i:first-child {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  transition: transform 0.3s ease;
+}
+
+.external-link-icon {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  margin-left: 4px;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease !important;
+}
+
+.website-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  color: #fff;
+  box-shadow:
+    0 8px 15px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(123, 97, 255, 0.1);
+}
+
+.website-btn:hover i:first-child {
+  transform: scale(1.1);
+}
+
+.website-btn:hover .external-link-icon {
+  color: rgba(255, 255, 255, 0.8) !important;
+  transform: translate(2px, -2px) !important;
+}
+
+.websites-section {
+  width: 100%;
+}
+
+.verified-badge-svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.hero-website-btn .verified-badge-svg {
+  width: 18px;
+  height: 18px;
 }

@@ -83,7 +83,9 @@ function Discover() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 500);
+      console.log(window.scrollY);
+      
+      setShowScrollTop(window.scrollY > 1500);
       discoverCache.scrollY = window.scrollY; // Update cache with scroll position continuously
     };
     
