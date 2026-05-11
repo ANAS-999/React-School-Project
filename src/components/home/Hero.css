@@ -376,9 +376,9 @@
 .hero-stats {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 8px;
   margin-bottom: 32px;
-  padding: 20px 28px;
+  padding: 8px 16px;
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
