@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Icon } from "../common/Icon";
 import "./DiscoverHero.css";
 
 interface AnimeHeroProps {

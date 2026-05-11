@@ -1,14 +1,13 @@
 import { sendPasswordResetEmail } from "firebase/auth";
-import React from "react";
 import {auth} from "../firebase/FirebaseConfig" 
 import "./ResetPassword.css"
 
 
 export default function ResetPassword(){
-    const handleSubmit=async(e)=>{
+    const handleSubmit=async(e: React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault()
-        const emailVal=e.target.email.value;
-        sendPasswordResetEmail(auth,emailVal).then(data=>{
+        const emailVal=(e.target as HTMLFormElement).email.value;
+        sendPasswordResetEmail(auth,emailVal).then(()=>{
             alert("checkyour Email")
         }).catch(err=>{
             alert(err.code)

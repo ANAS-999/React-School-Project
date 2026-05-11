@@ -1,8 +1,7 @@
-import { useState, type FormEventHandler, type ReactEventHandler } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, githubProvider } from '../firebase/FirebaseConfig'; // T-aked mn smiyat l-folder
-import { GoogleAuthProvider, signInWithEmailAndPassword,signInWithPopup ,GithubAuthProvider} from 'firebase/auth';
-import { Icon } from '../components/common/Icon';
+import { GoogleAuthProvider, signInWithEmailAndPassword,signInWithPopup } from 'firebase/auth';
 import './SignIn.css';
 
 
@@ -35,7 +34,7 @@ export const SignIn = () => {
       }
   }
 
-   const handleGoogle = async (e) => {
+   const handleGoogle = async (e: React.MouseEvent) => {
       e.preventDefault();
 
     try {
@@ -49,7 +48,7 @@ export const SignIn = () => {
     console.log(error);
   }
 }
-  const handleGithub =async(e)=>{
+  const handleGithub =async()=>{
     console.log("Provider check",githubProvider);
     try{
       const result =await signInWithPopup(auth,githubProvider);

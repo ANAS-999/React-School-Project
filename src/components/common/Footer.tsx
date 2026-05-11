@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Icon } from './Icon';
 import './Footer.css';
 
 gsap.registerPlugin(ScrollTrigger);

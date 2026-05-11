@@ -9,7 +9,7 @@ function UnderDevelopment() {
       <Header />
       <main className="under-development-page">
         <div className="container">
-          <Icon icon="fa-gears" size="3x" className="icon" />
+          <Icon icon="fa-gears" size="2xl" className="icon" />
           <h1>Under Development</h1>
           <p>This feature is coming soon. Stay tuned!</p>
         </div>

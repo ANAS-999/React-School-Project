@@ -6,7 +6,7 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter window={window} scrollRestoration="manual">
+    <BrowserRouter window={window}>
       <App />
     </BrowserRouter>
   </StrictMode>,

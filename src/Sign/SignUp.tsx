@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // @ts-ignore
 import { auth, db, githubProvider } from "../firebase/FirebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
@@ -8,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import "./SignUp.css";
 
 /* ── Password strength helper ── */
-function getStrength(pw) {
+function getStrength(pw: string) {
   if (!pw) return { score: 0, label: "" };
   let s = 0;
   if (pw.length >= 8) s++;
@@ -70,7 +70,7 @@ export const SignUp = () => {
     }
   };
 
-  const set = (key) => (e) =>
+  const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({
       ...f,
       [key]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
@@ -78,14 +78,14 @@ export const SignUp = () => {
 
   const strength = getStrength(form.password);
 
-  const segClass = (i) => {
+  const segClass = (i: number) => {
     if (!form.password) return "signup-strength-seg";
-    const map = { 1: "weak", 2: "medium", 3: "medium", 4: "strong" };
+    const map: Record<number, string> = { 1: "weak", 2: "medium", 3: "medium", 4: "strong" };
     return i <= strength.score
-      ? `signup-strength-seg ${map[strength.score]}`
+      ? `signup-strength-seg ${map[strength.score] || "medium"}`
       : "signup-strength-seg";
   };
-  const handleGoogle = async (e) => {
+  const handleGoogle = async (e: React.MouseEvent) => {
     e.preventDefault();
 
     try {
@@ -99,7 +99,7 @@ export const SignUp = () => {
       console.log(error);
     }
   };
-  const handleGithub = async (e) => {
+  const handleGithub = async () => {
     console.log("Provider check", githubProvider);
     try {
       const result = await signInWithPopup(auth, githubProvider);

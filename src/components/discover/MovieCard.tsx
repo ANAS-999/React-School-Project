@@ -2,12 +2,10 @@ import type { MovieModel } from "../../models/MovieModel";
 import { Icon } from "../common/Icon";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import MoviesAPI from "../../api/movie_api";
 import "./GameCard.css";
 import {
   addMovieTolibrary,
   removeMovieFromLibrary,
-  fetchMovieToLibrary,
   checkIfMovieInLibrary,
 } from "../../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";

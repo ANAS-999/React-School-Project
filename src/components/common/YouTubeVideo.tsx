@@ -10,10 +10,9 @@ declare global {
 interface YouTubeVideoProps {
   videoId: string;
   title: string;
-  className?: string;
 }
 
-export const YouTubeVideo: React.FC<YouTubeVideoProps> = ({ videoId, title, className }) => {
+export const YouTubeVideo: React.FC<YouTubeVideoProps> = ({ videoId, title }) => {
   const [isRestricted, setIsRestricted] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<any>(null);

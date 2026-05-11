@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, Suspense, lazy } from "react";
+import { useRef, useState, Suspense } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,7 +19,7 @@ export const Hero = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const benefitsRef = useRef<HTMLDivElement>(null);
   const splineRef = useRef<any>(null);
-  const [splineLoaded, setSplineLoaded] = useState(false);
+  const [, setSplineLoaded] = useState(false);
 
   useGSAP(
     () => {
