@@ -652,16 +652,9 @@
 }
 
 .image-container {
+  position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 30, 40, 0.8) 100%);
-  color: var(--text-tertiary);
-  font-size: 2rem;
-  position: relative;
-  overflow: hidden;
 }
 
 .placeholder::before {
@@ -867,40 +860,64 @@
   color: var(--blue-light);
 }
 
-.external-links,
-.streaming-links {
+.external-links-grid {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
 }
 
-.external-btn,
-.streaming-btn {
+.external-link-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 8px;
-  color: var(--blue-light);
-  font-size: 13px;
-  font-weight: 600;
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(20, 20, 25, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #e2e2e2;
   text-decoration: none;
-  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  justify-content: space-between;
 }
 
-.external-btn:hover,
-.streaming-btn:hover {
-  background: var(--blue-primary);
-  color: white;
+.external-link-btn i:first-child {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  transition: transform 0.3s ease;
+}
+
+.external-link-name {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.external-link-btn .external-link-icon {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  transition: color 0.3s ease, transform 0.3s ease !important;
+}
+
+.external-link-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  color: #fff;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), 0 0 15px rgba(59, 130, 246, 0.1);
 }
 
-.external-btn i,
-.streaming-btn i {
-  font-size: 14px;
+.external-link-btn:hover i:first-child {
+  transform: scale(1.1);
+}
+
+.external-link-btn:hover .external-link-icon {
+  color: rgba(255, 255, 255, 0.8) !important;
+  transform: translate(2px, -2px) !important;
 }
 
 .music-section {
@@ -954,6 +971,38 @@
   .anime-tags,
   .anime-genres {
     justify-content: center;
+  }
+
+  .anime-content {
+    grid-template-columns: 1fr;
+  }
+
+  .anime-hero-websites {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .anime-hero-btns-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .watch-on-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-website-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .anime-details-page .add-to-library-details-btn {
+    margin-left: 0;
+    margin-top: 12px;
+    width: 100%;
   }
 
 .anime-music-section {
@@ -1130,6 +1179,123 @@
 
   .meta-item {
     font-size: 0.9rem;
+  }
+
+  .about-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .summary {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .info-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+
+  .fact-item {
+    gap: 2px;
+  }
+
+  .fact-label {
+    font-size: 11px;
+  }
+
+  .fact-value {
+    font-size: 13px;
+  }
+
+  .anime-music-section {
+    margin-top: 30px;
+  }
+
+  .anime-music-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .music-section {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .music-list li {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .trailer-section {
+    margin-top: 30px;
+  }
+
+  .trailer-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .videos-grid {
+    gap: 16px;
+  }
+
+  .video-main {
+    grid-column: 1;
+  }
+
+  .video-thumbnail {
+    border-radius: 12px;
+  }
+
+  .video-play-btn {
+    width: 70px;
+    height: 70px;
+  }
+
+  .video-play-btn .fa-play {
+    font-size: 22px;
+  }
+
+  .video-label {
+    font-size: 13px;
+    padding: 6px 16px;
+  }
+
+  .similar-anime-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .similar-anime-info {
+    padding: 12px;
+  }
+
+  .similar-anime-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .external-links-grid {
+    gap: 6px;
+  }
+
+  .external-link-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .return-to-top-container {
+    padding: 24px 0;
+  }
+
+  .return-to-top-btn {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
 

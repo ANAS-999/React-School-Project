@@ -1,5 +1,5 @@
-import { useEffect, useState  } from "react";
-import { useParams, Link ,useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
@@ -7,7 +7,11 @@ import MoviesAPI from "../api/movie_api";
 import type { MovieModel } from "../models/MovieModel";
 import "./MovieDetails.css";
 import MovieCard from "../components/discover/MovieCard";
-import {addMovieTolibrary,checkIfMovieInLibrary,removeMovieFromLibrary } from "../firebase/FirebaseService";
+import {
+  addMovieTolibrary,
+  checkIfMovieInLibrary,
+  removeMovieFromLibrary,
+} from "../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import type { LibraryModel } from "../models/LibraryModel";
 
@@ -16,14 +20,13 @@ function MovieDetails() {
   const [movie, setMovie] = useState<MovieModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isInLibrary,setIsInLibrary]=useState(false);
+  const [isInLibrary, setIsInLibrary] = useState(false);
   const [isBtnHovered, setIsBtnHovered] = useState(false);
-  const [isLoading,setIsLoading]=useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isCheckingLibrary, setIsCheckingLibrary] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
-
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -54,62 +57,61 @@ function MovieDetails() {
     if (id) fetchMovieDetails();
   }, [id]);
 
-    useEffect(() => {
-      if (!movie) return;
-        const auth = getAuth();
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            const inLibrary = await checkIfMovieInLibrary(movie!.id);
-            setIsInLibrary(inLibrary);
-          } else {
-            setIsInLibrary(false);
-          }
-          setIsCheckingLibrary(false);
-        });
-        return () => unsubscribe();
-      }, [movie]);
-  
-    const handleAddToLibrary = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-        const auth = getAuth();
-        if (!auth.currentUser) {
-          setShowDialog(true);
-          return;
+  useEffect(() => {
+    if (!movie) return;
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const inLibrary = await checkIfMovieInLibrary(movie!.id);
+        setIsInLibrary(inLibrary);
+      } else {
+        setIsInLibrary(false);
+      }
+      setIsCheckingLibrary(false);
+    });
+    return () => unsubscribe();
+  }, [movie]);
+
+  const handleAddToLibrary = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      setShowDialog(true);
+      return;
+    }
+
+    if (isLoading) return;
+    setIsLoading(true);
+
+    try {
+      if (isInLibrary) {
+        await removeMovieFromLibrary(movie!.id);
+        setIsInLibrary(false);
+      } else {
+        if (movie) {
+          const libraryMovie: LibraryModel = {
+            id: movie.id,
+            title: movie.title,
+            image: movie.posterUrl,
+          };
+
+          await addMovieTolibrary(libraryMovie);
+          setIsInLibrary(true);
         }
-        
-        if (isLoading) return;
-        setIsLoading(true);
-    
-        try {
-          if (isInLibrary ) {
-            await removeMovieFromLibrary(movie!.id);
-            setIsInLibrary(false);
-          } else {
-            if(movie){
-            const libraryMovie: LibraryModel = {
-              id: movie.id,
-              title: movie.title,
-              image: movie.posterUrl
-            };
-          
-            
-            await addMovieTolibrary(libraryMovie);
-            setIsInLibrary(true);
-          }
-        }
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      const closeDialog = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setShowDialog(false);
-    };
-  
-    const goToLogin = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      navigate("/signin", { state: { from: location.pathname } });
-    };
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const closeDialog = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDialog(false);
+  };
+
+  const goToLogin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate("/signin", { state: { from: location.pathname } });
+  };
 
   if (loading) {
     return (
@@ -156,13 +158,20 @@ function MovieDetails() {
           <div className="movie-hero-bg">
             {movie.posterUrl && <img src={movie.posterUrl} alt="" />}
             <div className="overlay"></div>
-            
           </div>
           <div className="container">
-            
-            <Link to="/movies" className="back-link">
-              <Icon icon="fa-arrow-left" /> Back to Movies
-            </Link>
+            <button
+              className="back-link"
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  navigate("/movies");
+                }
+              }}
+            >
+              <Icon icon="fa-arrow-left" /> Back
+            </button>
             <div className="movie-hero-content">
               <div className="movie-cover">
                 {movie.posterUrl ? (
@@ -170,70 +179,25 @@ function MovieDetails() {
                 ) : (
                   <div className="placeholder-cover">
                     <Icon icon="fa-film" size="2xl" />
-                    
                   </div>
-                  
                 )}
-                 <button
-                  className={`add-to-library-btn cover-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
-                  onClick={handleAddToLibrary}
-                  onMouseEnter={() => setIsBtnHovered(true)}
-                  onMouseLeave={() => setIsBtnHovered(false)}
-                  title={
-                    isInLibrary ? "Remove from Library" : "Add to Library"
-                  }
-                  disabled={isLoading || isCheckingLibrary}
-                >
-                  {isLoading || isCheckingLibrary ? (
-                    <Icon icon="fas fa-spinner fa-spin" />
-                  ) : (
-                    <Icon
-                      icon={
-                        isInLibrary
-                          ? isBtnHovered
-                            ? "fas fa-times"
-                            : "fas fa-check"
-                          : "fas fa-plus"
-                      }
-                    />
-                  )}
-                  <span className="btn-text">
-                    {isCheckingLibrary
-                      ? " Loading..."
-                      : isInLibrary
-                        ? isBtnHovered
-                          ? " Remove"
-                          : " In Library"
-                        : " Add to Library"}
-                  </span>
-                </button>
               </div>
               <div className="movie-info">
                 <h1>{movie.title}</h1>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div className="game-meta">
-                    {movie.releaseYear && (
-                      <span className="meta-item">
-                        <Icon icon="fa-calendar" /> {movie.releaseYear}
-                      </span>
-                    )}
-                    {movie.rating && (
-                      <span className="meta-item rating">
-                        <Icon icon="fa-star" /> {movie.rating}%
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ display: "flex", gap: 8 }}>
-                  </div>
+                <div className="movie-meta">
+                  {movie.releaseYear && (
+                    <span className="meta-item">
+                      <Icon icon="fa-calendar" /> {movie.releaseYear}
+                    </span>
+                  )}
+                  {movie.rating && (
+                    <span className="meta-item rating">
+                      <Icon icon="fa-star" /> {movie.rating}%
+                    </span>
+                  )}
                 </div>
                 {movie.genres && movie.genres.length > 0 && (
-                  <div className="game-tags">
+                  <div className="movie-tags">
                     {movie.genres.map((g) => (
                       <span key={g} className="tag">
                         {g}
@@ -241,6 +205,43 @@ function MovieDetails() {
                     ))}
                   </div>
                 )}
+                <div className="movie-hero-websites">
+                  <div className="movie-hero-btns-group">
+                    <button
+                      className={`add-to-library-details-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
+                      onClick={handleAddToLibrary}
+                      onMouseEnter={() => setIsBtnHovered(true)}
+                      onMouseLeave={() => setIsBtnHovered(false)}
+                      title={
+                        isInLibrary ? "Remove from Library" : "Add to Library"
+                      }
+                      disabled={isLoading || isCheckingLibrary}
+                    >
+                      {isLoading || isCheckingLibrary ? (
+                        <Icon icon="fas fa-spinner fa-spin" />
+                      ) : (
+                        <Icon
+                          icon={
+                            isInLibrary
+                              ? isBtnHovered
+                                ? "fas fa-times"
+                                : "fas fa-check"
+                              : "fas fa-plus"
+                          }
+                        />
+                      )}
+                      <span className="btn-text">
+                        {isCheckingLibrary
+                          ? " Loading..."
+                          : isInLibrary
+                            ? isBtnHovered
+                              ? " Remove"
+                              : " In Library"
+                            : " Add to Library"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -302,30 +303,37 @@ function MovieDetails() {
 
             {/* Watch On (providers) */}
             {movie.watchProviders && movie.watchProviders.results && (
-              <section className="media-section">
-                <h2>Watch On</h2>
+              <section className="movie-watch-on-section">
+                <h2>Where to Watch</h2>
                 <div className="watch-on-grid">
                   {(() => {
                     const results = movie.watchProviders.results;
-                    // prefer US providers, fallback to the first available region
                     const regionKey = results.US
                       ? "US"
                       : Object.keys(results)[0];
                     const region = results[regionKey];
                     if (!region)
                       return (
-                        <div className="no-results">No providers available</div>
+                        <div className="no-results">
+                          <Icon icon="fa-film" />
+                          <span>No providers available for your region</span>
+                        </div>
                       );
 
                     const list: any[] = [];
+                    const labels: Record<string, string> = {
+                      flatrate: "Stream",
+                      rent: "Rent",
+                      buy: "Buy",
+                    };
+
                     ["flatrate", "rent", "buy"].forEach((k) => {
                       if (Array.isArray(region[k]))
                         region[k].forEach((p: any) =>
-                          list.push({ ...p, kind: k }),
+                          list.push({ ...p, kind: k, label: labels[k] || k }),
                         );
                     });
 
-                    // unique by provider_id
                     const unique = list.reduce((acc: any[], cur) => {
                       if (!acc.find((a) => a.provider_id === cur.provider_id))
                         acc.push(cur);
@@ -336,10 +344,13 @@ function MovieDetails() {
                       <div
                         key={p.provider_id}
                         className="watch-on-card"
-                        title={p.provider_name}
+                        title={`${p.provider_name} - ${p.label}`}
                       >
                         <Icon icon="fa-play-circle" size="xl" />
                         <span>{p.provider_name}</span>
+                        <span className={`watch-on-provider-type ${p.kind}`}>
+                          {p.label}
+                        </span>
                       </div>
                     ));
                   })()}

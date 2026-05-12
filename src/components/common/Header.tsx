@@ -101,6 +101,48 @@ export const Header = () => {
           >
             About
           </Link>
+
+          {!user && (
+            <div className="mobile-auth-buttons">
+              <button
+                className="btn btn-secondary mobile-auth-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/signin", { state: { from: location.pathname } });
+                }}
+              >
+                Sign In
+              </button>
+              <button
+                className="btn btn-primary mobile-auth-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/signup", { state: { from: location.pathname } });
+                }}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
+
+          {user && (
+            <div className="mobile-user-section">
+              <div className="mobile-user-info">
+                <Icon icon="fa-solid fa-user" className="mobile-user-icon" />
+                <span className="mobile-user-name">{userName}</span>
+              </div>
+              <button
+                className="btn sign-out-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleSignOut();
+                }}
+              >
+                <Icon icon="fa-solid fa-sign-out-alt" />
+                Sign Out
+              </button>
+            </div>
+          )}
         </nav>
 
         <div className="header-actions">

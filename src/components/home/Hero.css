@@ -376,9 +376,9 @@
 .hero-stats {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   margin-bottom: 32px;
-  padding: 8px 16px;
+  padding: 8px 12px;
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -389,24 +389,27 @@
 .hero-stats .stat-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
   align-items: center;
   text-align: center;
+  padding: 4px 16px;
 }
 
 .hero-stats .stat-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   font-family: var(--heading);
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .hero-stats .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .mobile-hide {
@@ -429,7 +432,7 @@
 
 .hero-stats .stat-divider {
   width: 1px;
-  height: 40px;
+  height: 36px;
   background: linear-gradient(
     to bottom,
     transparent,

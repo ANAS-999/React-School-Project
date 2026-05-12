@@ -526,16 +526,18 @@ function AnimeDetails() {
             {anime.externalLinks && anime.externalLinks.length > 0 && (
               <div className="info-card">
                 <h3>Links</h3>
-                <div className="external-links">
+                <div className="external-links-grid">
                   {anime.externalLinks.slice(0, 6).map((link, i) => (
                     <a
                       key={i}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="external-link"
+                      className="external-link-btn"
                     >
-                      {link.name}
+                      <Icon icon="fa-solid fa-link" />
+                      <span className="external-link-name">{link.name}</span>
+                      <Icon icon="fa-solid fa-arrow-up-right-from-square" className="external-link-icon" />
                     </a>
                   ))}
                 </div>

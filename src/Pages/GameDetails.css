@@ -836,6 +836,23 @@
   .game-content {
     grid-template-columns: 1fr;
   }
+
+  .game-hero-websites {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .game-hero-websites .game-hero-btns-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .game-hero-websites .add-to-library-details-btn {
+    margin-left: 0;
+    margin-top: 12px;
+    width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
@@ -846,6 +863,166 @@
 
   .meta-item {
     font-size: 0.9rem;
+  }
+
+  .about-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .summary {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .info-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+
+  .fact-item {
+    gap: 2px;
+  }
+
+  .fact-label {
+    font-size: 11px;
+  }
+
+  .fact-value {
+    font-size: 13px;
+  }
+
+  .game-platforms-section {
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .game-platforms-section .platforms-list {
+    gap: 6px;
+  }
+
+  .platform-badge {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .platform-badge .fa-gamepad,
+  .platform-badge .fa-windows,
+  .platform-badge .fa-playstation,
+  .platform-badge .fa-xbox {
+    font-size: 12px;
+  }
+
+  .stores-card .stores-grid {
+    gap: 6px;
+  }
+
+  .store-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .store-icon-wrapper {
+    width: 24px;
+    height: 24px;
+  }
+
+  .media-section {
+    margin-top: 30px;
+  }
+
+  .media-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .websites-section .websites-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .website-btn {
+    min-width: 100%;
+    padding: 10px 14px;
+  }
+
+  .videos-grid {
+    gap: 16px;
+  }
+
+  .video-main {
+    grid-column: 1;
+  }
+
+  .video-thumbnail {
+    border-radius: 12px;
+  }
+
+  .video-play-btn {
+    width: 70px;
+    height: 70px;
+  }
+
+  .video-play-btn .fa-play {
+    font-size: 22px;
+  }
+
+  .video-label {
+    font-size: 13px;
+    padding: 6px 16px;
+  }
+
+  .screenshots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .screenshot-main {
+    border-radius: 12px;
+  }
+
+  .similar-games-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .similar-game-info {
+    padding: 12px;
+  }
+
+  .similar-game-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .quick-facts-grid {
+    gap: 8px;
+  }
+
+  .quick-fact-item {
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  .quick-fact-label {
+    font-size: 10px;
+  }
+
+  .quick-fact-value {
+    font-size: 12px;
+  }
+
+  .return-to-top-container {
+    padding: 24px 0;
+  }
+
+  .return-to-top-btn {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
 

@@ -584,8 +584,7 @@
     font-size: 2.2rem;
   }
   .library-stats {
-    width: 100%;
-    justify-content: space-between;
+    display: none;
   }
   .library-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
