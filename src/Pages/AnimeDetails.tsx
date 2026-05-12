@@ -28,8 +28,11 @@ function AnimeDetails() {
   const [showDialog, setShowDialog] = useState(false);
 
   const cleanText = (text: string | null | undefined) => {
-    if (!text) return '';
-    return text.replace(/\[Written by.*?\]/gi, '').replace(/\(Written by.*?\)/gi, '').trim();
+    if (!text) return "";
+    return text
+      .replace(/\[Written by.*?\]/gi, "")
+      .replace(/\(Written by.*?\)/gi, "")
+      .trim();
   };
 
   useEffect(() => {
@@ -41,8 +44,6 @@ function AnimeDetails() {
         const api = new AnimeAPI();
         const data = await api.getAnimeById(Number(id));
 
-        console.log(data);
-        
         if (data) {
           setAnime(data);
         } else {
@@ -68,7 +69,7 @@ function AnimeDetails() {
       setIsCheckingLibrary(true);
       const auth = getAuth();
       const user = auth.currentUser;
-      
+
       if (user) {
         const inLibrary = await checkIfAnimeInLibrary(anime.id);
         setIsInLibrary(inLibrary);
@@ -180,10 +181,8 @@ function AnimeDetails() {
       <Header />
       <main className="game-details-page">
         <div className="game-hero">
-<div className="game-hero-bg">
-            {anime.imageId && (
-              <img src={anime.imageId} alt="" />
-            )}
+          <div className="game-hero-bg">
+            {anime.imageId && <img src={anime.imageId} alt="" />}
             <div className="overlay"></div>
           </div>
           <div className="container">
@@ -195,16 +194,16 @@ function AnimeDetails() {
                 {anime.imageId ? (
                   <img src={anime.imageId} alt={anime.title} />
                 ) : (
-                  <div className="placeholder-cover"><Icon icon="fa-film" size="2xl" /></div>
+                  <div className="placeholder-cover">
+                    <Icon icon="fa-film" size="2xl" />
+                  </div>
                 )}
                 <button
                   className={`add-to-library-btn cover-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
                   onClick={handleAddToLibrary}
                   onMouseEnter={() => setIsBtnHovered(true)}
                   onMouseLeave={() => setIsBtnHovered(false)}
-                  title={
-                    isInLibrary ? "Remove from Library" : "Add to Library"
-                  }
+                  title={isInLibrary ? "Remove from Library" : "Add to Library"}
                   disabled={isLoading || isCheckingLibrary}
                 >
                   {isLoading || isCheckingLibrary ? (
@@ -295,19 +294,24 @@ function AnimeDetails() {
                 <div className="alt-titles">
                   <div className="alt-title-item">
                     <span className="alt-title-label">Japanese</span>
-                    <span className="alt-title-value">{anime.titleJapanese}</span>
+                    <span className="alt-title-value">
+                      {anime.titleJapanese}
+                    </span>
                   </div>
                   {anime.titleSynonyms && anime.titleSynonyms.length > 0 && (
                     <div className="alt-title-item">
                       <span className="alt-title-label">Synonyms</span>
-                      <span className="alt-title-value">{anime.titleSynonyms.join(", ")}</span>
+                      <span className="alt-title-value">
+                        {anime.titleSynonyms.join(", ")}
+                      </span>
                     </div>
                   )}
                 </div>
               </section>
             )}
 
-            {(anime.openings && anime.openings.length > 0) || (anime.endings && anime.endings.length > 0) ? (
+            {(anime.openings && anime.openings.length > 0) ||
+            (anime.endings && anime.endings.length > 0) ? (
               <section className="media-section">
                 <h2>Music</h2>
                 <div className="music-section">
@@ -341,15 +345,21 @@ function AnimeDetails() {
                 <div className="videos-grid">
                   <div className="video-wrapper video-main">
                     {!playTrailer ? (
-                      <div 
+                      <div
                         className="video-thumbnail"
                         onClick={() => setPlayTrailer(true)}
-                        style={{ backgroundImage: anime.imageId ? `url(${anime.imageId})` : undefined }}
+                        style={{
+                          backgroundImage: anime.imageId
+                            ? `url(${anime.imageId})`
+                            : undefined,
+                        }}
                       >
                         <div className="video-play-btn">
                           <Icon icon="fa-play" size="2xl" />
                         </div>
-                        <span className="video-label">Click to play trailer</span>
+                        <span className="video-label">
+                          Click to play trailer
+                        </span>
                       </div>
                     ) : (
                       <iframe
@@ -370,7 +380,13 @@ function AnimeDetails() {
                 <h2>Watch On</h2>
                 <div className="watch-on-grid">
                   {anime.streaming.map((s, i) => (
-                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="watch-on-card">
+                    <a
+                      key={i}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="watch-on-card"
+                    >
                       <Icon icon="fa-play-circle" size="xl" />
                       <span>{s.name}</span>
                     </a>
@@ -399,7 +415,12 @@ function AnimeDetails() {
                 {anime.releaseYear && (
                   <div className="fact-item">
                     <span className="fact-label">Season</span>
-                    <span className="fact-value">{anime.season ? anime.season.charAt(0).toUpperCase() + anime.season.slice(1) : anime.releaseYear}</span>
+                    <span className="fact-value">
+                      {anime.season
+                        ? anime.season.charAt(0).toUpperCase() +
+                          anime.season.slice(1)
+                        : anime.releaseYear}
+                    </span>
                   </div>
                 )}
                 {anime.releaseYear && (
@@ -447,31 +468,44 @@ function AnimeDetails() {
                 {anime.genres && anime.genres.length > 0 && (
                   <div className="fact-item">
                     <span className="fact-label">Genres</span>
-                    <span className="fact-value">{anime.genres.join(", ")}</span>
+                    <span className="fact-value">
+                      {anime.genres.join(", ")}
+                    </span>
                   </div>
                 )}
                 {anime.themes && anime.themes.length > 0 && (
                   <div className="fact-item">
                     <span className="fact-label">Themes</span>
-                    <span className="fact-value">{anime.themes.join(", ")}</span>
+                    <span className="fact-value">
+                      {anime.themes.join(", ")}
+                    </span>
                   </div>
                 )}
                 {anime.demographics && anime.demographics.length > 0 && (
                   <div className="fact-item">
                     <span className="fact-label">Demographic</span>
-                    <span className="fact-value">{anime.demographics.join(", ")}</span>
+                    <span className="fact-value">
+                      {anime.demographics.join(", ")}
+                    </span>
                   </div>
                 )}
                 {anime.producers && anime.producers.length > 0 && (
                   <div className="fact-item">
                     <span className="fact-label">Producers</span>
-                    <span className="fact-value">{anime.producers.slice(0, 3).join(", ")}{anime.producers.length > 3 ? ` +${anime.producers.length - 3}` : ''}</span>
+                    <span className="fact-value">
+                      {anime.producers.slice(0, 3).join(", ")}
+                      {anime.producers.length > 3
+                        ? ` +${anime.producers.length - 3}`
+                        : ""}
+                    </span>
                   </div>
                 )}
                 {anime.licensors && anime.licensors.length > 0 && (
                   <div className="fact-item">
                     <span className="fact-label">Licensors</span>
-                    <span className="fact-value">{anime.licensors.join(", ")}</span>
+                    <span className="fact-value">
+                      {anime.licensors.join(", ")}
+                    </span>
                   </div>
                 )}
               </div>
@@ -482,7 +516,13 @@ function AnimeDetails() {
                 <h3>Links</h3>
                 <div className="external-links">
                   {anime.externalLinks.slice(0, 6).map((link, i) => (
-                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="external-link">
+                    <a
+                      key={i}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="external-link"
+                    >
                       {link.name}
                     </a>
                   ))}

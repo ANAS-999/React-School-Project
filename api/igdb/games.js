@@ -1,7 +1,4 @@
 export default async function handler(req, res) {
-  console.log("Client-ID:", process.env.VITE_GAMES_CLIENT_ID ? "SET" : "MISSING");
-  console.log("Token:", process.env.VITE_GAMES_AUTHORIZATION ? "SET" : "MISSING");
-
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }

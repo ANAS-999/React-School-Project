@@ -36,7 +36,6 @@ export const Header = () => {
     if (!isFirebaseConfigured || !auth) return;
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
-      console.log("User : " + u?.displayName);
     });
     return unsubscribe;
   }, []);
@@ -46,12 +45,11 @@ export const Header = () => {
       await signOut(auth);
       setUserMenuOpen(false);
       navigate("/");
-    } catch (err) {
-      console.error("Sign out error", err);
-    }
+    } catch (err) {}
   };
 
-  const userName = user?.displayName || (user?.email && user.email.split("@")[0]);
+  const userName =
+    user?.displayName || (user?.email && user.email.split("@")[0]);
 
   return (
     <header className="header">
@@ -109,24 +107,37 @@ export const Header = () => {
         <div className="header-actions">
           {user ? (
             <div className="user-menu-container">
-              <button 
+              <button
                 className="user-menu-trigger"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
                 <Icon icon="fa-solid fa-user" className="user-icon" />
                 <span className="user-name">{userName}</span>
-                <Icon 
-                  icon={userMenuOpen ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down"} 
-                  className="chevron-icon" 
+                <Icon
+                  icon={
+                    userMenuOpen
+                      ? "fa-solid fa-chevron-up"
+                      : "fa-solid fa-chevron-down"
+                  }
+                  className="chevron-icon"
                 />
               </button>
               {userMenuOpen && (
                 <div className="user-dropdown">
-                  <button className="dropdown-item" onClick={() => { setUserMenuOpen(false); navigate("/library"); }}>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate("/library");
+                    }}
+                  >
                     <Icon icon="fa-solid fa-bookmark" />
                     <span>My Library</span>
                   </button>
-                  <button className="dropdown-item sign-out" onClick={handleSignOut}>
+                  <button
+                    className="dropdown-item sign-out"
+                    onClick={handleSignOut}
+                  >
                     <Icon icon="fa-solid fa-sign-out-alt" />
                     <span>Sign Out</span>
                   </button>

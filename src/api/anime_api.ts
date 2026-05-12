@@ -35,7 +35,6 @@ class AnimeAPI {
       }
 
       const data = await response.json();
-      console.log("API Response:", data);
 
       const cleanSynopsis = (text: string) => {
         return text

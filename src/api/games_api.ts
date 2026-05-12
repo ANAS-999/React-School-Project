@@ -15,7 +15,7 @@ class GamesAPIConfig {
     this.headers = {
       clientId: import.meta.env.VITE_GAMES_CLIENT_ID,
       authorization: import.meta.env.VITE_GAMES_AUTHORIZATION,
-    };    
+    };
   }
 
   getApiUrl() {
@@ -85,7 +85,6 @@ class GamesAPI {
       }
 
       const listGames: GameModel[] = this.mapResponseToGameModel(rawData);
-      console.log(listGames.length);
 
       return listGames;
     } catch (error) {
@@ -142,7 +141,11 @@ class GamesAPI {
         ? game.screenshots.map((s: any) => s.image_id)
         : [],
       websites: game.websites
-        ? game.websites.map((w: any) => ({ type: w.type, url: w.url, trusted: w.trusted }))
+        ? game.websites.map((w: any) => ({
+            type: w.type,
+            url: w.url,
+            trusted: w.trusted,
+          }))
         : [],
       videos: game.videos
         ? game.videos.map((v: any) => ({ name: v.name, videoId: v.video_id }))
@@ -216,8 +219,6 @@ class GamesAPI {
     const fields =
       "fields id, name, cover.image_id, rating, first_release_date, genres.name, platforms.name, summary, category;";
     const query = where + fields + sort + limit + offset;
-
-    console.log(query);
 
     return query;
   }

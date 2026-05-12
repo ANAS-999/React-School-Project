@@ -38,7 +38,7 @@ const PLATFORM_ICKS: Record<string, string> = {
   "Nintendo Switch": "fa-solid fa-gamepad",
   Wii: "fa-solid fa-gamepad",
   WiiU: "fa-solid fa-gamepad",
-  "GameCube": "fa-solid fa-gamepad",
+  GameCube: "fa-solid fa-gamepad",
   "Nintendo 3DS": "fa-solid fa-gamepad",
   "Nintendo DS": "fa-solid fa-gamepad",
   iOS: "fa-brands fa-apple",
@@ -95,7 +95,6 @@ function GameDetails() {
 
   useEffect(() => {
     if (!game) return;
-    console.log(game.websites);
 
     const checkLibrary = async () => {
       setIsCheckingLibrary(true);
@@ -225,13 +224,13 @@ function GameDetails() {
             <div className="overlay"></div>
           </div>
           <div className="container">
-            <button 
+            <button
               className="back-link"
               onClick={() => {
                 if (window.history.length > 1) {
                   navigate(-1);
                 } else {
-                  navigate('/discover');
+                  navigate("/discover");
                 }
               }}
             >
@@ -271,9 +270,9 @@ function GameDetails() {
                         {g}
                       </span>
                     ))}
-</div>
+                  </div>
                 )}
-{game && (
+                {game && (
                   <div className="game-hero-websites">
                     <div className="game-hero-btns-group">
                       {game.websites &&
@@ -422,39 +421,56 @@ function GameDetails() {
               </section>
             )}
 
-            {game.websites && game.websites.filter(w => ![GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any)).length > 0 && (
-              <section className="media-section websites-section">
-                <h2>Websites & Socials</h2>
-                <div className="websites-grid">
-                  {game.websites
-                    .filter(w => ![GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any))
-                    .map((w) => (
-                    <a
-                      key={w.type}
-                      href={w.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="website-btn"
-                    >
-                      <Icon
-                        icon={
-                          GAME_WEBSITES_DATA[w.type]?.iconClass ||
-                          "fa-solid fa-link"
-                        }
-                      />
-                      <span className="website-name">
-                        {GAME_WEBSITES_DATA[w.type]?.title || "Website"}
-                      </span>
-                      {w.trusted && <VerifiedBadge />}
-                      <Icon
-                        icon="fa-solid fa-arrow-up-right-from-square"
-                        className="external-link-icon"
-                      />
-                    </a>
-                  ))}
-                </div>
-              </section>
-            )}
+            {game.websites &&
+              game.websites.filter(
+                (w) =>
+                  ![
+                    GameWebsite.Steam,
+                    GameWebsite.EpicGames,
+                    GameWebsite.GOG,
+                    GameWebsite.Itchio,
+                  ].includes(w.type as any),
+              ).length > 0 && (
+                <section className="media-section websites-section">
+                  <h2>Websites & Socials</h2>
+                  <div className="websites-grid">
+                    {game.websites
+                      .filter(
+                        (w) =>
+                          ![
+                            GameWebsite.Steam,
+                            GameWebsite.EpicGames,
+                            GameWebsite.GOG,
+                            GameWebsite.Itchio,
+                          ].includes(w.type as any),
+                      )
+                      .map((w) => (
+                        <a
+                          key={w.type}
+                          href={w.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="website-btn"
+                        >
+                          <Icon
+                            icon={
+                              GAME_WEBSITES_DATA[w.type]?.iconClass ||
+                              "fa-solid fa-link"
+                            }
+                          />
+                          <span className="website-name">
+                            {GAME_WEBSITES_DATA[w.type]?.title || "Website"}
+                          </span>
+                          {w.trusted && <VerifiedBadge />}
+                          <Icon
+                            icon="fa-solid fa-arrow-up-right-from-square"
+                            className="external-link-icon"
+                          />
+                        </a>
+                      ))}
+                  </div>
+                </section>
+              )}
           </div>
           <div className="side-col">
             {game.platforms && game.platforms.length > 0 && (
@@ -503,38 +519,56 @@ function GameDetails() {
                 )}
               </div>
             </div>
-            {game.websites && game.websites.filter(w => [GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any)).length > 0 && (
-              <div className="info-card stores-card">
-                <h3>Buy From</h3>
-                <div className="stores-grid">
-                  {game.websites
-                    .filter(w => [GameWebsite.Steam, GameWebsite.EpicGames, GameWebsite.GOG, GameWebsite.Itchio].includes(w.type as any))
-                    .map((w) => (
-                      <a
-                        key={w.type}
-                        href={w.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="store-btn"
-                      >
-                        <div className="store-icon-wrapper">
+            {game.websites &&
+              game.websites.filter((w) =>
+                [
+                  GameWebsite.Steam,
+                  GameWebsite.EpicGames,
+                  GameWebsite.GOG,
+                  GameWebsite.Itchio,
+                ].includes(w.type as any),
+              ).length > 0 && (
+                <div className="info-card stores-card">
+                  <h3>Buy From</h3>
+                  <div className="stores-grid">
+                    {game.websites
+                      .filter((w) =>
+                        [
+                          GameWebsite.Steam,
+                          GameWebsite.EpicGames,
+                          GameWebsite.GOG,
+                          GameWebsite.Itchio,
+                        ].includes(w.type as any),
+                      )
+                      .map((w) => (
+                        <a
+                          key={w.type}
+                          href={w.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="store-btn"
+                        >
+                          <div className="store-icon-wrapper">
+                            <Icon
+                              icon={
+                                GAME_WEBSITES_DATA[w.type]?.iconClass ||
+                                "fa-solid fa-store"
+                              }
+                            />
+                          </div>
+                          <span className="store-name">
+                            {GAME_WEBSITES_DATA[w.type]?.title || "Store"}
+                          </span>
+                          {w.trusted && <VerifiedBadge />}
                           <Icon
-                            icon={
-                              GAME_WEBSITES_DATA[w.type]?.iconClass ||
-                              "fa-solid fa-store"
-                            }
+                            icon="fa-solid fa-chevron-right"
+                            className="store-action-icon"
                           />
-                        </div>
-                        <span className="store-name">
-                          {GAME_WEBSITES_DATA[w.type]?.title || "Store"}
-                        </span>
-                        {w.trusted && <VerifiedBadge />}
-                        <Icon icon="fa-solid fa-chevron-right" className="store-action-icon" />
-                      </a>
-                    ))}
+                        </a>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
 
@@ -545,30 +579,35 @@ function GameDetails() {
               {game.similarGames.map((similar) => (
                 <Link
                   to={`/games/${similar.id}`}
-key={similar.id}
+                  key={similar.id}
                   className="similar-game-card group"
                 >
                   <div className="similar-game-image">
-                      {similar.imageId ? (
-                        <div className="image-container">
-                          <img
-                            src={getGameImageUrl(similar.imageId, GameImageSize.HD)}
-                            alt={similar.title}
-                            loading="lazy"
-                            onLoad={(e) => {
-                              (e.target as HTMLImageElement).classList.add('loaded');
-                            }}
-                          />
-                          <div className="placeholder loading-placeholder">
-                            <Icon icon="fa-gamepad" />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="placeholder">
+                    {similar.imageId ? (
+                      <div className="image-container">
+                        <img
+                          src={getGameImageUrl(
+                            similar.imageId,
+                            GameImageSize.HD,
+                          )}
+                          alt={similar.title}
+                          loading="lazy"
+                          onLoad={(e) => {
+                            (e.target as HTMLImageElement).classList.add(
+                              "loaded",
+                            );
+                          }}
+                        />
+                        <div className="placeholder loading-placeholder">
                           <Icon icon="fa-gamepad" />
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="placeholder">
+                        <Icon icon="fa-gamepad" />
+                      </div>
+                    )}
+                  </div>
                   <div className="similar-game-info">
                     <h4>{similar.title}</h4>
                   </div>

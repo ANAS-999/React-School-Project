@@ -36,11 +36,10 @@ function MovieDiscover() {
         // If user has typed a search query use the search endpoint which searches all movies
         if (searchQuery.trim().length > 0) {
           data = await api.searchMovies(searchQuery.trim(), 1);
-        } else {          
+        } else {
           // No search query: use discover endpoint which can filter/sort across all movies
           try {
             data = await api.getPopularMovies(1);
-            
           } catch (e) {
             // Fallback to popular if discover fails for some reason
             console.warn(
@@ -86,8 +85,7 @@ function MovieDiscover() {
       return false;
     if (year && m.releaseYear && String(m.releaseYear) !== String(year))
       return false;
-    console.log("Movie genres:", movies[0].genres);
-    console.log("Selected genre:", genre);
+
     return true;
   });
 

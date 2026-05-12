@@ -27,10 +27,7 @@ export const addMovieTolibrary = async (movie: LibraryModel) => {
       image: movie.image,
       createdAt: new Date(),
     });
-    console.log("  Added to library");
-  } catch (error) {
-    console.error(error);
-  }
+  } catch (error) {}
 };
 export const fetchMovieToLibrary = async () => {
   const auth = getAuth();
@@ -56,8 +53,6 @@ export const removeMovieFromLibrary = async (movieId: string | number) => {
     await deleteDoc(
       doc(db, "users", user.uid, "Movies-Library", movieId.toString()),
     );
-
-    console.log("Movie removed ✅");
   } catch (error) {
     console.error(error);
   }
@@ -102,7 +97,6 @@ export const addGameToLibrary = async (game: LibraryModel) => {
       image: game.image,
       createdAt: new Date(),
     });
-    console.log("  Added to library");
   } catch (error) {
     console.error(error);
   }
@@ -139,8 +133,6 @@ export const removeGameFromLibrary = async (GameId: string | number) => {
     await deleteDoc(
       doc(db, "users", user.uid, "Games-Library", GameId.toString()),
     );
-
-    console.log("Game removed ");
   } catch (error) {
     console.error(error);
   }
@@ -177,7 +169,6 @@ export const addAnimeTolibrary = async (anime: LibraryModel) => {
       image: anime.image,
       createdAt: new Date(),
     });
-    console.log(" Added to library");
   } catch (error) {
     console.error(error);
   }
@@ -214,8 +205,6 @@ export const removeAnimeFromLibrary = async (AnimeId: string | number) => {
     await deleteDoc(
       doc(db, "users", user.uid, "Animes-Library", AnimeId.toString()),
     );
-
-    console.log("Anime removed ");
   } catch (error) {
     console.error(error);
   }

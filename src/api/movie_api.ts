@@ -101,10 +101,6 @@ class MoviesAPI {
         if (genreId) params.set("with_genres", String(genreId));
       }
 
-      console.log(
-        `${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`,
-      );
-
       const response = await fetch(
         `${this.apiConfig.getApiUrl()}discover/movie?${params.toString()}`,
       );

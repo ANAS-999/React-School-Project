@@ -7,7 +7,11 @@ import DiscoverFilters from "../components/discover/DiscoverFilters";
 import GamesAPI from "../api/games_api";
 import type { GameModel } from "../models/GameModel";
 import GameCard from "../components/discover/GameCard";
-import type { GameTypeType, GameGenreType, GamesPopularStudiosType } from "../types";
+import type {
+  GameTypeType,
+  GameGenreType,
+  GamesPopularStudiosType,
+} from "../types";
 import { discoverCache } from "../utils/discoverCache";
 import "./Discover.css";
 
@@ -22,23 +26,38 @@ function Discover() {
   const [year, setYear] = useState<string>(discoverCache.year);
   const [genre, setGenre] = useState<string>(discoverCache.genre);
   const [studio, setStudio] = useState<string>(discoverCache.studio);
-  
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(discoverCache.searchQuery);
-  const [debouncedGameType, setDebouncedGameType] = useState<string>(discoverCache.gameType);
-  const [debouncedPlatform, setDebouncedPlatform] = useState<string>(discoverCache.platform);
-  const [debouncedYear, setDebouncedYear] = useState<string>(discoverCache.year);
-  const [debouncedGenre, setDebouncedGenre] = useState<string>(discoverCache.genre);
-  const [debouncedStudio, setDebouncedStudio] = useState<string>(discoverCache.studio);
-  
+
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(
+    discoverCache.searchQuery,
+  );
+  const [debouncedGameType, setDebouncedGameType] = useState<string>(
+    discoverCache.gameType,
+  );
+  const [debouncedPlatform, setDebouncedPlatform] = useState<string>(
+    discoverCache.platform,
+  );
+  const [debouncedYear, setDebouncedYear] = useState<string>(
+    discoverCache.year,
+  );
+  const [debouncedGenre, setDebouncedGenre] = useState<string>(
+    discoverCache.genre,
+  );
+  const [debouncedStudio, setDebouncedStudio] = useState<string>(
+    discoverCache.studio,
+  );
+
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [offset, setOffset] = useState(discoverCache.offset);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  
+
   const contentRef = useRef<HTMLElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  const skeletonCards = useMemo(() => Array.from({ length: 12 }, (_, i) => i), []);
+  const skeletonCards = useMemo(
+    () => Array.from({ length: 12 }, (_, i) => i),
+    [],
+  );
 
   const filteredGames = useMemo(() => {
     let result = [...games];
@@ -70,7 +89,13 @@ function Discover() {
     return result;
   }, [games, sortBy]);
 
-  const isSearching = debouncedSearchQuery.trim().length > 0 || debouncedGameType !== "" || debouncedPlatform !== "" || debouncedYear !== "" || debouncedGenre !== "" || debouncedStudio.trim().length > 0;
+  const isSearching =
+    debouncedSearchQuery.trim().length > 0 ||
+    debouncedGameType !== "" ||
+    debouncedPlatform !== "" ||
+    debouncedYear !== "" ||
+    debouncedGenre !== "" ||
+    debouncedStudio.trim().length > 0;
   const hasResults = filteredGames.length > 0;
 
   const isInitialMount = useRef(true);
@@ -83,12 +108,10 @@ function Discover() {
 
   useEffect(() => {
     const handleScroll = () => {
-      console.log(window.scrollY);
-      
       setShowScrollTop(window.scrollY > 1500);
       discoverCache.scrollY = window.scrollY; // Update cache with scroll position continuously
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -104,7 +127,17 @@ function Discover() {
       discoverCache.offset = offset;
       discoverCache.hasCachedData = true;
     };
-  }, [games, searchQuery, sortBy, gameType, platform, year, genre, studio, offset]);
+  }, [
+    games,
+    searchQuery,
+    sortBy,
+    gameType,
+    platform,
+    year,
+    genre,
+    studio,
+    offset,
+  ]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
   const clearFilters = () => {
@@ -136,7 +169,15 @@ function Discover() {
       return;
     }
 
-    if (!initialDebounceSkipped.current && debouncedSearchQuery === "" && debouncedGameType === "" && debouncedPlatform === "" && debouncedYear === "" && debouncedGenre === "" && debouncedStudio === "") {
+    if (
+      !initialDebounceSkipped.current &&
+      debouncedSearchQuery === "" &&
+      debouncedGameType === "" &&
+      debouncedPlatform === "" &&
+      debouncedYear === "" &&
+      debouncedGenre === "" &&
+      debouncedStudio === ""
+    ) {
       initialDebounceSkipped.current = true;
       return; // Skip the first debounced empty string update
     }
@@ -147,11 +188,19 @@ function Discover() {
     setTimeout(() => {
       const contentElement = contentRef.current;
       if (contentElement) {
-        const gridTop = contentElement.getBoundingClientRect().top + window.scrollY;
+        const gridTop =
+          contentElement.getBoundingClientRect().top + window.scrollY;
         window.scrollTo({ top: gridTop - 120, behavior: "smooth" });
       }
     }, 150);
-  }, [debouncedSearchQuery, debouncedGameType, debouncedPlatform, debouncedYear, debouncedGenre, debouncedStudio]);
+  }, [
+    debouncedSearchQuery,
+    debouncedGameType,
+    debouncedPlatform,
+    debouncedYear,
+    debouncedGenre,
+    debouncedStudio,
+  ]);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -160,27 +209,43 @@ function Discover() {
       } else {
         setIsFetchingMore(true);
       }
-      
+
       try {
         const gamesAPI = new GamesAPI();
         let data: GameModel[];
 
         // Header handles scroll to top on navigation
 
-        if (debouncedSearchQuery.trim() || debouncedGameType !== "" || debouncedPlatform !== "" || debouncedYear !== "" || debouncedGenre !== "" || debouncedStudio.trim() !== "") {
+        if (
+          debouncedSearchQuery.trim() ||
+          debouncedGameType !== "" ||
+          debouncedPlatform !== "" ||
+          debouncedYear !== "" ||
+          debouncedGenre !== "" ||
+          debouncedStudio.trim() !== ""
+        ) {
           data = await gamesAPI.getFilteredGames({
             title: debouncedSearchQuery.trim() || undefined,
-            type: debouncedGameType !== "" ? (Number(debouncedGameType) as GameTypeType) : null,
+            type:
+              debouncedGameType !== ""
+                ? (Number(debouncedGameType) as GameTypeType)
+                : null,
             platform: debouncedPlatform !== "" ? debouncedPlatform : null,
             year: debouncedYear !== "" ? debouncedYear : null,
-            genre: debouncedGenre !== "" ? (Number(debouncedGenre) as GameGenreType) : null,
-            studio: debouncedStudio !== "" ? (Number(debouncedStudio) as GamesPopularStudiosType) : null,
+            genre:
+              debouncedGenre !== ""
+                ? (Number(debouncedGenre) as GameGenreType)
+                : null,
+            studio:
+              debouncedStudio !== ""
+                ? (Number(debouncedStudio) as GamesPopularStudiosType)
+                : null,
             offset: offset,
           });
         } else {
           data = await gamesAPI.getPopularGames(offset);
         }
-        
+
         if (data.length < 50) {
           setHasMore(false);
         } else {
@@ -198,16 +263,29 @@ function Discover() {
     };
 
     fetchGames();
-  }, [debouncedSearchQuery, debouncedGameType, debouncedPlatform, debouncedYear, debouncedGenre, debouncedStudio, offset]);
+  }, [
+    debouncedSearchQuery,
+    debouncedGameType,
+    debouncedPlatform,
+    debouncedYear,
+    debouncedGenre,
+    debouncedStudio,
+    offset,
+  ]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading && !isFetchingMore) {
+        if (
+          entries[0].isIntersecting &&
+          hasMore &&
+          !loading &&
+          !isFetchingMore
+        ) {
           setOffset((prev) => prev + 50);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (observerTarget.current) {
@@ -317,8 +395,11 @@ function Discover() {
                     )}
                   </div>
                 )}
-                
-                <div ref={observerTarget} style={{ height: "10px", marginTop: "20px" }}></div>
+
+                <div
+                  ref={observerTarget}
+                  style={{ height: "10px", marginTop: "20px" }}
+                ></div>
 
                 {!loading && !error && hasResults && (
                   <div className="scroll-top-wrapper">
