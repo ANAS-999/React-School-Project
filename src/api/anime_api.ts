@@ -45,7 +45,7 @@ class AnimeAPI {
       const anime: AnimeModel[] = data.data.map((item: any) => ({
         id: item.mal_id,
         title: item.title_english || item.title,
-        imageId: item.images?.jpg?.large_image_url || null,
+        imageId: item.images?.jpg?.large_image_url || item.images?.jpg?.image_url || item.images?.webp?.large_image_url || item.images?.webp?.image_url || null,
         rating: item.score ? Math.round(item.score * 10) : null,
         releaseYear: item.year ? String(item.year) : null,
         genres: item.genres ? item.genres.map((g: any) => g.name) : [],
@@ -97,7 +97,7 @@ class AnimeAPI {
       const anime: AnimeModel[] = data.data.map((item: any) => ({
         id: item.mal_id,
         title: item.title_english || item.title,
-        imageId: item.images?.jpg?.large_image_url || null,
+        imageId: item.images?.jpg?.large_image_url || item.images?.jpg?.image_url || item.images?.webp?.large_image_url || item.images?.webp?.image_url || null,
         rating: item.score ? Math.round(item.score * 10) : null,
         releaseYear: item.year ? String(item.year) : null,
         genres: item.genres ? item.genres.map((g: any) => g.name) : [],
@@ -193,7 +193,7 @@ class AnimeAPI {
       return {
         id: item.mal_id,
         title: item.title_english || item.title,
-        imageId: item.images?.jpg?.large_image_url || null,
+        imageId: item.images?.jpg?.large_image_url || item.images?.jpg?.image_url || item.images?.webp?.large_image_url || item.images?.webp?.image_url || null,
         rating: item.score ? Math.round(item.score * 10) : null,
         releaseYear: item.year ? String(item.year) : null,
         genres: item.genres ? item.genres.map((g: any) => g.name) : [],

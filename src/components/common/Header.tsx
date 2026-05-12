@@ -44,7 +44,6 @@ export const Header = () => {
     try {
       await signOut(auth);
       setUserMenuOpen(false);
-      navigate("/");
     } catch (err) {}
   };
 
@@ -125,16 +124,6 @@ export const Header = () => {
               {userMenuOpen && (
                 <div className="user-dropdown">
                   <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      navigate("/library");
-                    }}
-                  >
-                    <Icon icon="fa-solid fa-bookmark" />
-                    <span>My Library</span>
-                  </button>
-                  <button
                     className="dropdown-item sign-out"
                     onClick={handleSignOut}
                   >
@@ -148,13 +137,13 @@ export const Header = () => {
             <>
               <button
                 className="btn btn-secondary"
-                onClick={() => navigate("/signin")}
+                onClick={() => navigate("/signin", { state: { from: location.pathname } })}
               >
                 Sign In
               </button>
               <button
                 className="btn btn-primary"
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate("/signup", { state: { from: location.pathname } })}
               >
                 Sign Up
               </button>

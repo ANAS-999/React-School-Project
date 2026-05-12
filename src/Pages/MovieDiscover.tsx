@@ -7,7 +7,7 @@ import type { MovieModel } from "../models/MovieModel";
 import MovieCard from "../components/discover/MovieCard";
 import MovieFilters from "../components/discover/MovieFilters";
 // Icon not needed in this file
-import "./Discover.css";
+import "./MovieDiscover.css";
 
 function MovieDiscover() {
   const [movies, setMovies] = useState<MovieModel[]>([]);
@@ -113,7 +113,7 @@ function MovieDiscover() {
   return (
     <div>
       <Header />
-      <main>
+      <main className="movie-discover-page">
         <MovieHero movieCount={movies.length} isSearching={false} />
 
         <section className="discover-content">

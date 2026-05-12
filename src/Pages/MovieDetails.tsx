@@ -1,11 +1,11 @@
 import { useEffect, useState  } from "react";
-import { useParams, Link ,useNavigate } from "react-router-dom";
+import { useParams, Link ,useNavigate, useLocation } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
 import MoviesAPI from "../api/movie_api";
 import type { MovieModel } from "../models/MovieModel";
-import "./GameDetails.css";
+import "./MovieDetails.css";
 import MovieCard from "../components/discover/MovieCard";
 import {addMovieTolibrary,checkIfMovieInLibrary,removeMovieFromLibrary } from "../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -22,6 +22,7 @@ function MovieDetails() {
   const [isCheckingLibrary, setIsCheckingLibrary] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
   const navigate=useNavigate();
+  const location = useLocation();
 
 
   useEffect(() => {
@@ -107,14 +108,14 @@ function MovieDetails() {
   
     const goToLogin = (e: React.MouseEvent) => {
       e.stopPropagation();
-      navigate("/signin");
+      navigate("/signin", { state: { from: location.pathname } });
     };
 
   if (loading) {
     return (
       <div>
         <Header />
-        <main className="game-details-page loading">
+        <main className="movie-details-page loading">
           <div className="container">
             <Icon icon="fa-spinner" className="fa-spin" size="2xl" />
             <p>Loading movie details...</p>
@@ -129,7 +130,7 @@ function MovieDetails() {
     return (
       <div>
         <Header />
-        <main className="game-details-page error">
+        <main className="movie-details-page error">
           <div className="error-content">
             <div className="error-icon">
               <Icon icon="fa-solid fa-ghost" size="2xl" />
@@ -150,9 +151,9 @@ function MovieDetails() {
   return (
     <div>
       <Header />
-      <main className="game-details-page">
-        <div className="game-hero">
-          <div className="game-hero-bg">
+      <main className="movie-details-page">
+        <div className="movie-hero">
+          <div className="movie-hero-bg">
             {movie.posterUrl && <img src={movie.posterUrl} alt="" />}
             <div className="overlay"></div>
             
@@ -162,8 +163,8 @@ function MovieDetails() {
             <Link to="/movies" className="back-link">
               <Icon icon="fa-arrow-left" /> Back to Movies
             </Link>
-            <div className="game-hero-content">
-              <div className="game-cover">
+            <div className="movie-hero-content">
+              <div className="movie-cover">
                 {movie.posterUrl ? (
                   <img src={movie.posterUrl} alt={movie.title} />
                 ) : (
@@ -207,7 +208,7 @@ function MovieDetails() {
                   </span>
                 </button>
               </div>
-              <div className="game-info">
+              <div className="movie-info">
                 <h1>{movie.title}</h1>
                 <div
                   style={{

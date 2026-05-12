@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
@@ -53,6 +53,7 @@ const PLATFORM_ICKS: Record<string, string> = {
 function GameDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [game, setGame] = useState<GameModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -168,7 +169,7 @@ function GameDetails() {
 
   const goToLogin = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate("/signin");
+    navigate("/signin", { state: { from: location.pathname } });
   };
 
   if (loading) {

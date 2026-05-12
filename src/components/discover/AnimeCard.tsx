@@ -18,6 +18,7 @@ function AnimeCard({ anime }: AnimeCardProps) {
   const [isBtnHovered, setIsBtnHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingLibrary, setIsCheckingLibrary] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const auth = getAuth();
@@ -70,7 +71,7 @@ function AnimeCard({ anime }: AnimeCardProps) {
 
   const goToLogin = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate("/signin");
+    navigate("/signin", { state: { from: location.pathname } });
   };
 
   return (
@@ -79,11 +80,20 @@ function AnimeCard({ anime }: AnimeCardProps) {
         <div className="game-card-inner">
           <div className="game-card-image">
             {anime.imageId && anime.imageId.length > 0 ? (
-              <img 
-                src={anime.imageId} 
-                alt={anime.title}
-                loading="lazy"
-              />
+              <>
+                {!imageLoaded && (
+                  <div className="loading-placeholder">
+                    <div className="placeholder-title">{anime.title}</div>
+                  </div>
+                )}
+                <img 
+                  src={anime.imageId} 
+                  alt={anime.title}
+                  loading="lazy"
+                  onLoad={() => setImageLoaded(true)}
+                  className={imageLoaded ? "loaded" : ""}
+                />
+              </>
             ) : (
               <div className="game-card-placeholder">
                 <Icon icon="fa-film" size="2xl" />

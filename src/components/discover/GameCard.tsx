@@ -3,7 +3,7 @@ import type { GameModel } from "../../models/GameModel";
 import { GameImageSize } from "../../types";
 import { getGameImageUrl } from "../../utils/imageUtils";
 import { Icon } from "../common/Icon";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { addGameToLibrary, checkIfGameInLibrary, removeGameFromLibrary } from "../../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import type { LibraryModel } from "../../models/LibraryModel";
@@ -15,6 +15,7 @@ interface GameCardProps {
 
 function GameCard({ game }: GameCardProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showDialog, setShowDialog] = useState(false);
   const [isInLibrary, setIsInLibrary] = useState(false);
   const [isBtnHovered, setIsBtnHovered] = useState(false);
@@ -96,7 +97,7 @@ function GameCard({ game }: GameCardProps) {
 
   const goToLogin = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate("/signin");
+    navigate("/signin", { state: { from: location.pathname } });
   };
 
 return (

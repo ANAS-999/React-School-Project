@@ -1,6 +1,6 @@
 import type { MovieModel } from "../../models/MovieModel";
 import { Icon } from "../common/Icon";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./GameCard.css";
 import {
@@ -18,6 +18,7 @@ interface MovieCardProps {
 
 function MovieCard({ movie }: MovieCardProps) {
  const navigate = useNavigate();
+   const location = useLocation();
    const [showDialog, setShowDialog] = useState(false);
    const [isInLibrary, setIsInLibrary] = useState(false);
    const [isBtnHovered, setIsBtnHovered] = useState(false);
@@ -81,7 +82,7 @@ function MovieCard({ movie }: MovieCardProps) {
  
    const goToLogin = (e: React.MouseEvent) => {
      e.stopPropagation();
-     navigate("/signin");
+     navigate("/signin", { state: { from: location.pathname } });
    };
 
   return (

@@ -8,7 +8,7 @@ import AnimeCard from "../components/discover/AnimeCard";
 import { AnimeFilters } from "../components/discover/AnimeFilters";
 import AnimeAPI from "../api/anime_api";
 import type { AnimeModel } from "../models/AnimeModel";
-import "./Discover.css";
+import "./AnimeDiscover.css";
 
 function AnimeDiscover() {
   const [animeList, setAnimeList] = useState<AnimeModel[]>([]);
@@ -51,7 +51,7 @@ function AnimeDiscover() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 500);
+      setShowScrollTop(window.scrollY > 1500);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -197,7 +197,7 @@ function AnimeDiscover() {
   return (
     <div>
       <Header />
-      <main className="discover-page" ref={contentRef}>
+      <main className="anime-discover-page" ref={contentRef}>
         <AnimeHero
           animeCount={animeList.length}
           isSearching={!!debouncedSearchQuery}
@@ -257,10 +257,9 @@ function AnimeDiscover() {
                   <div className="games-grid">
                     {[...Array(12)].map((_, i) => (
                       <div key={`skeleton-${i}`} className="game-card skeleton">
-                        <div className="skeleton-image"></div>
-                        <div className="skeleton-content">
+                        <div className="game-card-inner">
+                          <div className="skeleton-image"></div>
                           <div className="skeleton-title"></div>
-                          <div className="skeleton-meta"></div>
                         </div>
                       </div>
                     ))}
@@ -282,20 +281,16 @@ function AnimeDiscover() {
                     ))}
 
                     {isFetchingMore && (
-                      <>
+                      <div className="games-grid">
                         {[...Array(6)].map((_, i) => (
-                          <div
-                            key={`skeleton-${i}`}
-                            className="game-card skeleton"
-                          >
-                            <div className="skeleton-image"></div>
-                            <div className="skeleton-content">
+                          <div key={`skeleton-${i}`} className="game-card skeleton">
+                            <div className="game-card-inner">
+                              <div className="skeleton-image"></div>
                               <div className="skeleton-title"></div>
-                              <div className="skeleton-meta"></div>
                             </div>
                           </div>
                         ))}
-                      </>
+                      </div>
                     )}
                   </div>
                 )}

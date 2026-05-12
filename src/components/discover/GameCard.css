@@ -27,8 +27,6 @@
 .game-card:hover .game-card-inner {
   transform: translateY(-8px) scale(1.02);
   border-color: var(--border-light);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.15);
 }
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { auth, githubProvider } from '../firebase/FirebaseConfig'; // T-aked mn smiyat l-folder
 import { GoogleAuthProvider, signInWithEmailAndPassword,signInWithPopup } from 'firebase/auth';
 import './SignIn.css';
@@ -7,6 +7,8 @@ import './SignIn.css';
 
 export const SignIn = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
@@ -24,7 +26,7 @@ export const SignIn = () => {
         const user=userCredential.user;
 
         console.log("user m-connecter:",user.uid);
-        navigate('/');
+        navigate(from, { replace: true });
       }catch(err:any){
         setLoading(false);
         if(err.code==="auth/invalid-credential"){
@@ -41,9 +43,9 @@ export const SignIn = () => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
 
-      console.log(result.user); 
+console.log(result.user); 
 
-      navigate('/'); 
+      navigate(from, { replace: true });
   } catch (error) {
     console.log(error);
   }
@@ -175,7 +177,7 @@ export const SignIn = () => {
         {/* Footer */}
         <div className="signin-footer">
           Don't have an account?{' '}
-          <button onClick={() => navigate('/signup')}>Create one</button>
+          <button onClick={() => navigate('/signup', { state: { from: location.pathname } })}>Create one</button>
         </div>
       </div>
     </div>

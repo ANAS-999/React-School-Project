@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 // @ts-ignore
 import { auth, db, githubProvider } from "../firebase/FirebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
@@ -20,6 +20,8 @@ function getStrength(pw: string) {
 
 export const SignUp = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/';
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -59,6 +61,7 @@ export const SignUp = () => {
 
       setLoading(false);
       setSuccess(true);
+      setTimeout(() => navigate(from, { replace: true }), 1500);
     } catch (error) {
       setLoading(false);
       if (error instanceof Error) {
@@ -94,7 +97,7 @@ export const SignUp = () => {
 
       console.log(result.user);
 
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (error) {
       console.log(error);
     }
@@ -151,7 +154,7 @@ export const SignUp = () => {
             <button
               className="signup-btn"
               style={{ marginTop: 28 }}
-              onClick={() => navigate("/signin")}
+              onClick={() => navigate("/signin", { state: { from: location.pathname } })}
             >
               Go to Sign In →
             </button>
@@ -353,7 +356,7 @@ export const SignUp = () => {
         {/* Footer */}
         <div className="signup-footer">
           Already have an account?{" "}
-          <button onClick={() => navigate("/signin")}>Sign in</button>
+          <button onClick={() => navigate("/signin", { state: { from: location.pathname } })}>Sign in</button>
         </div>
       </div>
     </div>

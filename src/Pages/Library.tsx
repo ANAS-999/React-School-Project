@@ -28,6 +28,7 @@ function Library() {
   const [activeTab, setActiveTab] = useState<TabType>("games");
   const [libraryItems, setLibraryItems] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [counts, setCounts] = useState({ games: 0, movies: 0, animes: 0 });
@@ -36,6 +37,7 @@ function Library() {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
+      setAuthLoading(false);
       if (!u) {
         setLoading(false);
       }
@@ -121,11 +123,26 @@ function Library() {
     if (!searchQuery.trim()) return libraryItems;
     const query = searchQuery.toLowerCase();
     return libraryItems.filter((item) =>
-      item.title.toLowerCase().includes(query)
+      item.title.toLowerCase().includes(query),
     );
   }, [libraryItems, searchQuery]);
 
-if (!user) {
+  if (authLoading) {
+    return (
+      <div>
+        <Header />
+        <main className="library-page loading">
+          <div className="container">
+            <Icon icon="fa-spinner" className="fa-spin" size="2xl" />
+            <p>Checking your account...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div>
         <Header />
@@ -137,11 +154,21 @@ if (!user) {
             <h2>Sign In Required</h2>
             <p>Please sign in to view your library</p>
             <div className="auth-required-actions">
-              <button className="btn btn-primary" onClick={() => navigate("/signin")}>
+              <button
+                className="btn btn-primary"
+                onClick={() =>
+                  navigate("/signin", { state: { from: location.pathname } })
+                }
+              >
                 <Icon icon="fa-solid fa-right-to-bracket" />
                 Sign In
               </button>
-              <button className="btn btn-secondary" onClick={() => navigate("/signup")}>
+              <button
+                className="btn btn-secondary"
+                onClick={() =>
+                  navigate("/signup", { state: { from: location.pathname } })
+                }
+              >
                 <Icon icon="fa-solid fa-user-plus" />
                 Sign Up
               </button>
@@ -193,7 +220,9 @@ if (!user) {
               >
                 <Icon icon="fa-solid fa-gamepad" />
                 <span>Games</span>
-                {counts.games > 0 && <span className="tab-count">{counts.games}</span>}
+                {counts.games > 0 && (
+                  <span className="tab-count">{counts.games}</span>
+                )}
               </button>
               <button
                 className={`tab-btn ${activeTab === "movies" ? "active" : ""}`}
@@ -201,7 +230,9 @@ if (!user) {
               >
                 <Icon icon="fa-solid fa-film" />
                 <span>Movies</span>
-                {counts.movies > 0 && <span className="tab-count">{counts.movies}</span>}
+                {counts.movies > 0 && (
+                  <span className="tab-count">{counts.movies}</span>
+                )}
               </button>
               <button
                 className={`tab-btn ${activeTab === "animes" ? "active" : ""}`}
@@ -209,7 +240,9 @@ if (!user) {
               >
                 <Icon icon="fa-solid fa-tv" />
                 <span>Anime</span>
-                {counts.animes > 0 && <span className="tab-count">{counts.animes}</span>}
+                {counts.animes > 0 && (
+                  <span className="tab-count">{counts.animes}</span>
+                )}
               </button>
             </div>
             <div className="library-search">
@@ -222,7 +255,10 @@ if (!user) {
                 className="search-input"
               />
               {searchQuery && (
-                <button className="clear-search" onClick={() => setSearchQuery("")}>
+                <button
+                  className="clear-search"
+                  onClick={() => setSearchQuery("")}
+                >
                   <Icon icon="fa-xmark" />
                 </button>
               )}
@@ -233,11 +269,13 @@ if (!user) {
             <div className="library-grid">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="library-card skeleton">
-                  <div className="skeleton-image"></div>
-                  <div className="skeleton-content">
-                    <div className="skeleton-title"></div>
+                    <div className="game-card-inner">
+                      <div className="game-card-image">
+                        <div className="skeleton-image"></div>
+                      </div>
+                      <div className="skeleton-title"></div>
+                    </div>
                   </div>
-                </div>
               ))}
             </div>
           ) : filteredItems.length === 0 ? (
@@ -247,7 +285,10 @@ if (!user) {
                   <Icon icon="fa-magnifying-glass" size="2xl" />
                   <h3>No results found</h3>
                   <p>Try a different search term</p>
-                  <button className="btn btn-secondary" onClick={() => setSearchQuery("")}>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => setSearchQuery("")}
+                  >
                     Clear Search
                   </button>
                 </>
@@ -276,7 +317,10 @@ if (!user) {
                     }}
                   >
                     <Icon icon="fa-solid fa-compass" />
-                    Discover {activeTab === "animes" ? "Anime" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                    Discover{" "}
+                    {activeTab === "animes"
+                      ? "Anime"
+                      : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                   </button>
                 </>
               )}
@@ -293,21 +337,32 @@ if (!user) {
                     <div className="game-card-image">
                       {item.image ? (
                         <div className="image-container">
-                          <img 
-                            src={item.image} 
-                            alt={item.title} 
+                          <img
+                            src={item.image}
+                            alt={item.title}
                             loading="lazy"
                             onLoad={(e) => {
-                              (e.target as HTMLImageElement).classList.add('loaded');
+                              (e.target as HTMLImageElement).classList.add(
+                                "loaded",
+                              );
                             }}
                             onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                              (e.target as HTMLImageElement).parentElement?.classList.add('image-error');
+                              (e.target as HTMLImageElement).style.display =
+                                "none";
+                              (
+                                e.target as HTMLImageElement
+                              ).parentElement?.classList.add("image-error");
                             }}
                           />
                           <div className="game-card-placeholder loading-placeholder">
                             <Icon
-                              icon={item.type === "games" ? "fa-solid fa-gamepad" : item.type === "movies" ? "fa-solid fa-film" : "fa-solid fa-tv"}
+                              icon={
+                                item.type === "games"
+                                  ? "fa-solid fa-gamepad"
+                                  : item.type === "movies"
+                                    ? "fa-solid fa-film"
+                                    : "fa-solid fa-tv"
+                              }
                               size="2xl"
                             />
                           </div>
@@ -315,29 +370,40 @@ if (!user) {
                       ) : (
                         <div className="game-card-placeholder">
                           <Icon
-                            icon={item.type === "games" ? "fa-solid fa-gamepad" : item.type === "movies" ? "fa-solid fa-film" : "fa-solid fa-tv"}
+                            icon={
+                              item.type === "games"
+                                ? "fa-solid fa-gamepad"
+                                : item.type === "movies"
+                                  ? "fa-solid fa-film"
+                                  : "fa-solid fa-tv"
+                            }
                             size="2xl"
                           />
                         </div>
                       )}
 
-                      <div className="card-overlay">
-                        <button
-                          className="remove-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemove(item.id, item.type);
-                          }}
-                          title="Remove from library"
-                        >
-                          <Icon icon="fa-solid fa-trash" />
-                          <span>Remove</span>
-                        </button>
+                      <div className="card-type-badge">
+                        <Icon
+                          icon={
+                            item.type === "games"
+                              ? "fa-solid fa-gamepad"
+                              : item.type === "movies"
+                                ? "fa-solid fa-film"
+                                : "fa-solid fa-tv"
+                          }
+                        />
                       </div>
 
-                      <div className="card-type-badge">
-                        <Icon icon={item.type === "games" ? "fa-solid fa-gamepad" : item.type === "movies" ? "fa-solid fa-film" : "fa-solid fa-tv"} />
-                      </div>
+                      <button
+                        className="card-delete-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemove(item.id, item.type);
+                        }}
+                        title="Remove from library"
+                      >
+                        <Icon icon="fa-solid fa-times" />
+                      </button>
                     </div>
 
                     <h3 className="library-card-title">{item.title}</h3>

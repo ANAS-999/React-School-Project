@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { Icon } from "../components/common/Icon";
@@ -12,11 +12,12 @@ import {
 } from "../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import type { LibraryModel } from "../models/LibraryModel";
-import "./GameDetails.css";
+import "./AnimeDetails.css";
 
 function AnimeDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [anime, setAnime] = useState<AnimeModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +96,6 @@ function AnimeDetails() {
     });
 
     return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anime?.id]);
 
   const handleAddToLibrary = async (e: React.MouseEvent) => {
@@ -136,14 +136,14 @@ function AnimeDetails() {
 
   const goToLogin = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate("/signin");
+    navigate("/signin", { state: { from: location.pathname } });
   };
 
   if (loading) {
     return (
       <div>
         <Header />
-        <main className="game-details-page loading">
+        <main className="anime-details-page loading">
           <div className="container">
             <Icon icon="fa-spinner" className="fa-spin" size="2xl" />
             <p>Loading anime details...</p>
@@ -158,7 +158,7 @@ function AnimeDetails() {
     return (
       <div>
         <Header />
-        <main className="game-details-page error">
+        <main className="anime-details-page error">
           <div className="error-content">
             <div className="error-icon">
               <Icon icon="fa-solid fa-ghost" size="2xl" />
@@ -179,18 +179,27 @@ function AnimeDetails() {
   return (
     <div>
       <Header />
-      <main className="game-details-page">
-        <div className="game-hero">
-          <div className="game-hero-bg">
+      <main className="anime-details-page">
+        <div className="anime-hero">
+          <div className="anime-hero-bg">
             {anime.imageId && <img src={anime.imageId} alt="" />}
             <div className="overlay"></div>
           </div>
           <div className="container">
-            <Link to="/animes" className="back-link">
-              <Icon icon="fa-arrow-left" /> Back to Anime
-            </Link>
-            <div className="game-hero-content">
-              <div className="game-cover">
+            <button
+              className="back-link"
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  navigate("/animes");
+                }
+              }}
+            >
+              <Icon icon="fa-arrow-left" /> Back
+            </button>
+            <div className="anime-hero-content">
+              <div className="anime-cover">
                 {anime.imageId ? (
                   <img src={anime.imageId} alt={anime.title} />
                 ) : (
@@ -198,41 +207,10 @@ function AnimeDetails() {
                     <Icon icon="fa-film" size="2xl" />
                   </div>
                 )}
-                <button
-                  className={`add-to-library-btn cover-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
-                  onClick={handleAddToLibrary}
-                  onMouseEnter={() => setIsBtnHovered(true)}
-                  onMouseLeave={() => setIsBtnHovered(false)}
-                  title={isInLibrary ? "Remove from Library" : "Add to Library"}
-                  disabled={isLoading || isCheckingLibrary}
-                >
-                  {isLoading || isCheckingLibrary ? (
-                    <Icon icon="fas fa-spinner fa-spin" />
-                  ) : (
-                    <Icon
-                      icon={
-                        isInLibrary
-                          ? isBtnHovered
-                            ? "fas fa-times"
-                            : "fas fa-check"
-                          : "fas fa-plus"
-                      }
-                    />
-                  )}
-                  <span className="btn-text">
-                    {isCheckingLibrary
-                      ? " Loading..."
-                      : isInLibrary
-                        ? isBtnHovered
-                          ? " Remove"
-                          : " In Library"
-                        : " Add to Library"}
-                  </span>
-                </button>
               </div>
-              <div className="game-info">
+              <div className="anime-info">
                 <h1>{anime.title}</h1>
-                <div className="game-meta">
+                <div className="anime-meta">
                   {anime.releaseYear && (
                     <span className="meta-item">
                       <Icon icon="fa-calendar" /> {anime.releaseYear}
@@ -255,20 +233,74 @@ function AnimeDetails() {
                   )}
                 </div>
                 {anime.genres && anime.genres.length > 0 && (
-                  <div className="game-tags">
+                  <div className="anime-tags">
                     {anime.genres.map((g, i) => (
-                      <span key={i} className="tag">
-                        {g}
-                      </span>
+                      <span key={i} className="tag">{g}</span>
                     ))}
                   </div>
                 )}
+                <div className="anime-hero-websites">
+                  <div className="anime-hero-btns-group">
+                    {anime.streaming && anime.streaming.length > 0 && (
+                      <div className="watch-on-buttons">
+                        {anime.streaming.slice(0, 4).map((s, i) => {
+                          const isNetflix = s.name.toLowerCase().includes('netflix');
+                          const isCrunchyroll = s.name.toLowerCase().includes('crunchyroll');
+                          return (
+                            <a
+                              key={i}
+                              href={s.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`hero-website-btn ${isNetflix ? 'netflix' : ''} ${isCrunchyroll ? 'crunchyroll' : ''}`}
+                            >
+                              <Icon icon={isNetflix ? "fa-solid fa-n" : "fa-solid fa-play"} />
+                              <span>{s.name}</span>
+                              <Icon icon="fa-solid fa-arrow-up-right-from-square" className="btn-icon" />
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    className={`add-to-library-details-btn ${isInLibrary ? "in-library" : ""} ${isLoading || isCheckingLibrary ? "disabled" : ""}`}
+                    onClick={handleAddToLibrary}
+                    onMouseEnter={() => setIsBtnHovered(true)}
+                    onMouseLeave={() => setIsBtnHovered(false)}
+                    title={isInLibrary ? "Remove from Library" : "Add to Library"}
+                    disabled={isLoading || isCheckingLibrary}
+                  >
+                    {isLoading || isCheckingLibrary ? (
+                      <Icon icon="fas fa-spinner fa-spin" />
+                    ) : (
+                      <Icon
+                        icon={
+                          isInLibrary
+                            ? isBtnHovered
+                              ? "fas fa-times"
+                              : "fas fa-check"
+                            : "fas fa-plus"
+                        }
+                      />
+                    )}
+                    <span className="btn-text">
+                      {isCheckingLibrary
+                        ? " Loading..."
+                        : isInLibrary
+                          ? isBtnHovered
+                            ? " Remove"
+                            : " In Library"
+                          : " Add to Library"}
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="container game-content">
+        <div className="container anime-content">
           <div className="main-col">
             <section className="about-section">
               <h2>Synopsis</h2>
@@ -312,7 +344,7 @@ function AnimeDetails() {
 
             {(anime.openings && anime.openings.length > 0) ||
             (anime.endings && anime.endings.length > 0) ? (
-              <section className="media-section">
+              <section className="media-section anime-music-section">
                 <h2>Music</h2>
                 <div className="music-section">
                   {anime.openings && anime.openings.length > 0 && (
@@ -340,10 +372,10 @@ function AnimeDetails() {
             ) : null}
 
             {anime.trailer && (
-              <section className="media-section">
+              <section className="trailer-section">
                 <h2>Trailer</h2>
                 <div className="videos-grid">
-                  <div className="video-wrapper video-main">
+                  <div className="video-main video-wrapper">
                     {!playTrailer ? (
                       <div
                         className="video-thumbnail"
@@ -371,26 +403,6 @@ function AnimeDetails() {
                       ></iframe>
                     )}
                   </div>
-                </div>
-              </section>
-            )}
-
-            {anime.streaming && anime.streaming.length > 0 && (
-              <section className="media-section">
-                <h2>Watch On</h2>
-                <div className="watch-on-grid">
-                  {anime.streaming.map((s, i) => (
-                    <a
-                      key={i}
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="watch-on-card"
-                    >
-                      <Icon icon="fa-play-circle" size="xl" />
-                      <span>{s.name}</span>
-                    </a>
-                  ))}
                 </div>
               </section>
             )}
@@ -533,29 +545,37 @@ function AnimeDetails() {
         </div>
 
         {anime.similarAnime && anime.similarAnime.length > 0 && (
-          <section className="container similar-games-section">
+          <section className="container similar-anime-section">
             <h2>Related Anime</h2>
-            <div className="similar-games-grid">
+            <div className="similar-anime-grid">
               {anime.similarAnime.map((similar) => (
                 <Link
                   to={`/anime/${similar.id}`}
                   key={similar.id}
-                  className="similar-game-card group"
+                  className="similar-anime-card group"
                 >
-                  <div className="similar-game-image">
+                  <div className="similar-anime-image">
                     {similar.imageId ? (
-                      <img
-                        src={similar.imageId}
-                        alt={similar.title}
-                        loading="lazy"
-                      />
+                      <div className="image-container">
+                        <img
+                          src={similar.imageId}
+                          alt={similar.title}
+                          loading="lazy"
+                          onLoad={(e) => {
+                            (e.target as HTMLImageElement).classList.add("loaded");
+                          }}
+                        />
+                        <div className="placeholder loading-placeholder">
+                          <Icon icon="fa-film" />
+                        </div>
+                      </div>
                     ) : (
                       <div className="placeholder">
                         <Icon icon="fa-film" />
                       </div>
                     )}
                   </div>
-                  <div className="similar-game-info">
+                  <div className="similar-anime-info">
                     <h4>{similar.title}</h4>
                   </div>
                 </Link>
