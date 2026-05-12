@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const response = await fetch(`https://api.igdb.com/v4/${igdbPath}`, {
+  const response = await fetch(`https://api.igdb.com/v4/games/`, {
     method: "POST",
     headers: {
       "Client-ID": import.meta.env.VITE_GAMES_CLIENT_ID,
