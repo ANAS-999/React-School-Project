@@ -38,6 +38,10 @@ export const SignUp = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(form.password!=form.confirm){
+      setError("password do not match ");
+      return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -191,6 +195,7 @@ export const SignUp = () => {
         </div>
 
         {/* Form */}
+        <form onSubmit={handleSignUp}>
         <div className="signup-form">
           {error && <div className="signup-error">{error}</div>}
 
@@ -204,6 +209,7 @@ export const SignUp = () => {
                   placeholder="Alex"
                   value={form.firstName}
                   onChange={set("firstName")}
+                  required
                 />
                 <span className="signup-input-icon">
                   <i className="fas fa-user" aria-hidden="true" />
@@ -294,6 +300,7 @@ export const SignUp = () => {
                 value={form.confirm}
                 onChange={set("confirm")}
                 style={{ paddingRight: 38 }}
+                required
               />
               <span className="signup-input-icon">
                 <i className="fas fa-lock" aria-hidden="true" />
@@ -319,6 +326,7 @@ export const SignUp = () => {
               id="terms"
               checked={form.terms}
               onChange={set("terms")}
+              required
             />
             <label className="signup-terms-text" htmlFor="terms">
               I agree to the <a href="#">Terms of Service</a> and{" "}
@@ -326,21 +334,20 @@ export const SignUp = () => {
             </label>
           </div>
 
-          {/* Submit */}
-          <button
-            className="signup-btn"
-            onClick={handleSignUp}
-            disabled={loading}
-          >
-            {loading ? "Creating account…" : "Create Account →"}
-          </button>
-
+                  <button
+                    className="signup-btn"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? "Creating account…" : "Create Account →"}
+                  </button>
           {/* Divider */}
           <div className="signup-divider">
             <div className="signup-divider-line" />
             <span className="signup-divider-text">or sign up with</span>
             <div className="signup-divider-line" />
           </div>
+
 
           {/* Social */}
           <div className="signup-social">
@@ -352,6 +359,7 @@ export const SignUp = () => {
             </button>
           </div>
         </div>
+        </form>
 
         {/* Footer */}
         <div className="signup-footer">

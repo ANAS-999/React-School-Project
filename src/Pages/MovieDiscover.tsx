@@ -36,6 +36,7 @@ function MovieDiscover() {
         // If user has typed a search query use the search endpoint which searches all movies
         if (searchQuery.trim().length > 0) {
           data = await api.searchMovies(searchQuery.trim(), 1);
+<<<<<<< HEAD
         } else {
           // No search query: use discover endpoint which can filter/sort across all movies
           try {
@@ -46,6 +47,11 @@ function MovieDiscover() {
               "discoverMovies failed, falling back to getPopularMovies",
               e,
             );
+=======
+        } else if(sortBy !== "popular" || year !== "" || genre !== "") {          
+          // No search query: use discover endpoint which can filter/sort across all movies
+          /* try {
+>>>>>>> 09ca3cb (Fixing Movies Probleme  commit)
             data = await api.discoverMovies({
               page: 1,
               sortBy,
@@ -53,6 +59,24 @@ function MovieDiscover() {
               genre: genre || undefined,
             });
           }
+           
+          catch (e) {
+            // Fallback to popular if discover fails for some reason
+            console.warn(
+              "discoverMovies failed, falling back to getPopularMovies",
+              e,
+            );
+            data = await api.getPopularMovies(1);
+            
+          } */
+                data = await api.discoverMovies({
+                    page: 1,
+                    sortBy,
+                    year: year || undefined,
+                    genre: genre || undefined,
+                });
+        }else{
+          data = await api.getPopularMovies(1);
         }
 
         setMovies(data || []);
