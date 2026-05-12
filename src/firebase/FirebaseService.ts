@@ -29,6 +29,7 @@ export const addMovieTolibrary = async (movie: LibraryModel) => {
     });
   } catch (error) {}
 };
+<<<<<<< Updated upstream
 export const fetchMovieToLibrary = async () => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -43,6 +44,17 @@ export const fetchMovieToLibrary = async () => {
     image: doc.data().image,
   }));
 };
+=======
+export const fetchMovieToLibrary=async()=>{
+    const auth =getAuth();
+    const user=auth.currentUser;
+    if(!user) return [];
+    const snapshot =await getDocs(collection(db,"users",user.uid,"Movies-Library"));
+    return snapshot.docs.map((doc)=>doc.id);
+
+}
+
+>>>>>>> Stashed changes
 export const removeMovieFromLibrary = async (movieId: string | number) => {
   const auth = getAuth();
   const user = auth.currentUser;

@@ -31,6 +31,10 @@ export const Header = () => {
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+<<<<<<< Updated upstream
+=======
+ 
+>>>>>>> Stashed changes
 
   useEffect(() => {
     if (!isFirebaseConfigured || !auth) return;
@@ -147,6 +151,7 @@ export const Header = () => {
 
         <div className="header-actions">
           {user ? (
+<<<<<<< Updated upstream
             <div className="user-menu-container">
               <button
                 className="user-menu-trigger"
@@ -174,6 +179,13 @@ export const Header = () => {
                   </button>
                 </div>
               )}
+=======
+            // When signed in show greeting with the user's display name or email prefix and a sign out button
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div className="header-greeting">Hello {user.displayName || (user.email && user.email.split('@')[0])}</div>
+              
+              <button className="btn SignOut-btn" onClick={handleSignOut}>Sign Out</button>
+>>>>>>> Stashed changes
             </div>
           ) : (
             <>

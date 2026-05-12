@@ -13,6 +13,7 @@ import type { LibraryModel } from "../../models/LibraryModel";
 
 interface MovieCardProps {
   movie: MovieModel;
+<<<<<<< Updated upstream
   // inLibrary : bool
 }
 
@@ -84,6 +85,74 @@ function MovieCard({ movie }: MovieCardProps) {
      e.stopPropagation();
      navigate("/signin", { state: { from: location.pathname } });
    };
+=======
+
+}
+
+function MovieCard({ movie }: MovieCardProps ) {
+  const navigate = useNavigate();
+  const [details, setDetails] = useState<MovieModel | null>(null);
+  const [saved,setSaved]=useState(false);
+  const [savedMovie,setSsavedMovie]=useState<string[]>([]);
+
+  useEffect(() => {
+    // If the movie prop lacks key details, try to fetch full data from the API
+    if ((!movie.posterUrl || !movie.summary) && movie.id) {
+      let mounted = true;
+      const api = new MoviesAPI();
+      api.getMovieById(movie.id as any)
+        .then((res) => {
+          if (mounted && res) setDetails(res);
+        })
+        .catch(() => {
+          /* ignore fetch errors, keep using provided prop */
+        })
+        .finally(() => {
+          // no loading state needed here; we quietly enrich the card data
+        });
+
+      return () => { mounted = false; };
+    }
+    return;
+  }, [movie]);
+
+  const getRatingColor = (rating: number | null) => {
+    if (!rating) return "var(--text-tertiary)";
+    if (rating >= 85) return "var(--success)";
+    if (rating >= 70) return "var(--warning)";
+    return "var(--error)";
+  };
+ const handleAddToLibrary = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const auth = getAuth();
+        // persist to Firestore for logged-in users
+        if (auth.currentUser) {
+          await addMovieTolibrary({
+            id: displayed.id,
+            title: displayed.title,
+            image: displayed.posterUrl,
+          });
+        } else {
+          // fallback to localStorage for anonymous users
+          try {
+            const raw = localStorage.getItem("savedMovies");
+            const local: string[] = raw ? JSON.parse(raw) : [];
+            if (displayed.id && !local.includes(displayed.id as string)) {
+              local.push(displayed.id as string);
+              localStorage.setItem("savedMovies", JSON.stringify(local));
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+        setSaved(true);
+};
+
+const handleDelete = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+
+  await removeMovieFromLibrary(displayed.id);
+>>>>>>> Stashed changes
 
   return (
     <>
