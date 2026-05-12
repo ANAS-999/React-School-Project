@@ -29,7 +29,7 @@ class GamesAPIConfig {
     return {
       Accept: "application/json",
       "Client-ID": this.headers.clientId,
-      Authorization: this.headers.authorization,
+      Authorization: "Bearer " + this.headers.authorization,
     };
   }
 }
