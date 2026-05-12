@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/igdb/:path*", "destination": "/api/igdb/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
