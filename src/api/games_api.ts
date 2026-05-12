@@ -15,10 +15,7 @@ class GamesAPIConfig {
     this.headers = {
       clientId: import.meta.env.VITE_GAMES_CLIENT_ID,
       authorization: import.meta.env.VITE_GAMES_AUTHORIZATION,
-    };
-
-    console.log(this.headers);
-    
+    };    
   }
 
   getApiUrl() {
