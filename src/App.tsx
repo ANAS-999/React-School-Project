@@ -14,6 +14,7 @@ import ResetPassword from "./Sign/ResetPassword";
 import NotFound from "./Pages/NotFound";
 import Library from "./Pages/Library";
 import ConfigError from "./Pages/ConfigError";
+import Test from "./Pages/Test";
 
 import About from "./Pages/About";
 import { clearDiscoverCache } from "./utils/discoverCache";
@@ -70,6 +71,7 @@ function App() {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin/reset" element={<ResetPassword />} />
+      <Route path="/test" element={<Test />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
     </>
