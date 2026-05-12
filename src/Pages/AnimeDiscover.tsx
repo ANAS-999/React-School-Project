@@ -258,8 +258,18 @@ function AnimeDiscover() {
                     {[...Array(12)].map((_, i) => (
                       <div key={`skeleton-${i}`} className="game-card skeleton">
                         <div className="game-card-inner">
-                          <div className="skeleton-image"></div>
-                          <div className="skeleton-title"></div>
+                          <div className="game-card-image skeleton-image"></div>
+                          <div className="game-card-content">
+                            <h3 className="game-card-title skeleton-title"></h3>
+                            <div className="game-card-info skeleton-info">
+                              <span className="skeleton-year"></span>
+                              <span className="skeleton-status"></span>
+                            </div>
+                            <div className="game-card-genres skeleton-genres">
+                              <span className="skeleton-tag"></span>
+                              <span className="skeleton-tag"></span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -285,8 +295,18 @@ function AnimeDiscover() {
                         {[...Array(6)].map((_, i) => (
                           <div key={`skeleton-${i}`} className="game-card skeleton">
                             <div className="game-card-inner">
-                              <div className="skeleton-image"></div>
-                              <div className="skeleton-title"></div>
+                              <div className="game-card-image skeleton-image"></div>
+                              <div className="game-card-content">
+                                <h3 className="game-card-title skeleton-title"></h3>
+                                <div className="game-card-info skeleton-info">
+                                  <span className="skeleton-year"></span>
+                                  <span className="skeleton-status"></span>
+                                </div>
+                                <div className="game-card-genres skeleton-genres">
+                                  <span className="skeleton-tag"></span>
+                                  <span className="skeleton-tag"></span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         ))}

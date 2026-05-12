@@ -24,6 +24,10 @@
   z-index: 50;
 }
 
+.game-card.skeleton .game-card-inner {
+  overflow: hidden;
+}
+
 .game-card:hover .game-card-inner {
   transform: translateY(-8px) scale(1.02);
   border-color: var(--border-light);
