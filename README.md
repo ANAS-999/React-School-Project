@@ -1,6 +1,6 @@
-# 🌟 Entertainment Hub: Games, Movies, & Anime
+# 🌟 NeonHub: Games, Movies, & Anime
 
-Welcome to the **Entertainment Hub**, a comprehensive React-based platform where you can discover, explore, and track your favorite games, movies, and anime all in one place. With an elegant UI, responsive design, and robust API integrations, this project centralizes your entertainment experience.
+Welcome to **NeonHub**, a comprehensive React-based platform where you can discover, explore, and track your favorite games, movies, and anime all in one place. With an elegant UI, responsive design, and robust API integrations, this project centralizes your entertainment experience.
 
 ---
 
@@ -13,7 +13,37 @@ Welcome to the **Entertainment Hub**, a comprehensive React-based platform where
 
 ---
 
+## 📋 Requirements Specification
+
+### Functional Requirements
+- **Media Exploration**: Users can browse, search, and dynamically filter vast catalogs of games, movies, and anime based on genres, release years, platforms, and popularity.
+- **Detailed Insights**: Users can view comprehensive details for each item, including synopses, system requirements, cast, related media, and embedded playable trailers.
+- **User Authentication**: Secure sign-up, sign-in, and password reset functionalities using email/password or third-party providers (Google, GitHub).
+- **Personalized Library**: Authenticated users can add or remove items from their personal collection, which is categorized intelligently by media type.
+- **Streaming Availability**: For movies and anime, users can see where to legally watch the content via integrated streaming provider links.
+
+### Non-Functional Requirements
+- **Performance**: The application utilizes Vite for ultra-fast hot module replacement (HMR) during development and highly optimized static builds for production.
+- **Security**: Strict route protection for authenticated areas and secure environment variable handling for all sensitive API keys. Database privacy is enforced via Backend-as-a-Service (BaaS) security rules.
+- **Usability**: Intuitive user interface with interactive feedback (hover states, loaders) and graceful error handling (NotFound/ConfigError pages).
+- **Scalability**: Component-driven architecture using React 19 and strict typing via TypeScript ensures the codebase remains maintainable as new features are added.
+
+---
+
+## 🏗️ Application Architecture
+
+NeonHub follows a modern **Client-Side Rendering (CSR)** architecture built as a Single Page Application (SPA):
+
+1. **Presentation Layer (Frontend)**: Developed with React 19 and TypeScript. It handles the user interface, state management, complex 3D/GSAP animations, and client-side routing via React Router v7.
+2. **Data Fetching Layer**: Utilizes asynchronous API calls to aggregate data from three distinct external RESTful APIs (IGDB, TMDB, Jikan) to populate the frontend in real-time.
+3. **Backend-as-a-Service (BaaS) Layer**: Powered by Firebase v12. 
+   - *Firebase Auth* acts as the identity provider, issuing secure session tokens.
+   - *Cloud Firestore* acts as the real-time NoSQL database, storing personalized user data (the "My Library" collections) linked to unique User IDs.
+
+---
+
 ## 🛠️ Tools & Technologies Used
+
 ### Frontend Architecture
 - **React 19**: Modern UI component architecture with hooks.
 - **TypeScript**: Strict typing for highly reliable, bug-free code.
@@ -26,7 +56,7 @@ Welcome to the **Entertainment Hub**, a comprehensive React-based platform where
 - **@splinetool/react-spline**: Interactive 3D graphics integration.
 - **FontAwesome (v7)**: Extensive icon library.
 
-### Backend & Cloud (Firebase v12)
+### Backend & Cloud
 - **Firebase Authentication**: Supports Email/Password, Google, and GitHub providers.
 - **Cloud Firestore**: Real-time NoSQL database used to store users' personalized media libraries.
 
@@ -40,38 +70,34 @@ This application pulls extensive data from three major external APIs to keep con
 
 ---
 
-## 🗺️ Navigation & Pages
-The application utilizes a robust routing system mapped in `App.tsx`:
+## 📁 Folder Structure
 
-- **`/` (Home)**: The landing page featuring a 3D Spline interactive hero section and top-level statistics for the platform.
-- **`/discover` (Game Discover)**: Browse, search, and filter the video game database.
-- **`/games/:id` (Game Details)**: Deep dive into a specific game, showcasing media, requirements, and an "Add to Library" capability.
-- **`/movies` & `/movies/:id`**: Dedicated discovery and detail pages for movies. Features a glassmorphic "Watch On" streaming provider section and cast information.
-- **`/animes` & `/anime/:id`**: Dedicated discovery and detail pages for anime. Includes standardized embedded trailers and quick external links.
-- **`/library` (My Library)**: A secured route displaying saved items. Features custom glossy delete buttons on hover and distinct UI categorizations for games, movies, and anime.
-- **`/signin`, `/signup`, `/signin/reset`**: Authentication flows. Integrates smart redirects (returns you to the page you were originally browsing after logging in).
-- **`/about`**: Details about the platform and its creators.
-- **`/` (NotFound / ConfigError)**: Graceful error handling for missing routes or unconfigured Firebase environments.
-
----
-
-## 🔒 Firebase Security & Privacy
-Security is a top priority in handling user libraries and authentication.
-
-1. **Authentication Protection**:
-   - Routes like `/library` require an active user session. Unauthenticated users are redirected to `/signin`.
-   - Loading states (`authLoading`) prevent UI flickering while Firebase verifies the user's session token.
-2. **Firestore Rules (Privacy)**:
-   - Data is scoped to the user ID (`uid`). Users can only Read, Update, or Delete (RUD) items inside their own dedicated Firestore document/collection.
-   - The frontend queries Firestore using the authenticated user's `uid` to guarantee privacy of their "My Library" contents.
-3. **Environment Security**:
-   - API keys and secrets (Firebase config, IGDB Client ID, TMDB Key) are strictly maintained in `.env` variables and never committed to the repository. The `ConfigError` page intercepts the UI gracefully if these keys are missing.
-
----
-
-## 💻 Setup & Installation
-1. Clone the repository.
-2. Run `npm install` to install dependencies.
-3. Create a `.env` file based on `.env.example` and populate it with your Firebase, IGDB, and TMDB keys.
-4. Run `npm run dev` to start the Vite development server.
-5. Visit `http://localhost:5173`.
+```text
+📦 neonhub
+ ┣ 📂 public           # Static public assets (favicon, icons, etc.)
+ ┣ 📂 src
+ ┃ ┣ 📂 api            # External API integrations (IGDB, TMDB, Jikan)
+ ┃ ┣ 📂 assets         # Local images, SVG icons, and global styling variables
+ ┃ ┣ 📂 components     # Reusable UI components
+ ┃ ┃ ┣ 📂 common       # Shared components (Header, Footer, Icon, EmptyState, etc.)
+ ┃ ┃ ┣ 📂 discover     # Discover page components (Cards, Filters, Heroes)
+ ┃ ┃ ┗ 📂 home         # Home page components (Hero, Contact, ContentGrid)
+ ┃ ┣ 📂 firebase       # Firebase configuration and authentication service
+ ┃ ┣ 📂 models         # TypeScript type definitions and models
+ ┃ ┣ 📂 Pages          # Page-level components (Home, Discover, Details, Library, etc.)
+ ┃ ┣ 📂 Sign           # Authentication components (SignIn, SignUp, ResetPassword)
+ ┃ ┣ 📂 utils          # Helper functions (imageUtils, discoverCache)
+ ┃ ┣ 📜 App.tsx        # Main application component and Router configuration
+ ┃ ┣ 📜 App.css        # Global application styles
+ ┃ ┣ 📜 index.css      # Global CSS variables and base styles
+ ┃ ┣ 📜 main.tsx       # Application entry point
+ ┃ ┣ 📜 types.ts       # Global TypeScript interfaces and types
+ ┃ ┗ 📜 ICONS_REFERENCE.ts  # FontAwesome icon reference guide
+ ┣ 📜 .env             # Environment variables (API keys, Firebase config)
+ ┣ 📜 .env.example     # Template for environment variables
+ ┣ 📜 .gitignore       # Git ignore rules
+ ┣ 📜 eslint.config.js # ESLint configuration
+ ┣ 📜 index.html       # HTML template
+ ┣ 📜 package.json     # Project dependencies and scripts
+ ┣ 📜 tsconfig.json    # TypeScript configuration
+ ┗ 📜 vite.config.ts   # Vite bundler configuration

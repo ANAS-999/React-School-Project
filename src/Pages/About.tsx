@@ -356,7 +356,7 @@ const About: React.FC = () => {
         <div className="container">
           <div className="section-header text-reveal">
             <h2>Meet The Creators</h2>
-            <p>The minds behind EntertainHub</p>
+            <p>The minds behind NeonHub</p>
           </div>
 
           <div className="dev-grid">

@@ -32,7 +32,7 @@ export const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
-            <h4>EntertainHub</h4>
+            <h4>NeonHub</h4>
             <p>Your ultimate entertainment discovery platform for games, movies, and animes.</p>
             <div className="footer-social">
               <a href="#" aria-label="Twitter"><i className="fab fa-twitter fa-sm"></i></a>
@@ -74,7 +74,7 @@ export const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {currentYear} EntertainHub. All rights reserved.</p>
+          <p>&copy; {currentYear} NeonHub. All rights reserved.</p>
           <p>Made with <i className="fas fa-heart fa-sm heart-icon"></i> for entertainment enthusiasts</p>
         </div>
       </div>

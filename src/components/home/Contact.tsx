@@ -1,9 +1,11 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Icon } from "../common/Icon";
 import "./Contact.css";
+import emailjs from "@emailjs/browser";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +22,7 @@ export const Contact = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [loading,setLoading]=useState<boolean>(false);
 
   useGSAP(
     () => {
@@ -94,6 +97,44 @@ export const Contact = () => {
     { scope: containerRef },
   );
 
+  const handleSend=async(e:React.FormEvent)=>{
+    e.preventDefault();
+    setLoading(true);
+    try{
+      await emailjs.send(
+       
+        import.meta.env.VITE_EMAIL_JS_SERVICE_ID,
+        import.meta.env.VITE_EMAIL_JS_TEMPLATE_ID,
+
+        {
+          form_name:formData.name,
+          email:formData.email,
+          subject:formData.subject,
+          message:formData.message,
+
+        },
+
+        import.meta.env.VITE_EMAIL_JS_PUBLIC_KEY
+      );
+      setFormData({
+      name:"",
+      email:"",
+      message:"",
+      subject:"",
+      })
+      setSubmitted(true);
+
+
+      console.log("email send succes");
+
+    }catch(error){
+       setLoading(false);
+      console.log(error);
+      alert("failed to send message");
+    }
+    setLoading(false);
+  }
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -126,21 +167,21 @@ export const Contact = () => {
               <Icon icon="fa-envelope" size="lg" className="icon" />
               <div>
                 <p className="label">Email</p>
-                <p>support@entertainhub.com</p>
+                <p>support@neaonhub.com</p>
               </div>
             </div>
             <div className="info-item">
               <Icon icon="fa-phone" size="lg" className="icon" />
               <div>
                 <p className="label">Phone</p>
-                <p>+1 (555) 123-4567</p>
+                <p>+212 00000000</p>
               </div>
             </div>
             <div className="info-item">
               <Icon icon="fa-location-dot" size="lg" className="icon" />
               <div>
                 <p className="label">Address</p>
-                <p>123 Entertainment Ave, Los Angeles, CA 90001</p>
+                <p>Casablanca, Ain Sebaa</p>
               </div>
             </div>
 
@@ -163,7 +204,7 @@ export const Contact = () => {
             </div>
           </div>
 
-          <form className="contact-form" onSubmit={handleSubmit} ref={formRef}>
+          <form className="contact-form" onSubmit={handleSend} ref={formRef}>
             <div className="form-group">
               <label htmlFor="name">Name</label>
               <input
@@ -199,7 +240,6 @@ export const Contact = () => {
                 value={formData.subject}
                 onChange={handleInputChange}
                 placeholder="What's this about?"
-                required
               />
             </div>
 
@@ -216,13 +256,14 @@ export const Contact = () => {
               ></textarea>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-large">
+            <button type="submit" className="btn btn-primary btn-large" disabled={loading}>
               <Icon
                 icon="fa-paper-plane"
                 size="sm"
                 style={{ marginRight: "8px" }}
+
               />
-              Send Message
+              {loading ? "Sending message..." : "Send Message"}
             </button>
 
             {submitted && (

@@ -1,4 +1,4 @@
-// Font Awesome Icons Reference for EntertainHub
+// Font Awesome Icons Reference for NeonHub
 // All icons used throughout the application
 
 export const ICONS_USED = {

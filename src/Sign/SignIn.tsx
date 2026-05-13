@@ -101,7 +101,7 @@ console.log(result.user);
         {/* Logo */}
         <div className="signin-logo">
           <div className="signin-logo-icon">🎮</div>
-          <span className="signin-logo-name" onClick={handleGoHome}>EntertainHub</span>
+          <span className="signin-logo-name" onClick={handleGoHome}>NeonHub</span>
         </div>
 
         {/* Heading */}
