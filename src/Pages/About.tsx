@@ -374,13 +374,20 @@ const About: React.FC = () => {
                 <h3>Anas</h3>
                 <h4 className="dev-role">Full Stack Developer</h4>
                 <p>
-                  Expert in building end-to-end solutions combining robust backend 
-                  architecture with engaging frontend interfaces using React, animations, 
-                  and modern web technologies.
+                  Expert in building end-to-end solutions combining robust
+                  backend architecture with engaging frontend interfaces using
+                  React, animations, and modern web technologies.
                 </p>
                 <div className="dev-socials">
-                  <a href="#">GitHub</a>
-                  <a href="#">LinkedIn</a>
+                  <a href="https://github.com/ANAS-999/" target="_blank">
+                    GitHub
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/anas-bencheikh-dev/"
+                    target="_blank"
+                  >
+                    LinkedIn
+                  </a>
                 </div>
               </div>
             </div>
@@ -399,13 +406,21 @@ const About: React.FC = () => {
                 <h3>Yahya</h3>
                 <h4 className="dev-role">Full Stack Developer</h4>
                 <p>
-                  Passionate about creating seamless user experiences through innovative 
-                  problem-solving across frontend and backend development, with a focus 
-                  on clean code and scalable architecture.
+                  Passionate about creating seamless user experiences through
+                  innovative problem-solving across frontend and backend
+                  development, with a focus on clean code and scalable
+                  architecture.
                 </p>
                 <div className="dev-socials">
-                  <a href="#">GitHub</a>
-                  <a href="#">LinkedIn</a>
+                  <a href="https://github.com/yaya822/" target="_blank">
+                    GitHub
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/yahya-bachri-020688293/"
+                    target="_blank"
+                  >
+                    LinkedIn
+                  </a>
                 </div>
               </div>
             </div>
@@ -552,14 +567,14 @@ const About: React.FC = () => {
                   </div>
                 </div>
                 <div className="tech-card" data-color="#0052CC">
-                   <div className="tech-icon">
-                     <Icon icon="fab fa-jira" />
-                   </div>
-                   <div className="tech-info">
-                     <h4>Jira</h4>
-                     <p>Project Management</p>
-                   </div>
-                 </div>
+                  <div className="tech-icon">
+                    <Icon icon="fab fa-jira" />
+                  </div>
+                  <div className="tech-info">
+                    <h4>Jira</h4>
+                    <p>Project Management</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -576,7 +591,7 @@ const About: React.FC = () => {
             </div>
             <h2>Ready to Start Your Journey?</h2>
             <p>
-              Join thousands of users discovering new entertainment every day. 
+              Join thousands of users discovering new entertainment every day.
               Explore your next favorite game, movie, or anime.
             </p>
             <div className="cta-buttons">
