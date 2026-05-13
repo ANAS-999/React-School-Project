@@ -145,13 +145,6 @@ export const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    setTimeout(() => setSubmitted(false), 3000);
-  };
-
   return (
     <section id="contact" className="contact-section" ref={containerRef}>
       <div className="container">
