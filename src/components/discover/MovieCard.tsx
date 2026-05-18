@@ -87,7 +87,18 @@ function MovieCard({ movie }: MovieCardProps) {
 
   return (
     <>
-      <div className="game-card group" onClick={() => navigate(`/movies/${movie.id}`)}>
+      <a 
+  href={`/movies/${movie.id}`}
+  className="game-card group"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={(e) => {
+    if (e.button === 0) {
+      e.preventDefault();
+      navigate(`/movies/${movie.id}`);
+    }
+  }}
+>
         <div className="game-card-inner">
 <div className="game-card-image">
               {movie.posterUrl ? (
@@ -155,7 +166,7 @@ function MovieCard({ movie }: MovieCardProps) {
             </div>
           </div>
         </div>
-      </div>
+      </a>
        
       {showDialog && (
         <div className="auth-dialog-overlay" onClick={closeDialog}>

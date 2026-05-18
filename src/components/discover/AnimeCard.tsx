@@ -76,7 +76,18 @@ function AnimeCard({ anime }: AnimeCardProps) {
 
   return (
     <>
-      <div className="game-card group" onClick={() => navigate(`/anime/${anime.id}`)}>
+      <a 
+  href={`/anime/${anime.id}`}
+  className="game-card group"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={(e) => {
+    if (e.button === 0) {
+      e.preventDefault();
+      navigate(`/anime/${anime.id}`);
+    }
+  }}
+>
         <div className="game-card-inner">
           <div className="game-card-image">
             {anime.imageId && anime.imageId.length > 0 ? (
@@ -116,7 +127,7 @@ function AnimeCard({ anime }: AnimeCardProps) {
             </button>
             
             {anime.rating && (
-              <div className="game-card-rating">
+              <div className="anime-card-rating">
                 <Icon icon="fa-star" className="rating-icon" />
                 <span>{(anime.rating / 10).toFixed(1)}</span>
               </div>
@@ -153,10 +164,10 @@ function AnimeCard({ anime }: AnimeCardProps) {
             <p className="game-card-description">{anime.summary}</p>
           </div>
         </div>
-      </div>
     </div>
-    
-    {showDialog && (
+  </a>
+  
+  {showDialog && (
       <div className="auth-dialog-overlay" onClick={closeDialog}>
         <div className="auth-dialog" onClick={(e) => e.stopPropagation()}>
           <h3>Login Required</h3>

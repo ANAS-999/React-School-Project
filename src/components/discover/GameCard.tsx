@@ -102,7 +102,21 @@ function GameCard({ game }: GameCardProps) {
 
 return (
     <>
-      <div className="game-card group" onClick={() => navigate(`/games/${game.id}`)}>
+      <a 
+  href={`/games/${game.id}`}
+  className="game-card group"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={(e) => {
+    if (e.button === 0) {
+      e.preventDefault();
+      navigate(`/games/${game.id}`);
+    }
+  }}
+  onContextMenu={(e) => {
+    // Allow default context menu to work
+  }}
+>
         <div className="game-card-inner">
           <div className="game-card-image">
             {game.imageId ? (
@@ -176,7 +190,7 @@ return (
             </div>
           </div>
         </div>
-      </div>
+      </a>
       
       {showDialog && (
         <div className="auth-dialog-overlay" onClick={closeDialog}>

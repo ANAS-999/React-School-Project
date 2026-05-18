@@ -269,6 +269,29 @@
   gap: 4px;
 }
 
+.anime-card-rating {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.anime-card-rating {
+  color: white;
+}
+
 .rating-icon {
   font-size: 10px;
 }
@@ -431,7 +454,7 @@
 /* Anime Genre Tags - Glass Effect */
 .anime-genre-tag {
   background: rgba(255, 255, 255, 0.05);
-  color: var(--pink-light);
+  color: rgba(255, 255, 255, 0.795);
   border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
