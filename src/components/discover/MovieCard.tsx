@@ -46,6 +46,7 @@ function MovieCard({ movie }: MovieCardProps) {
     return "var(--error)";
   };
   const handleAddToLibrary = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     const auth = getAuth();
     if (!auth.currentUser) {

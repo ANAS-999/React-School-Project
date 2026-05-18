@@ -73,6 +73,7 @@ function GameCard({ game }: GameCardProps) {
   ) as string[];
 
   const handleAddToLibrary = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     const auth = getAuth();
     if (!auth.currentUser) {

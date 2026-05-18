@@ -39,6 +39,7 @@ function AnimeCard({ anime }: AnimeCardProps) {
   }, [anime.id]);
 
   const handleAddToLibrary = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     const auth = getAuth();
     if (!auth.currentUser) {
