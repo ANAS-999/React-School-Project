@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "../common/Icon";
 import type { AnimeModel } from "../../models/AnimeModel";
-import { addAnimeTolibrary, checkIfAnimeInLibrary, removeAnimeFromLibrary } from "../../firebase/FirebaseService";
+import {
+  addAnimeTolibrary,
+  checkIfAnimeInLibrary,
+  removeAnimeFromLibrary,
+} from "../../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import type { LibraryModel } from "../../models/LibraryModel";
 import "./GameCard.css";
@@ -41,7 +45,7 @@ function AnimeCard({ anime }: AnimeCardProps) {
       setShowDialog(true);
       return;
     }
-    
+
     if (isLoading) return;
     setIsLoading(true);
 
@@ -53,9 +57,9 @@ function AnimeCard({ anime }: AnimeCardProps) {
         const libraryAnime: LibraryModel = {
           id: anime.id,
           title: anime.title,
-          image: anime.imageId || undefined
+          image: anime.imageId || undefined,
         };
-        
+
         await addAnimeTolibrary(libraryAnime);
         setIsInLibrary(true);
       }
@@ -76,18 +80,18 @@ function AnimeCard({ anime }: AnimeCardProps) {
 
   return (
     <>
-      <a 
-  href={`/anime/${anime.id}`}
-  className="game-card group"
-  target="_blank"
-  rel="noopener noreferrer"
-  onClick={(e) => {
-    if (e.button === 0) {
-      e.preventDefault();
-      navigate(`/anime/${anime.id}`);
-    }
-  }}
->
+      <a
+        href={`/anime/${anime.id}`}
+        className="game-card group"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          if (e.button === 0) {
+            e.preventDefault();
+            navigate(`/anime/${anime.id}`);
+          }
+        }}
+      >
         <div className="game-card-inner">
           <div className="game-card-image">
             {anime.imageId && anime.imageId.length > 0 ? (
@@ -97,8 +101,8 @@ function AnimeCard({ anime }: AnimeCardProps) {
                     <div className="placeholder-title">{anime.title}</div>
                   </div>
                 )}
-                <img 
-                  src={anime.imageId} 
+                <img
+                  src={anime.imageId}
                   alt={anime.title}
                   loading="lazy"
                   onLoad={() => setImageLoaded(true)}
@@ -110,10 +114,10 @@ function AnimeCard({ anime }: AnimeCardProps) {
                 <Icon icon="fa-film" size="2xl" />
               </div>
             )}
-            
-            <button 
-              className={`add-to-library-btn ${isInLibrary ? 'in-library' : ''} ${isLoading ? 'loading' : ''} ${isCheckingLibrary ? 'checking' : ''}`} 
-              onClick={handleAddToLibrary} 
+
+            <button
+              className={`add-to-library-btn ${isInLibrary ? "in-library" : ""} ${isLoading ? "loading" : ""} ${isCheckingLibrary ? "checking" : ""}`}
+              onClick={handleAddToLibrary}
               onMouseEnter={() => setIsBtnHovered(true)}
               onMouseLeave={() => setIsBtnHovered(false)}
               title={isInLibrary ? "Remove from Library" : "Add to Library"}
@@ -122,10 +126,18 @@ function AnimeCard({ anime }: AnimeCardProps) {
               {isLoading ? (
                 <Icon icon="fas fa-spinner fa-spin" />
               ) : (
-                <Icon icon={isInLibrary ? (isBtnHovered ? "fas fa-times" : "fas fa-check") : "fas fa-plus"} />
+                <Icon
+                  icon={
+                    isInLibrary
+                      ? isBtnHovered
+                        ? "fas fa-times"
+                        : "fas fa-check"
+                      : "fas fa-plus"
+                  }
+                />
               )}
             </button>
-            
+
             {anime.rating && (
               <div className="anime-card-rating">
                 <Icon icon="fa-star" className="rating-icon" />
@@ -138,48 +150,54 @@ function AnimeCard({ anime }: AnimeCardProps) {
               </div>
             )}
           </div>
-        <div className="game-card-content">
-          <h3 className="game-card-title">{anime.title}</h3>
-          <div className="game-card-info">
-            {anime.releaseYear && (
-              <span className="game-card-year">
-                <Icon icon="fa-calendar" /> {anime.releaseYear}
-              </span>
-            )}
-            {anime.status && (
-              <span className="game-card-genre">{anime.status}</span>
-            )}
-          </div>
-          
-          {anime.genres.length > 0 && (
-            <div className="game-card-genres">
-              {anime.genres.slice(0, 2).map((genre, index) => (
-                <span key={index} className="genre-tag anime-genre-tag">{genre}</span>
-              ))}
+          <div className="game-card-content">
+            <h3 className="game-card-title">{anime.title}</h3>
+            <div className="game-card-info">
+              {anime.releaseYear && (
+                <span className="game-card-year">
+                  <Icon icon="fa-calendar" /> {anime.releaseYear}
+                </span>
+              )}
+              {anime.status && (
+                <span className="game-card-genre">{anime.status}</span>
+              )}
             </div>
-          )}
-          
-          <div className="game-card-hidden">
-            <h3>Synopsis</h3>
-            <p className="game-card-description">{anime.summary}</p>
+
+            {anime.genres.length > 0 && (
+              <div className="game-card-genres">
+                {anime.genres.slice(0, 2).map((genre, index) => (
+                  <span key={index} className="genre-tag anime-genre-tag">
+                    {genre}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="game-card-hidden">
+              <h3>Synopsis</h3>
+              <p className="game-card-description">{anime.summary}</p>
+            </div>
           </div>
         </div>
-    </div>
-  </a>
-  
-  {showDialog && (
-      <div className="auth-dialog-overlay" onClick={closeDialog}>
-        <div className="auth-dialog" onClick={(e) => e.stopPropagation()}>
-          <h3>Login Required</h3>
-          <p>You must be logged in to add anime to your library.</p>
-          <div className="auth-dialog-buttons">
-            <button className="auth-dialog-btn cancel" onClick={closeDialog}>Cancel</button>
-            <button className="auth-dialog-btn login" onClick={goToLogin}>Login</button>
+      </a>
+
+      {showDialog && (
+        <div className="auth-dialog-overlay" onClick={closeDialog}>
+          <div className="auth-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Login Required</h3>
+            <p>You must be logged in to add anime to your library.</p>
+            <div className="auth-dialog-buttons">
+              <button className="auth-dialog-btn cancel" onClick={closeDialog}>
+                Cancel
+              </button>
+              <button className="auth-dialog-btn login" onClick={goToLogin}>
+                Login
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
-  </>
+      )}
+    </>
   );
 }
 

@@ -4,7 +4,11 @@ import { GameImageSize } from "../../types";
 import { getGameImageUrl } from "../../utils/imageUtils";
 import { Icon } from "../common/Icon";
 import { useNavigate, useLocation } from "react-router-dom";
-import { addGameToLibrary, checkIfGameInLibrary, removeGameFromLibrary } from "../../firebase/FirebaseService";
+import {
+  addGameToLibrary,
+  checkIfGameInLibrary,
+  removeGameFromLibrary,
+} from "../../firebase/FirebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import type { LibraryModel } from "../../models/LibraryModel";
 import "./GameCard.css";
@@ -45,10 +49,18 @@ function GameCard({ game }: GameCardProps) {
 
   const getPlatformIcon = (platformName: string) => {
     const name = platformName.toLowerCase();
-    if (name.includes("playstation") || name.includes("ps")) return "fab fa-playstation";
+    if (name.includes("playstation") || name.includes("ps"))
+      return "fab fa-playstation";
     if (name.includes("xbox")) return "fab fa-xbox";
-    if (name.includes("pc") || name.includes("windows")) return "fab fa-windows";
-    if (name.includes("nintendo") || name.includes("switch") || name.includes("wii") || name.includes("ds")) return "fas fa-gamepad";
+    if (name.includes("pc") || name.includes("windows"))
+      return "fab fa-windows";
+    if (
+      name.includes("nintendo") ||
+      name.includes("switch") ||
+      name.includes("wii") ||
+      name.includes("ds")
+    )
+      return "fas fa-gamepad";
     if (name.includes("mac") || name.includes("apple")) return "fab fa-apple";
     if (name.includes("linux")) return "fab fa-linux";
     if (name.includes("android")) return "fab fa-android";
@@ -57,7 +69,7 @@ function GameCard({ game }: GameCardProps) {
 
   // Extract unique platforms
   const uniquePlatformIcons = Array.from(
-    new Set(game.platforms.map(getPlatformIcon).filter(Boolean))
+    new Set(game.platforms.map(getPlatformIcon).filter(Boolean)),
   ) as string[];
 
   const handleAddToLibrary = async (e: React.MouseEvent) => {
@@ -67,7 +79,7 @@ function GameCard({ game }: GameCardProps) {
       setShowDialog(true);
       return;
     }
-    
+
     if (isLoading) return;
     setIsLoading(true);
 
@@ -79,9 +91,11 @@ function GameCard({ game }: GameCardProps) {
         const libraryGame: LibraryModel = {
           id: game.id,
           title: game.title,
-          image: game.imageId ? getGameImageUrl(game.imageId, GameImageSize.FHD) : undefined
+          image: game.imageId
+            ? getGameImageUrl(game.imageId, GameImageSize.FHD)
+            : undefined,
         };
-        
+
         await addGameToLibrary(libraryGame);
         setIsInLibrary(true);
       }
@@ -100,37 +114,36 @@ function GameCard({ game }: GameCardProps) {
     navigate("/signin", { state: { from: location.pathname } });
   };
 
-return (
+  return (
     <>
-      <a 
-  href={`/games/${game.id}`}
-  className="game-card group"
-  target="_blank"
-  rel="noopener noreferrer"
-  onClick={(e) => {
-    if (e.button === 0) {
-      e.preventDefault();
-      navigate(`/games/${game.id}`);
-    }
-  }}
-  onContextMenu={(e) => {
-    // Allow default context menu to work
-  }}
->
+      <a
+        href={`/games/${game.id}`}
+        className="game-card group"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          if (e.button === 0) {
+            e.preventDefault();
+            navigate(`/games/${game.id}`);
+          }
+        }}
+      >
         <div className="game-card-inner">
           <div className="game-card-image">
             {game.imageId ? (
               <div className="image-container">
-                <img 
-                  src={getGameImageUrl(game.imageId, GameImageSize.FHD)} 
-                  alt={game.title} 
+                <img
+                  src={getGameImageUrl(game.imageId, GameImageSize.FHD)}
+                  alt={game.title}
                   loading="lazy"
                   onLoad={(e) => {
-                    (e.target as HTMLImageElement).classList.add('loaded');
+                    (e.target as HTMLImageElement).classList.add("loaded");
                   }}
                   onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                    (e.target as HTMLImageElement).parentElement?.classList.add('image-error');
+                    (e.target as HTMLImageElement).style.display = "none";
+                    (e.target as HTMLImageElement).parentElement?.classList.add(
+                      "image-error",
+                    );
                   }}
                 />
                 <div className="game-card-placeholder loading-placeholder">
@@ -142,10 +155,10 @@ return (
                 <Icon icon="fa-gamepad" size="2xl" />
               </div>
             )}
-            
-            <button 
-              className={`add-to-library-btn ${isInLibrary ? 'in-library' : ''} ${isLoading ? 'loading' : ''} ${isCheckingLibrary ? 'checking' : ''}`} 
-              onClick={handleAddToLibrary} 
+
+            <button
+              className={`add-to-library-btn ${isInLibrary ? "in-library" : ""} ${isLoading ? "loading" : ""} ${isCheckingLibrary ? "checking" : ""}`}
+              onClick={handleAddToLibrary}
               onMouseEnter={() => setIsBtnHovered(true)}
               onMouseLeave={() => setIsBtnHovered(false)}
               title={isInLibrary ? "Remove from Library" : "Add to Library"}
@@ -154,12 +167,20 @@ return (
               {isLoading ? (
                 <Icon icon="fas fa-spinner fa-spin" />
               ) : (
-                <Icon icon={isInLibrary ? (isBtnHovered ? "fas fa-times" : "fas fa-check") : "fas fa-plus"} />
+                <Icon
+                  icon={
+                    isInLibrary
+                      ? isBtnHovered
+                        ? "fas fa-times"
+                        : "fas fa-check"
+                      : "fas fa-plus"
+                  }
+                />
               )}
             </button>
-            
+
             {game.rating && (
-              <div 
+              <div
                 className="game-card-rating"
                 style={{ color: getRatingColor(game.rating) }}
               >
@@ -171,7 +192,12 @@ return (
           <div className="game-card-content">
             <div className="game-card-platforms">
               {uniquePlatformIcons.map((icon, index) => (
-                <Icon key={index} icon={icon} className="platform-icon" title={icon.split('-')[2] || 'Platform'} />
+                <Icon
+                  key={index}
+                  icon={icon}
+                  className="platform-icon"
+                  title={icon.split("-")[2] || "Platform"}
+                />
               ))}
             </div>
             <h3 className="game-card-title">{game.title}</h3>
@@ -183,7 +209,7 @@ return (
                 <span className="game-card-genre">{game.genres[0]}</span>
               )}
             </div>
-            
+
             <div className="game-card-hidden">
               <h3>Summary</h3>
               <p className="game-card-description">{game.summary}</p>
@@ -191,15 +217,19 @@ return (
           </div>
         </div>
       </a>
-      
+
       {showDialog && (
         <div className="auth-dialog-overlay" onClick={closeDialog}>
           <div className="auth-dialog" onClick={(e) => e.stopPropagation()}>
             <h3>Login Required</h3>
             <p>You must be logged in to add games to your library.</p>
             <div className="auth-dialog-buttons">
-              <button className="auth-dialog-btn cancel" onClick={closeDialog}>Cancel</button>
-              <button className="auth-dialog-btn login" onClick={goToLogin}>Login</button>
+              <button className="auth-dialog-btn cancel" onClick={closeDialog}>
+                Cancel
+              </button>
+              <button className="auth-dialog-btn login" onClick={goToLogin}>
+                Login
+              </button>
             </div>
           </div>
         </div>
